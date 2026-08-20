@@ -1,0 +1,85 @@
+---
+title: packages/skill — skill capability family
+status: verified_inference
+mastery: L1
+freshness: fresh
+anchors:
+  - packages/skill/README.md
+  - packages/skill/skill/README.md
+  - packages/skill/skill/src/index.ts
+  - packages/skill/skill-filesystem/README.md
+  - packages/skill/tool-skill/README.md
+  - docs/subsystems/skills.md
+commit: 141eb6fef83422698aef7a981029e843e8161534
+verified_at: 2026-08-20
+asked_by: self
+---
+
+## 一句话定位
+
+`SkillRegistry`（`ctx.skills`）是一个**纯 provider 注册表**：它不知道 skill 来自本地文件、插件内嵌数据还是 HTTP，只负责发现、去重、按层合并与按名加载；模型侧的目录与 `skill` 加载工具是独立的 Consumer。
+
+## 稳定性
+
+`Product — stable API`（`packages/README.md` 表格原文）。组 README 补充：该能力「remains outside the core control spine」，可用 local / embedded / remote provider 而不改变 model-facing 契约。
+
+## 包清单
+
+| 包名 | npm | 一句话职责 |
+|---|---|---|
+| `skill` | `@deepseek-ai/dsh-skill` | Service Definition：provider 注册与查找、分层解析、`renderSkillContent` |
+| `skill-badge` | `@deepseek-ai/dsh-skill-badge` | Provider：贡献固定的 `dsh-badge` 一个 skill（"powered by dsh" 素材） |
+| `skill-filesystem` | `@deepseek-ai/dsh-skill-filesystem` | Provider：扫描本地 project / custom / user 根目录发现 skill |
+| `tool-skill` | `@deepseek-ai/dsh-tool-skill` | Consumer：发布 skill 目录并注册模型侧 `skill` 加载工具 |
+
+## 三件套结构
+
+- **Service Definition**：`dsh-skill`，ctx key `ctx.skills`，`class SkillRegistry extends Service` [T1: packages/skill/skill/src/index.ts#SkillRegistry]。
+- **Service Provider**：`dsh-skill-filesystem`（本地文件）、`dsh-skill-badge`（内嵌单例）。
+- **Consumer**：`dsh-tool-skill`，`inject: ['agents', 'tools', 'skills']`。
+
+注册表**分层**（layered over `@deepseek-ai/dsh-scope`，与 tools registry 同一形状）：注册落进调用上下文 scope 所在的层——host 行与仓库插件进全局层，agent preset 常驻组合挂载的插件进该 preset 的层；读取时合并全局层与观察者 scope 链，**近层直接赢下同名**，rank 只在同一层内决胜。
+
+## 扩展点
+
+想接一个新的 skill 来源（远端仓库、数据库、企业知识库）：
+
+1. 依赖 **`@deepseek-ai/dsh-skill`**（Service Definition），不依赖 `skill-filesystem`。
+2. `ctx.skills.registerProvider(create)`：工厂**同步**执行，收到 `{ signal, invalidate }`；远端 setup、鉴权、发现都放进 await 的 `list(options)` 里，不要放工厂里。
+3. `list()` 返回数组 = 完整发现；返回 `{ candidates, complete: false }` = 拿到了可用候选但无法建立权威观测。
+4. 可变来源必须**自己保留并调用注册作用域的 `invalidate()`**——注册表没有 TTL，猜不到远端变了。`invalidate()` 只在该次注册仍然活跃时生效，晚到的回调不会误伤同名替代者。
+5. 赢下名字的 provider 会拿回它自己 `list()` 时返回的那个 candidate 与**不透明 `locator`**（文件路径、URL、id、version 句柄随便），`get()` 每次都问 provider 要 body，注册表**不缓存 body**。
+
+读侧三个 API 共享同一组 `{ cwd?, signal?, scope? }`：`snapshot()`（返回 `{ skills, complete }`，永不缓存）、`list()`（按名排序的胜出摘要）、`get(name, …)`。另有 `ctx.skills.register(skill)` 用于内嵌 runtime skill，rank 固定 `250`，`provider` 名保留字 `runtime`，同层同名 first-wins。
+
+**调用策略必须在消费方边界自己判**：`SkillSummary.invocation` 是 `{ modelInvocable, userInvocable }` 两个独立布尔，四种组合都保留；`ctx.skills.get()` 是**policy-neutral 的可信加载原语**，任何面向用户或模型的 Consumer 必须先过 `isModelInvocable(skill)` / `isUserInvocable(skill)`。
+
+渲染统一点：`renderSkillContent(skill)` 产出规范的 `<skill_content>` 块（转义 `name`、资源提示、逐字 body），`dsh-tool-skill` 的工具结果与用户显式手势注入走的是同一份，所以模型看到的形状与谁发起加载无关。同包还声明了 `skill-invocation` 这个 `MessageSource` kind（`{ name, form: 'instructions' }`）。
+
+事件只有一条：`skills/change`，**无过滤、无 catalog、无 diff**，每个消费方自己带 lookup options 重新 `snapshot()`。监听器 throw 或 reject 会被记录，不能否决注册表变更，也不能饿死后续监听器。
+
+配置只有一个键：`collectCacheMaxEntries`，默认 `128`。
+
+## Known Limitations
+
+- `dsh-skill`：失效由 provider 驱动（无 TTL）；**provider 顺序查询**，一个慢的合作型 provider 会拖住其后所有 provider，取消只能停掉调用方的等待、停不掉不合作 provider 仍在跑的活；不完整观测不被保留（无 last-good catalog、无 per-provider 诊断）；重复名 first-wins，近层静默遮蔽远层且**没有 API 能查看被遮蔽的定义**。
+- `dsh-skill-filesystem`：发现**只有一层深**，只认 `<root>/<name>/SKILL.md` 与 `<root>/<name>.md`；project scope 是最近的 `.git` 祖先，没有该标记就退回传入 cwd，无 monorepo 子项目选择；格式错误的条目只 warn 后消失，模型目录里区分不出「不存在」与「非法」；启动时缺失的 root 用 `fs.watchFile` 按 `watchPollIntervalMs` 轮询一个路径段直到 Chokidar 能挂上；**无 body 版本协议**。
+- `dsh-tool-skill`：目录省略 `whenToUse`、来源与 provider 元数据，路由只靠名字 + 截断的描述；**加载的正文没有大小上限**（只有目录描述被截断）；resources 只是提示不是附件；加载是一次性文本（无流式/缓存句柄）；目录替换是整表替换——改一个名字或描述就要重发全部可见摘要；body 未版本化，只改 body 不改 digest 也不通知模型。
+- `dsh-skill-badge`：只贡献一个固定 skill，无运行期定制；远端 Markdown 走 Shields.io。
+
+## 陷阱
+
+- **`skill-badge` 默认关着**：出厂 CLI composition 把该插件行标为 `disabled: true`，用户必须显式启用 `skill-badge` 行，skill 才会进目录。
+- `provider.name` 在**层内**唯一，重复即 throw；`runtime` 是保留名。注册失败会 abort 该次注册的 signal。
+- provider 返回的定义如果 name 与选中的 candidate 不一致，注册表会拒绝这次陈旧选择，并**内部 invalidate 该 provider**，下次 snapshot 重新发现其目录。
+- 一个持续自我 invalidate 的 provider 不会独占调用方：注册表在重试也被抢占后，直接以 incomplete + 不缓存的方式返回候选。
+- provider 对象、lookup options、candidates、definitions 都是**借用的 readonly**，不克隆不重绑，调用方与 provider 双方都必须守住这个契约。
+- `list()`/`snapshot()` 返回的东西不带调用策略过滤——忘了加 `isModelInvocable` 就会把仅供人类的 skill 暴露给模型。
+
+## 去哪深入
+
+- 组结构与 ctx key → `packages/skill/README.md`
+- 完整 API、provider contract、分层与 rank 规则、invocation policy 四象限表 → `packages/skill/skill/README.md`
+- 本地发现根、`SKILL.md` 解析、watcher 策略 → `packages/skill/skill-filesystem/README.md`
+- 模型侧目录快照与 `skill` 工具行为 → `packages/skill/tool-skill/README.md`
+- 子系统参考（discovery priority、catalog snapshots、`skill` loader）→ `docs/subsystems/skills.md`

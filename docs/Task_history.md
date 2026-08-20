@@ -6,4 +6,4 @@
 
 | # | 任务名称 | 开始时间 | 任务描述 | 结果 | 详情 |
 | --- | --- | --- | --- | --- | --- |
-| 1 | dsh-expert-bootstrap | 2026-08-20 | 从零建立 DSH 专家系统：身份定义、知识库底座、三个 skill、上游镜像、冷启动学习 | 进行中 | [详情](Task-detail/dsh-expert-bootstrap.md) |
+| 1 | dsh-expert-bootstrap | 2026-08-20 | 从零建立 DSH 专家系统：身份定义、知识库底座、三个 skill、上游镜像、冷启动学习 | **已完成**：68 页知识库（62 内容 + 6 治理）、532 锚点、L1×53/L2×9、lint 全绿 | [详情](Task-detail/dsh-expert-bootstrap.md) |

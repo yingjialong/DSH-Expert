@@ -4,7 +4,7 @@
 | --- | --- |
 | 任务名称 | dsh-expert-bootstrap |
 | 开始时间 | 2026-08-20 |
-| 状态 | 进行中 |
+| 状态 | **已完成** |
 
 ## 一、任务背景
 
@@ -87,17 +87,17 @@
 - [x] 3. `README.md`
 - [x] 4. `docs/Task_history.md`
 - [x] 5. `docs/Task-detail/dsh-expert-bootstrap.md`（本文件）
-- [ ] 6. `git init` + `.gitignore` + 目录骨架
-- [ ] 7. `CLAUDE.md`（12 条硬约束）
-- [ ] 8. skill：`dsh`
-- [ ] 9. skill：`dsh-sync`
-- [ ] 10. skill：`dsh-wiki`
-- [ ] 11. `wiki/` 五个治理文件初版
-- [ ] 12. `playbooks/` 四本剧本初版
-- [ ] 13. `docs/Module/` 四份模块文档
-- [ ] 14. 冷启动阶段一：全域 L1，生成 `index.md` + `coverage.md`
-- [ ] 15. 冷启动阶段二：要害领域 L2
-- [ ] 16. 向用户汇报 `coverage.md` 真实结果
+- [x] 6. `git init` + `.gitignore` + 目录骨架
+- [x] 7. `CLAUDE.md`（12 条硬约束）
+- [x] 8. skill：`dsh`
+- [x] 9. skill：`dsh-sync`
+- [x] 10. skill：`dsh-wiki`
+- [x] 11. `wiki/` 五个治理文件初版
+- [x] 12. `playbooks/` 四本剧本初版
+- [x] 13. `docs/Module/` 四份模块文档
+- [x] 14. 冷启动阶段一：全域 L1，生成 `index.md` + `coverage.md`
+- [x] 15. 冷启动阶段二：要害领域 L2
+- [x] 16. 向用户汇报 `coverage.md` 真实结果
 
 ## 七、上游镜像基线
 
@@ -115,4 +115,47 @@
 
 ## 九、变动文件清单
 
-（任务完成后填写）
+### 新建（共 80 个文件）
+
+| 类别 | 文件 | 数量 |
+| --- | --- | --- |
+| 身份与规则 | `CLAUDE.md` | 1 |
+| 项目文档 | `README.md`、`docs/Task_history.md`、`docs/Task-detail/dsh-expert-bootstrap.md` | 3 |
+| 模块文档 | `docs/Module/{knowledge-base,skills,playbooks,upstream}.md` | 4 |
+| Skill | `.claude/skills/{dsh,dsh-sync,dsh-wiki}/SKILL.md` | 3 |
+| 方法层剧本 | `playbooks/{新项目集成选型,报错诊断,插件开发,版本升级评估}.md` | 4 |
+| 知识库治理 | `wiki/{index,log,coverage,errors,open-questions,conflicts}.md` | 6 |
+| 知识库内容 | `wiki/packages/*.md`（50）、`wiki/topics/*.md`（8）、`wiki/integration/*.md`（4） | 62 |
+| 配置 | `.gitignore` | 1 |
+
+### 上游镜像（gitignore，不入库）
+
+`upstream/deepseek-harness`（110M）、`upstream/cordis`（1.5M）
+
+## 十、验收结果
+
+| 验收标准 | 结果 |
+| --- | --- |
+| 1. 三个 skill 可用，`dsh` 自动触发 | ✅ 已被 Claude Code 注册识别 |
+| 2. `CLAUDE.md` 12 条硬约束 | ✅（第 11 条按 Q34/Q35 改为预授权制） |
+| 3. `wiki/` 治理文件齐备 | ✅ 6 个（比计划多 `conflicts.md`） |
+| 4. `playbooks/` 四本剧本 | ✅ |
+| 5. 上游 blobless 克隆可 grep/diff/溯源 | ✅ DSH `141eb6f` · Cordis `8cc9e33` |
+| 6. 冷启动阶段一全域 L1 | ✅ 53 个单元 L1 |
+| 7. 冷启动阶段二要害 L2 | ✅ 9 个单元 L2 |
+| 8. 向用户汇报 `coverage.md` | ✅ |
+
+**lint 验收**：62 个内容页 frontmatter 违规 **0** · 封顶规则（L1/L2 标 fact）违规 **0** · 532 个去重锚点指向不存在文件 **0** · 超 400 行的页 **0**。
+
+**知识产出**：532 锚点 · 572 条陷阱 · 75 条文档与源码冲突 · 114 条悬而未决。
+
+## 十一、待确认支线
+
+以下为执行过程中自然发现、**未经授权不处理**的支线：
+
+| # | 位置/现象 | 潜在影响 | 建议优先级 |
+| --- | --- | --- | --- |
+| S1 | 本机 pnpm 10.13.1 与上游要求的 `pnpm@11.7.0` 不匹配 | 将来做 L3 实测（跑上游测试、构建）会失败，需 corepack 切换 | 中（实测前必处理） |
+| S2 | 本机 Python 3.12.8，用户全局规则要求 3.13+ | 不影响 DSH Python SDK（要求 ≥3.10），但与用户全局规则不符 | 低 |
+| S3 | 全域无 L3（实测）知识，故当前**没有任何 `fact` 级结论** | 所有回答的认知状态上限是 `verified_inference` | 中（可按需推进） |
+| S4 | 114 条悬而未决中约半数需读源码即可解决（标注为"未逐条核对"） | 属于可消化的盲区，非真正未知 | 低（可随提问自然消化） |

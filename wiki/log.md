@@ -44,3 +44,27 @@
 | docs/cookbook | 9 篇 | `ls docs/cookbook/` |
 | docs/postmortem | 4 篇事故复盘 | `ls docs/postmortem/` |
 | apps | `cli`、`web` | `ls apps/` |
+
+---
+
+## 2026-08-20 · 冷启动阶段一 + 阶段二
+
+- **提问者**：self（主动学习，非提问触发）
+- **范围**：阶段一全域 L1（50 个包组 + 19 个 docs 顶层主题 + 20 篇 subsystems + 4 篇 postmortem + Cordis + 集成表面）；阶段二要害 L2（JSON-RPC 协议层、Python SDK、ACP/HTTP、核心链、插件开发、配置与工具）
+- **执行方式**：17 个并行 agent，每个只写自己的页面（避免并发写冲突），索引与覆盖度由主控统一汇总
+- **上游基线**：DSH `141eb6f` · Cordis `8cc9e33`
+- **产出**：62 个内容页 + 6 个治理页；**532 个去重锚点**；572 条陷阱；75 条文档与源码冲突；114 条悬而未决
+- **验收（lint 全绿）**：frontmatter 违规 **0** · 封顶规则违规 **0** · 锚点指向不存在文件 **0** · 超 400 行的页 **0**
+- **沉淀**：`errors.md` 新增 E004-E006（三条跨组陷阱）；新建 `conflicts.md`（75 条冲突登记册）
+- **实测**：无（冷启动明确不做 L3，故当前**全域没有任何 `fact` 级知识**）
+- **覆盖度变化**：全域 L0 → **L1 53 个单元 / L2 9 个单元**
+
+**阶段二的高价值发现举例**（均为读源码才能得出、文档未写）：
+
+| 发现 | 出处 |
+| --- | --- |
+| SDK 线协议只有 3 个 client→server 方法 + 4 个 server→client 通知，**无 interrupt/cancel/abort**，停止跑飞的回合只能 `close()` 杀进程 | `packages/sdk/protocol/src/types.ts` |
+| Python SDK 与 runtime 是**精确等号锁**（`==`），不能单独升级其一；只发 wheel 不发 sdist，平台仅 3 个 | `python/sdk/pyproject.toml`、`python/sdk-runtime/platforms.json` |
+| `session_prompt()` 只返回排队回执就立即返回，**不等回合结束**；绕开 `Session.run()` 就得自己拥有活动边界 | `python/sdk/src/deepseek_harness/client.py#session_prompt` |
+| ACP 的 stdout 被协议帧独占，任何调试打印都会污染 JSON-RPC 帧 | `packages/acp/acp/src/index.ts` |
+| ACP 插件加 default export 会让 Loader 丢掉 namespace 使 `inject` 静默失效（0001 号事故主角） | `docs/postmortem/0001-acp-default-export-drops-inject.md` |
