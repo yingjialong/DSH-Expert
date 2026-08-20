@@ -1,0 +1,14 @@
+# 上游镜像：有自己的 git 历史，不进本仓库
+upstream/
+
+# 实测沙箱：一次性产物
+sandbox/
+
+# 系统与编辑器
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# 同步过程中的临时产物
+.dsh-sync-tmp/
