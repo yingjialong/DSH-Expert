@@ -18,8 +18,8 @@ anchors:
   - .agents/notes/implemented/architecture/2026-06-17-filesystem-capability-seam.md
   - .agents/notes/implemented/simplification/2026-06-26-fsspec-style-fs-seam.md
   - .agents/notes/implemented/architecture/2026-06-26-file-context-as-event-gate.md
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-22
 asked_by: self
 ---
 
@@ -102,7 +102,7 @@ DSH 里 **capability seam 拆分做得最彻底的一组**：provider 契约（`
 5. **`glob`/`grep` 不是文件系统能力**。它们 spawn 打包的 rg（argv 里预置 `--no-config`，防止宿主 `RIPGREP_CONFIG_PATH` 注入 `--pre` 预处理器）。所以远端/虚拟文件系统后端下搜索结果**可能指向另一个世界的路径**。
 6. **`sampleOverCapGlobResults` 是必填且无 fallback** 的 config——部署必须显式选择超额排序契约。
 7. **`fs/observed` 的 listener 契约上必须是同步、纯副作用的**。工具不 guard 这次 `ctx.emit`，listener 抛异常会直接变成工具的 `isError` 结果。
-8. **`read_image` 只在挂了 `ctx.attachments` 时才注册**，且执行时还要求当前路由模型声明 `image` 输入，否则在任何 IO 之前就返回拒绝。
+8. **`read_image` 只在挂了 `ctx.attachments` 时才注册**，且执行时还要求当前路由模型声明 `image` 输入，否则在任何 IO 之前就返回拒绝。工具描述明确引导模型直接用它看图而非装图像库或自造缩略图：harness 会在下一次模型请求前校验并降采样超限图片（降采样读的信封标注 `downscaled from WxH px` 与换算回原文件的坐标倍率；超出单边像素 / 解码像素 / 字节硬上限则拒绝并提示缩小后重读），独立文件可小批量并发读 [T1: packages/fs/tool-fs/src/read-image.ts]。
 
 ## 去哪深入（文件路由）
 

@@ -19,8 +19,8 @@ anchors:
   - packages/preset/agent-presets/README.md
   - packages/llm/llm/src/index.ts
   - docs/subsystems/core.md
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-22
 asked_by: self
 ---
 
@@ -80,7 +80,7 @@ kick()                                        :210  while (await this.turn()) {}
 | 层 | 入口 | 产出 | 谁消费 |
 |---|---|---|---|
 | 模型历史 | `session.deriveMessages()` | `Message[]`，按 surface 节点投影，按节点缓存，`replaceGeneration` 变化才重建 | agent-loop 组请求 |
-| 客户端读模型 | `ctx.sessionProjections`（`init/apply/view` 三个纯同步函数 + `stateVersion`） | wire-JSON 整值 | apiproxy / UI |
+| 客户端读模型 | `ctx.sessionProjections`（`init/apply` 纯 fold + `stateSchema` + 可选 `wire`（`viewSchema`/`view`）+ `stateVersion`） | wire-JSON 整值（仅 client-visible unit） | apiproxy / UI |
 | 原始事件流 | `session/event`（同步通知） | `SessionEvent` | 持久化、telemetry、UI token 流 |
 
 - **Session 本体**：`packages/core/session/src/index.ts#Session`，`seq === log.length` 契约，事件与 data 在 accept 时 deep-freeze，header 走单独通道不进日志。
@@ -88,6 +88,7 @@ kick()                                        :210  while (await this.turn()) {}
 - **`session/flush` 只有一个入口**：`ctx.sessions.flush(session)`，store 持有 carrier，不能自己 `ctx.parallel('session/flush')`。
 - **持久化 seam**：`ctx.sessionPersistence`（abstract）+ 两个后端。JSONL = 每 session 一个 artifact（`locate()` 返路径、`supportsRawArtifacts=true`，默认 zstd 帧）；SQLite = 共享单库（`locate()` 返 `undefined`、不支持 raw artifact、schema 17，拒绝旧 schema 而非迁移）。两个一方后端共用 `PersistenceCoordinator`，只实现 `PersistenceBackend` 钩子。
 - **checkpoint 是另一个插件**：`dsh-session-checkpoint-policy` 才决定"模型请求前 / 顶层 tool body 前 / 每个 pre-step"落盘。**projection cache** 存 `(sessionId, key, ver, seq, val)` 行；改了 fold 语义必须 bump `stateVersion`，否则旧行会被 forward-apply 成垃圾。
+- **projection 已拆成 state 与 client-view 两张表**：`SessionProjectionStateMap` 是 host fold-state 表，`SessionProjectionMap` 只收 client-visible key。`ProjectionDefinition` 的 `schema` 改名为 `stateSchema`（改为验证 persisted state，不再验证 wire payload），`view` 降为可选的 `wire.view`。不带 `wire` 的 **host-only unit** 不进 snapshot 也不进 change feed，但 checkpoint 照常落行；读它的 state 用新增的 `ctx.sessionProjections.stateOf(session, key)`。`viewCheckpoint`/`restore` 现在会先 `stateSchema.parse` 存量行，解析失败分别跳过该 key / 抛错。
 
 ## 会话的并发与隔离边界（条件 → 结论）
 
@@ -104,7 +105,7 @@ kick()                                        :210  while (await this.turn()) {}
 | 想用 `whenIdle()` 判断"我这条消息处理完了" | 不行。它观察整个 agent 的静止，会跟随在观察到的驱动退休前启动的替换性工作；`followup()` 也不返回任何句柄，`MessageId` 只标识 inbox 的插入/claim/discard 事实。 |
 | 长驻服务里需要精确回收某个 agent | `AgentHandle.dispose()` 是 capability，只有 create/resume 的 owner 持有；`ctx.agents.get(id)` 只给裸 `Agent`。provider unload 是独立的结构性 teardown 边界，会停并 drain 它造出的每个 handle。 |
 | 把 `Scope.ctx` 交给第三方 | 同时交出了 minter 插件的 service 解析面，事后无法收窄。scope **不是**沙箱、不是授权边界（上游明确列为 non-goal）。 |
-| 用 projection key 的存在与否做能力探测 | 错。unit 表是进程级的，任何 preset 注册的 key 会出现在**每个** session 的 snapshot 里；必须读 value。 |
+| 用 projection key 的存在与否做能力探测 | 错。unit 表是进程级的，注册的 client-visible key 会出现在**每个** session 的 snapshot 里；host-only key（无 `wire`）永不进 snapshot，state 只能 `stateOf()` 读。必须读 value。 |
 
 ## preset：cordis.yml 如何在每个 session 组装出一个 agent
 

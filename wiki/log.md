@@ -18,6 +18,19 @@
 
 ---
 
+## 2026-08-22 · /dsh-sync：rc.8 → 0.1.1-rc.2 全量同步与知识防腐
+
+- **提问者**：human
+- **问题**：DSH 已有新版本，更新本地镜像与知识库
+- **结论**：同步 `141eb6f` → `b150a55`（0.1.1-rc.2，207 提交 / 2416 文件；Cordis 零变更）。47 页锚点命中全部复验：32 确认 / 9 增补 / 4 页结论被推翻重写。npm `latest` 从 rc.7 变 **0.1.1-rc.2**，默认回答基线已切换。
+- **依据锚点**：`packages/credentials/credentials/src/types.ts`、`packages/session/session-projection/src/index.ts`、`packages/attachment/attachment/src/index.ts`、`packages/llm/llm/src/index.ts`、`packages/host/apiproxy/src/api-proxy.ts`、`packages/host/apiproxy/src/index.ts`、`packages/host/webserver/src/index.ts`、`packages/acp/acp/src/content.ts`
+- **上游基线**：DSH `b150a55`（2026-08-21T20:03+08:00，dsh-v0.1.1-rc.2）· Cordis `8cc9e33`（未变）
+- **沉淀**：`errors.md` E008–E011（credentials 事件拆分 / projection register 重构 / 图片两级限额与 normalized 持久化 / Web 图片守卫移位）；`topics/版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md`（新）；credentials/session/attachment/llm/host/plan/todo/core-chain/protocol-acp-http 等页重写或增补；`open-questions.md` 解答删除 5 条（Q014/Q034/Q042/Q106/Q114）
+- **实测**：`git ls-remote` 比对 HEAD 落后 → fetch/pull --ff-only 成功；`curl registry.npmjs.org/@deepseek-ai%2Fdsh` → dist-tags `{latest: 0.1.1-rc.2, next: 0.1.1-rc.2}`（发布时间 0.1.1-rc.1 06:49 / rc.2 12:42，均 2026-08-21）；`curl pypi.org/pypi/deepseek-harness-sdk/json` → `0.1.1rc1`；`gh api repos/deepseek-ai/deepseek-harness/releases` → 4 个 release body 完整抓取（rc.1 含 Bubblewrap `/proc/<pid>/root` 逃逸安全修复）
+- **覆盖度变化**：无等级变化（同步复验不升级 L）；credentials 与 attachment 页内容大幅扩写（仍在 L2）
+
+---
+
 ## 2026-08-20 · 知识库建立（bootstrap）
 
 - **提问者**：human

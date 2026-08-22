@@ -112,9 +112,9 @@ DSH-Expert/
 | 许可证 | MIT |
 | 形态 | TypeScript pnpm monorepo（含 `python/`、`native/`） |
 | 内核 | [Cordis](https://github.com/cordiverse/cordis)，"一切皆插件" |
-| npm 包 | `@deepseek-ai/dsh`；`latest` = **0.1.0-rc.7**，`next` = 0.1.0-rc.8 |
-| Python SDK | `deepseek-harness-sdk`（PyPI，0.1.0rc7，Python≥3.10）+ `deepseek-harness-runtime-bin` |
-| **默认回答基线** | **rc.7**（npm latest / PyPI 唯一可用），同时可回答 master 的差异 |
+| npm 包 | `@deepseek-ai/dsh`；`latest` = **0.1.1-rc.2**，`next` = 0.1.1-rc.2（2026-08-22 核验） |
+| Python SDK | `deepseek-harness-sdk`（PyPI，0.1.1rc1，落后 npm 一个 rc，Python≥3.10）+ `deepseek-harness-runtime-bin` |
+| **默认回答基线** | **0.1.1-rc.2**（npm latest），同时可回答 master 的差异；rc.7→0.1.1-rc.2 破坏性变更见 `wiki/topics/版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md` |
 | 包组数量 | `packages/` **50 组 / 226 个包**，绝大多数标注 Product — stable API |
 | 集成表面 | TS SDK / Python SDK（stdio newline-delimited JSON-RPC）/ ACP server / HTTP API gateway |
 | ⚠️ 已知陷阱 | PyPI 上的 `deepseek-harness`（0.2.0）是**无关第三方包**，官方是 `deepseek-harness-sdk` |

@@ -109,4 +109,48 @@
 
 ---
 
+### E008 — 0.1.1-rc.1 起 credentials 事件改名并拆分、seam 扩成两个 key space
+
+- **类型**：上游变更导致失效（破坏性）
+- **错误内容**：rc.8 及以前的答案是：凭据 seam 只有一个 key space（`CredentialRef`）+ 单一事件 `credentials/updated(ref)` + Service Definition 仅四方法（`resolve/describe/set/unset`）+ `.credentials.yaml` 是平面 `ref: value` 映射无版本字段 + 并发写 last-write-wins + 组内只有 credentials/credentials-local 两个包。
+- **正解**：`credentials/updated` **已不存在**，拆为 `credentials/reference-updated(ref: CredentialRef)` 与 `credentials/record-updated(key: CredentialKey)`（两个 key 语法不相交，合并会让监听器分不清 subject 空间）；ref 半边四方法不变，新增 record 半边五方法 `readRecord/describeRecord/listRecords/modifyRecord/deleteRecord`（`modifyRecord` 是唯一写路径，跨进程 writer 锁下 read-decide-replace，锁等待 30 s）；`.credentials.yaml` 变为 `version: 1` + `refs:` + `records:` 顶层结构，pre-release 平面布局 boot 时在锁下自动迁移；新增第三包 `authorization/`（`ctx.authorization`：`registerFlow/list/describe/cancel/begin` + `authorization/settled` 事件）。
+- **根因**：0.1.1 引入 durable credential records 与「问人要凭据」的 authorization flow（commit `86a9f8c86`、`732a7361f`、`fecfabcac`）。
+- **发现于**：2026-08-22 · 上游 `b150a55`（0.1.1-rc.2）
+- **牵连条目**：[packages/credentials.md](packages/credentials.md) 已重写；[topics/architecture-overview.md](topics/architecture-overview.md) 事件域清单已核（capability 事件新增两条，21 步旅程不受影响）
+
+---
+
+### E009 — 0.1.1-rc.1 起 projection register 接口重构：`schema`→`stateSchema`、`view` 移入可选 `wire` 块
+
+- **类型**：上游变更导致失效（破坏性，波及所有注册 projection 的插件）
+- **错误内容**：rc.8 及以前的答案是：`ProjectionDefinition<K,S> = { key, schema, init(), apply(state,event), view(state), stateVersion }`，key 并进 `SessionProjectionMap`，snapshot/change feed/checkpoint 覆盖每个已注册单元。
+- **正解**：接口改为 `{ key, stateSchema, init(), apply(state,event), wire?, stateVersion }`——`schema` 改名 `stateSchema`（语义：校验持久化 state，seed fold 前）；`view` 与其校验移入可选块 `wire: { viewSchema, view(state) }`；key 先并进新类型表 `SessionProjectionStateMap`（host fold state），带 wire 的才再进 `SessionProjectionMap`（client-visible）；**省略 wire 即 host-only 单元**——snapshot 与 change feed 只覆盖 client-visible 单元，checkpoint 仍覆盖全部；新增 `stateOf(session, key)` 单元状态读取 API；register 变双重载。goal/todo/plan/session-title/apiproxy 等所有既有注册点已全部随迁。
+- **根因**：session-projection 三连重构分离 host state 与 client views（commit `4c421ec88`、`9127d7e8b`、`327b86d2e`）。
+- **发现于**：2026-08-22 · 上游 `b150a55`（0.1.1-rc.2）
+- **牵连条目**：[packages/session.md](packages/session.md)、[topics/core-chain.md](topics/core-chain.md)、[packages/plan.md](packages/plan.md)、[packages/todo.md](packages/todo.md) 已修正
+
+---
+
+### E010 — 0.1.1-rc.1/rc.2 起图片附件改为两级限额 + normalized 持久化 + 请求期投影
+
+- **类型**：上游变更导致失效（破坏性）
+- **错误内容**：rc.8 及以前的答案是：attachment-local 源准入单边默认 2000 px（单张 3.5 MiB / 40 M 像素 / 消息聚合 100 MiB）；`saveImage` 持久化原始上传字节的内容寻址对象；AttachmentStore 只有准入-持久化方法无请求级 API。
+- **正解**：两级结构——源准入（单边 8192 px / 单张 20 MiB / 64 M px / 每消息 20 张 200 MiB）+ 独立 normalization（长边 2048 px / 4 MiB，配置键 `normalizedImageMaxDimension` / `normalizedImageMaxBytes` / `imageCompressionConcurrency`）；`saveImage` 持久化的是 provider-independent **normalized image**（应用 EXIF orientation、归一化缩放），`ImageAttachmentRef` 新增 `originalDimensions`（仅当缩小才记录）；新增 `readImageRequest(ref, policy, signal?)` 请求级投影（按路由 `ImageRequestPolicy` 的像素/字节预算派生，基类默认抛 `ATTACHMENT_PROJECTION_UNSUPPORTED`）；**image region reads 已整体移除**（retired image-region tool）。
+- **根因**：unified master and Files request pipeline（commit `2491e12fd`、`724783b02`、`72b204afa`、`d29855f97`）。
+- **发现于**：2026-08-22 · 上游 `b150a55`（0.1.1-rc.2）
+- **牵连条目**：[packages/attachment.md](packages/attachment.md) 已重写；[packages/llm.md](packages/llm.md) 已补 `prepareCall` 与 text-only 模型图片投影
+
+---
+
+### E011 — 0.1.1-rc.2 起 Web 切换模型不再拦截「会话已有图片但模型不支持」
+
+- **类型**：上游变更导致失效（行为变化）
+- **错误内容**：rc.8 及以前：Web GUI 切换模型时若会话已含图片且目标模型 `inputModalities` 不含 `image`，api-proxy 会拒绝并报 `model-unavailable`。
+- **正解**：该守卫已从 `api-proxy.ts` 删除（commit `d29855f97`）。能力检查移到两处：入站 prompt 准入（ACP 侧 `assertImageRoute`，模型不声明 image input 时抛 `AcpContentError(..., 'invalid')`；`initialize` 时 `supportsAcpImagePrompts` 决定 `promptCapabilities.image` 通告）+ `LlmRuntime.adapterStream` 在 dispatch 前对 text-only 模型用 `projectImagesForTextModel()` 做确定性占位投影（经 `ctx.llm.stream()` 给 text-only 模型发图不再触发 deepseek adapter 的 `UNSUPPORTED_CONTENT` 门）。
+- **根因**：图片管线统一后，拦截点从「模型切换」前移到「内容准入」与「adapter dispatch」。
+- **发现于**：2026-08-22 · 上游 `b150a55`（0.1.1-rc.2）
+- **牵连条目**：[packages/host.md](packages/host.md)、[integration/protocol-acp-http.md](integration/protocol-acp-http.md)、[packages/llm.md](packages/llm.md) 已补
+
+---
+
 > 更多**按包组分布**的文档与源码冲突（共 75 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

@@ -12,8 +12,8 @@ anchors:
   - docs/api-gateway.md
   - docs/subsystems/typert.md
   - packages/README.md
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-22
 asked_by: self
 ---
 

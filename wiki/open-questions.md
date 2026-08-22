@@ -6,7 +6,7 @@
 
 > `/dsh-sync` 时对 `retry_on_sync: true` 的条目重新查证。
 
-> 冷启动填充于 2026-08-20 · 上游 `141eb6f` · 共 114 条，默认 `retry_on_sync: true`（多数需要实测或等上游补文档）
+> 冷启动填充于 2026-08-20 · 上游 `141eb6f` · 原 114 条；2026-08-22 同步 0.1.1-rc.2 时重试：**5 条已解答删除**（Q014 credentials/updated 事件签名→事件已拆分见 errors.md E008；Q034 apiproxy config 校验→zod 源码确认；Q042 supportedProtocols→三协议源码确认；Q106 ACP 图片失败→AcpContentError 分类源码确认；Q114 credentials writable 语义→describe() 源码确认），**1 条更新进展**（Q043 catalog 清单需 pi-ai 运行时），现存 109 条。多数仍需实测或等上游补文档。
 
 
 | # | 来源单元 | 问题 |
@@ -24,7 +24,6 @@
 | Q011 | `context` | agent-instructions 的 budget 诊断（baseline 可带空 change list 发布 budget diagnostic）具体渲染成什么模型可见文本，README 未给原文 |
 | Q012 | `core` | agent-tool-presentation 缺席组 README 表格是遗漏还是刻意（它无 ctx key、是 preset row 而非服务），需查 preset 组 README 或 Agent Note 交叉确认 |
 | Q013 | `core` | docs/subsystems/core.md 的 generated 区里 agent/* 事件的精确 dispatch mode 与 scope 过滤规则未在本页展开，L2 时应逐条核 |
-| Q014 | `credentials` | credentials/updated 的事件签名（是否携带 source、是否批量）只在 ./types 子路径声明，本次未读源码逐字核对 |
 | Q015 | `e2b` | e2b 组的 README 未列 fs-e2b/subprocess-e2b 的 Release expectation 是否也是 POC（组级标 POC，包级未单独标注） |
 | Q016 | `e2b` | ctx.e2b 的完整公开方法集（除 getSandbox / cwd / runtimeRoot 外）需读 src/index.ts 确认（L2） |
 | Q017 | `examples` | agent-spine-demo 的 apply() 实际挂载顺序是否与 README 列出的树顺序完全一致，未读 src/index.ts 逐行核对（L2） |
@@ -44,7 +43,6 @@
 | Q031 | `hooks` | stderrSummaryMaxChars 的参考默认值 DEFAULT_STDERR_SUMMARY_MAX_CHARS = 500 来自 README 陈述，未在 src/types.ts 中直接核对。 |
 | Q032 | `hooks` | 「Code Mode defers sub-call contexts until the outer run_code result」这条在两个 bridge 的 PostToolUse 映射里都出现，但其与 packages/code-runtime 的具体交接点未验证。 |
 | Q033 | `host` | packages/host/apiproxy/README.md 的 Contract layer 一节极长（session/workspace/settings/credentials/llm/agentPreset/command/skill 多个域），本次只做了要点提取，各域完整错误码集合未逐条核对。 |
-| Q034 | `host` | apiproxy 的 config 三个字段（nativeOpen / sessionExportCompressionLevel / coldBlankProbeMaxBytes）的校验规则只从散文推断（压缩级 0-9 默认 6、coldBlankProbeMaxBytes 默认 1 KiB），未读 src 确认。 |
 | Q035 | `host` | docs/subsystems/web-server.md 与 workspace.md 未通读。 |
 | Q036 | `identity` | DSH_TELEMETRY_DISABLED 的实际读取点不在本组源码内（README 声称由 telemetry 后端消费），未定位到具体包 |
 | Q037 | `identity` | OpenTelemetry backend 把 id 报为 Resource user.id 的具体实现包未定位（session telemetry 相关，未在本批范围内核对） |
@@ -52,8 +50,7 @@
 | Q039 | `interaction` | ACP automation bridge 提供 one-shot machine decision 的具体代码位置（packages/acp 内）未核对 |
 | Q040 | `jobs` | 哪些 producer 包实际扩展了 JobKindMap（shell / terminal / workflow 等组）未逐一核对，因此现存的 job kind 全集未确认 |
 | Q041 | `jobs` | docs/subsystems/jobs.md 里的 job type catalog 具体条目未展开阅读 |
-| Q042 | `llm` | llm-pi-ai 的 supportedProtocols() 具体返回哪些协议标识未读源码确认 |
-| Q043 | `llm` | llm-pi-ai 的 configurable-provider 目录里实际 ship 的路由清单（README 只点名 openai-codex 是唯一随 catalog 出货的）未在 src/catalog.ts 中核对 |
+| Q043 | `llm` | llm-pi-ai 的 configurable-provider 目录里实际 ship 的路由清单（README 只点名 openai-codex 是唯一随 catalog 出货的）——0.1.1-rc.2 源码核验：`catalogProviderIds()` 运行时取自 pi-ai 依赖的 `getBuiltinProviders()`，静态源码读不出，仍需实测或读 node_modules 里的 pi-ai 包 |
 | Q044 | `llm` | token-meter 三个 projection 的 checkpoint 序列化格式未展开 |
 | Q045 | `lsp` | 仓库内是否 ship 了现成的 lsp-stdio 服务器预设 overlay（README 说预设属于 cordis.yml overlay），未在 examples/ 下核对 |
 | Q046 | `lsp` | pinned TypeScript e2e 建立的那条兼容性下限对应的测试文件位置未定位 |
@@ -116,7 +113,6 @@
 | Q103 | `插件开发全路径（dsh-plugin）` | dsh.bundle manifest 除 `patch` 之外是否还有其它字段（版本约束、依赖 bundle 声明等）？publish.md 与 apps/cli/reference/README.md 都只出现 `{ "patch": "./cordis.patch.yml" }` 一种形态 |
 | Q104 | `ACP 与 HTTP API gateway（进程外集成的两条协议路线）` | Typert Remote endpoint 若需要等价于 PRIVILEGED_METHODS 的 loopback pin，上游是否有计划（intercept 的 ConnectionRpcHandlerOptions 支持 authority: 'loopback'，但目前 gateway 只注册一个全局 'trusted-host' 拦截器，无法按 endpoint 区分）——未在文档中找到说明。 |
 | Q105 | `ACP 与 HTTP API gateway（进程外集成的两条协议路线）` | ACP 的 approval/request waterfall 在多个 frontend 共存（如同时挂 ACP 与 Web）时的监听顺序与短路语义，未在 ACP README 或 docs 中找到跨 frontend 的仲裁说明。 |
-| Q106 | `ACP 与 HTTP API gateway（进程外集成的两条协议路线）` | 未实测：ACP session/prompt 在 provider 返回图片但 attachment store 校验失败时的确切错误码与 wire 表现（README 说「fails the prompt response instead of emitting a placeholder」，但未见具体 RequestError 分类）。 |
 | Q107 | `核心链 core / session / preset / llm（源码级 L2）` | JSONL 后端在同一目录被两个进程同时打开时的实际失败模式（静默交错 append 还是 seq 冲突报错）未从源码确认，需实测 packages/session/session-persistence-jsonl。 |
 | Q108 | `核心链 core / session / preset / llm（源码级 L2）` | `SessionStore` 是否在 Cordis root 之外还有第二实例（例如 worker 线程内的 code-runtime）尚未核实，影响"进程内唯一 store"这一表述的边界。 |
 | Q109 | `核心链 core / session / preset / llm（源码级 L2）` | `ctx.agentPresets.mount()` 在一方产品里除 apiproxy 的 `composeAgent()` 外是否还有其他生产调用点（例如 acp / headless profile）未穷尽检索。 |
@@ -124,4 +120,3 @@
 | Q111 | `配置、工具目录与运行模式` | DSH_TOOLS_MODE（host `tools` 行）与 per-agent agent-tool-presentation 同时设置时的最终优先级只从 config 声明与注释推断，未实测运行（L2 封顶，无实测）。 |
 | Q112 | `配置、工具目录与运行模式` | headless profile 是否真的完全没有 agent preset 机制（即 `dsh --profile headless` 无法选运行模式）只从 packages/bundle/headless/cordis.patch.yml 缺 agent-presets 行推断，未实测。 |
 | Q113 | `配置、工具目录与运行模式` | $DSH_HOME/settings.yaml 里各 namespace（permission / agent-loop / agent-default-model / agent-presets / shell / llm-deepseek / llm-pi-ai / web-search-deepseek）的完整 schema 字段未逐一核对，只确认了 namespace 名字与注册位置。 |
-| Q114 | `配置、工具目录与运行模式` | credentials 的 project-env/user-env 两层被 describe() 报成 writable: true，但 credentials-local README 同时说这两层 “not here” 可写——具体是「写会落到 .credentials.yaml 从而取代它们」还是别的语义，未从源码逐行确认。 |

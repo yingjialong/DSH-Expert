@@ -20,8 +20,8 @@ anchors:
   - docs/subsystems/session-projection.md
   - docs/subsystems/session-title.md
   - docs/subsystems/session-telemetry.md
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-22
 asked_by: self
 ---
 
@@ -65,7 +65,7 @@ asked_by: self
 ## 扩展点
 
 - **写一个新的持久后端**：继承 `SessionPersistence`（[T1: packages/session/session-persistence/src/index.ts#SessionPersistence]），实现 `locate` / `supportsRawArtifacts` / `readRaw` / `create` / `append` / `prepare` / `load` / `inspect` / `list`。持久单元**就是** `SessionEvent`（事件溯源，日志是唯一真相），没有平行的"persisted message"类型；不可回放的元数据（format version、cwd、lineage、seed 边界、origin、delegation depth）走 `SessionHeader`（由 `dsh-session` 拥有，此处 re-export）。
-- **注册一个投影单元**：`ctx.sessionProjections.register(definition)`，`ProjectionDefinition<K,S> = { key, schema, init(), apply(state,event), view(state), stateVersion }`——三个**纯同步**函数加声明，不是不透明 getter。key 必须先并进 `SessionProjectionMap`（整条链共用的 merge-extensible 类型表）。返回的是 effect disposer。
+- **注册一个投影单元**：`ctx.sessionProjections.register(definition)`，`ProjectionDefinition<K,S> = { key, stateSchema, init(), apply(state,event), wire?, stateVersion }`——纯同步 fold 加声明加**可选**的 client view（`wire = { viewSchema, view(state) }`），不是不透明 getter。key 必须先并进 `SessionProjectionStateMap`（host fold 状态表，`types.ts` 新引入的 merge-extensible 类型表）；要 client 可见还要并进 `SessionProjectionMap`（wire 值表）。省略 `wire` 即注册 **host-only 单元**：state 不出现在 client snapshot、不进 change feed，但照常写投影 cache。读法对应分开：`snapshot(session)` 只返回 client-visible 值；`stateOf(session, key)` 单读一个单元的 live host state（返回的是借用引用，不得改）。返回的是 effect disposer。
 - **写一个标题 provider**：`ctx.sessionTitle.register(provider)`（**只接受一个**，第二次注册立即 throw）。要复用模型调用逻辑就依赖 `session-title-llm` 而不是抄一份。
 - **写一个遥测后端**：实现 `SessionTelemetrySink` 的三个成员——`emit(record)`（**必须非阻塞入队**，它在 `session/event` 或显式回放期间同步跑）、可选 `flush()`（turn 结束后的 fire-and-forget 提示）、`shutdown()`（排空并等 SDK 停）。再用 `live` 或 `on-demand` 构造 `SessionTelemetryCoordinator`，自选触发点调 `captureSession(session, throughSeq?)`。必须填 `sharing`（`full` | `feedback-only` | `disabled`）。
 - **写脱敏规则**：挂一个 `sessionTelemetry/record` listener。**不挂就等于零脱敏**。
@@ -81,7 +81,7 @@ asked_by: self
 - **checkpoint 不是 exactly-once**：策略持久记录的是执行意图；有副作用的工具应把 `exec.callId` 当幂等键透传。流式 `assistant/chunk` 没有 per-chunk checkpoint，硬崩可能丢掉当前内存批次或未落盘的写。
 - **JSONL 后端**：只加载「配置的编码 + 当前 `SESSION_FORMAT_VERSION` (v0)」，pre-release 格式**无迁移**；旧的扁平文件布局不再加载；压缩文件不能直接按行读；每个 session 只允许一个 live writer。
 - **SQLite 后端**：schema 17 是过渡设计，不保证 schema 稳定性或迁移；`DatabaseSync` 与 Zstandard 调用**阻塞 JS 线程**，busy wait 也阻塞事件循环；外部 SQL 读者必须理解物理 tag（packed 行的 `type` 是 `text-chunks` / `reasoning-chunks` / `tool-call-chunks`，**不是** `SessionEventMap` 成员）。
-- **投影**：每个 tail page 携带**全部**已注册 key，无 per-key 退订；unit 表是**进程级**的，所以 key 存在与否**不是** per-session 的能力信号——客户端必须读 VALUE 而不是把 key 缺失当成功能缺失。registry cell 只在内存，重启靠 fold 重建（挂 `session-projection-cache` 才能从持久行 seed）。
+- **投影**：每个 tail page 携带**全部** client-visible（带 `wire`）key，host-only 单元不出现，无 per-key 退订；unit 表是**进程级**的，所以 key 存在与否**不是** per-session 的能力信号——客户端必须读 VALUE 而不是把 key 缺失当成功能缺失。registry cell 只在内存，重启靠 fold 重建（挂 `session-projection-cache` 才能从持久行 seed）。
 - **`session-stats` 只在 web-app bundle 里挂载**，其他装配没有 `sessionStats` key，消费者退回窗口级计数。
 - **标题**：没有"取消固定"（unpin 回自动标题）、没有搜索、没有列表索引；registry 刻意只接受一个实现。`first-prompt` provider 对 fork 从不自动跑；`all-prompts` 输入溢出时保留旧标题、不做摘要的摘要。
 - **遥测**：**best-effort 交付**——游标标记的是"已交接"，不是"已送达"；reload 窗口内被拆掉的 session 无法重新 adopt；崩溃时后端队列里的东西丢失。`FEEDBACK_ONLY` 在反馈前不留任何遥测侧副本，崩在反馈前就什么都不上传；on-demand 脱敏用的是**当时挂载的策略**下的**当前值**。
@@ -108,7 +108,7 @@ asked_by: self
 | 磁盘布局、packed chunk 行、zstd、project 目录 | `packages/session/session-persistence-jsonl/README.md` |
 | SQLite schema 17、压缩阈值、varint 溯源编码、读写路径 | `packages/session/session-persistence-sqlite/README.md` |
 | checkpoint 打在哪三个语义点 | `packages/session/session-checkpoint-policy/README.md` |
-| 投影单元定义、变更 feed、`snapshot()` 一致切面 | `packages/session/session-projection/src/index.ts` |
+| 投影单元定义（state vs `wire` client view）、`stateOf()`、变更 feed、`snapshot()` 一致切面 | `packages/session/session-projection/src/index.ts` |
 | 投影 cache 的写策略与失效规则 | `packages/session/session-projection-cache/README.md` |
 | `sessionStats` 各字段的 fold 语义 | `packages/session/session-stats/README.md` |
 | 标题服务 API、fallback 规则、provider 生命周期 | `packages/session/session-title/README.md`、`src/index.ts` |

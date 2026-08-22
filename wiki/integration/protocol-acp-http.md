@@ -32,8 +32,8 @@ anchors:
   - packages/typert/loader/README.md
   - packages/host/plugin-inventory/src/index.ts
   - package.json
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-22
 asked_by: self
 ---
 
@@ -50,6 +50,7 @@ asked_by: self
 - **只发 committed 内容**：`ctx.on('session/event')` 只处理 `assistant/message`，逐 block 转成 `agent_message_chunk`。raw delta、reasoning、tool 活动、plan、title 一律不上线。代价明写在 README：牺牲 token 级延迟换"干净的自动化结果"，未提交的 provider chunk 与重试不会泄漏半截文本。
 - **不 advertise 任何 session / editor / terminal / fs / MCP capability**；`session/new` 收到非空 `additionalDirectories` 或非空 `mcpServers` 直接 `invalidParams` 拒绝，`cwd` 必须绝对路径[T1: packages/acp/acp/src/index.ts#validateSessionParams]。
 - **图片是条件能力**：`initialize` 时算 `supportsAcpImagePrompts`，要求同时挂了 durable attachment store **且**配置的 exact provider/model 解析出显式 image input；只收 `image/png` `image/jpeg` `image/webp` `image/gif`。audio 与 embeddedContext 恒 false。
+- **图片失败的错误形态（0.1.1-rc.2 源码核验）**：入站与出站都抛 `AcpContentError(message, kind)`，`kind` 只有 `'invalid'` / `'internal'` 两类。入站：mimeType 不在四种之列、base64 不 canonical（含别名写法）、连接未 advertise 图片能力、当前模型不声明 image input（`assertImageRoute`）→ `invalid`；路由解析失败 → `internal`。出站（assistant 图片）：attachment store 未挂载（`'no attachment store is mounted'`）或 `readImage` 失败（`'the attachment is unavailable or corrupt'`）→ `internal`，**fail the prompt response，不发占位图**。
 - 仓内的 ACP **client** 在 `packages/subagent/subagent-acp/`（作为 subagent provider），与本包是两端，别搞混。
 
 ## ACP server 的启动方式与能力边界
@@ -70,7 +71,7 @@ asked_by: self
 
 分层是 `remotes → gateway → connection → webserver`[T1: packages/api/README.md]，注意 **Connection 和 WebServer 都不在 `packages/api` 下**：Connection 在 `packages/client/connection`，WebServer 在 `packages/host/webserver`。
 
-**路由**：`dsh-host-webserver` 是纯 `node:http` 载体（`ctx.webServer`），不认识任何 harness 概念、不服务任何文件。它只有三张表：`exact` / `prefix` / 单一 fallback，匹配顺序固定为 exact → 最长 prefix → fallback，注册顺序无语义。`/api` 这个 prefix 路由是 **connection 插件**注册的，不是 webserver 自带的。SPA dist 由 `dsh-host-frontend-static` 占 fallback 席位。`host` 只接受 `127.0.0.1` 与 `0.0.0.0` 两个值。
+**路由**：`dsh-host-webserver` 是纯 `node:http` 载体（`ctx.webServer`），不认识任何 harness 概念、不服务任何文件。路由只有三张表：`exact` / `prefix` / 单一 fallback，匹配顺序固定为 exact → 最长 prefix → fallback，注册顺序无语义。`/api` 这个 prefix 路由是 **connection 插件**注册的，不是 webserver 自带的。SPA dist 由 `dsh-host-frontend-static` 占 fallback 席位——但 0.1.1-rc.2 起 miss 语义收紧：只有 dist root 与配置的 index path 渲染 index，absent 或非 file 目标是空 404 响应，不再无条件回落 `index.html` 返回 200[T1: docs/subsystems/web-server.md]。`host` 只接受 `127.0.0.1` 与 `0.0.0.0` 两个值。webserver 另有一层 index 渲染（0.1.1-rc.2 基线新增）：`webserver/index-inject` 事件（emit 模式）收集结构化 `IndexInjection` 行，`renderIndex(html)` 先渲染这些行、再叠加 raw `tapIndex` transforms（后者降级为 escape hatch），`dsh-client-modules` 以事件应答方式注入 boot manifest[T1: packages/host/webserver/src/index.ts]。
 
 **鉴权：没有鉴权**。存在的只是一道 reachability fence（`isTrustedApiRequest`），README 明说 "The fence is a reachability policy, not authentication"。它做三件事：
 1. **Host 头栅栏（抗 DNS rebinding）** —— 对每个请求生效，不给"无 browser 标记"开后门，因为明文 HTTP 下浏览器的 image/navigation 读请求既无 `Origin` 也无 Fetch-Metadata。必须是 loopback 或命中 `trustedHosts`。
@@ -131,7 +132,7 @@ strict 分析对 Remote 方法的要求很硬：public、非 static、实例方�
 3. **可选服务必须用 `ctx.get(name)`，不能用 `ctx.<name>`**。属性代理走的是**只向祖先**的 fiber walk，穿过 traceable shadow 时会走到 root 然后抛；`ctx.get` 走全局 isolate store，与拓扑无关。这是 postmortem 0001 的 Bug #2。ACP 拆连接时读 `ctx.get('subagents')` 就是这个模式（且是结构化读取，不依赖 subagent seam 包）。
 4. **手搭 `ctx.plugin({...})` 的测试永远测不出加载路径**：`unwrapExports` 只被 Loader 调用。至少要有一条走真实 Loader + 真实进程的测试；不调模型的那条不需要 API key，应该进 CI。
 5. **`max-tokens` 在 prompt 路径上报 `end_turn`，不是 `max_tokens`**。`turnEndToStopReason` 里确实有 `max-tokens → 'max_tokens'` 分支，但 `settleAfterQuiescence` 在调用它之前先短路成 `end_turn`（注释："Token-limit and other non-terminal endings are not prompt-level stop reasons"）。靠 `stopReason` 判断是否被截断会失效。
-6. **`agentInfo.version` 是硬编码的 `'0.0.1'`**，与包版本 `0.1.0-rc.8` 无关，不要拿它做版本判断。
+6. **`agentInfo.version` 是硬编码的 `'0.0.1'`**，与包版本 `0.1.1-rc.2` 无关，不要拿它做版本判断。
 7. **`agent` / `session` lookup 是按 key 配的，没有 per-endpoint 的"只接受活对象"策略**。任何 Remote 方法拿到的 Agent 都可能是刚被冷恢复出来的，且业务方法**不许猜**它来自哪儿。
 8. **Gateway 到 RPC 的错误映射会丢结构**：普通 dispatch 失败与业务异常都被压成 RPC `internal` + 空 details；17 个 `TypertGatewayErrorCode` 只对同进程调用者可见。只有用 `TypertLookupFailure` 包装的 lookup 策略错误（冷恢复失败、ownership 围栏）保留原始 code。
 9. **Typert Remote endpoint 没有 privileged-method 机制**。Gateway 注册拦截器时用的是 `{ authority: 'trusted-host' }`，而 `PRIVILEGED_METHODS` 的 loopback pin 写在 fallback handler（即 legacy API Proxy 路径）里 —— 把一个敏感方法迁到 Remote，就等于把它从 loopback pin 里搬了出来。

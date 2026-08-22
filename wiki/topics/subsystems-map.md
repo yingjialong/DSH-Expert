@@ -10,8 +10,8 @@ anchors:
   - docs/subsystems/persistence.md
   - docs/subsystems/filesystem.md
   - packages/README.md
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-22
 asked_by: self
 ---
 
@@ -39,14 +39,14 @@ asked_by: self
 | `permission-presets.md` | `ctx.permissionPresets` | `interaction/`（读 `sandbox/sandbox-policy`） | preset 表 = sandbox mode + approval policy 的捆绑、派生态 `custom`、`optionOf`/`names` |
 | `commands.md` | `ctx.commands` — `CommandRuntime` | `interaction/` | 斜杠命令注册/发现/直接执行、`CommandDescriptor`、`ParsedCommand`、`CommandInputDescriptor.images` |
 | `plan.md` | `ctx.planMode` — `PlanModeController` | `plan/` | `plan/mode` log-only 状态与 fold 恢复、pending selection 何时落盘、`plan:policy` prompt section（order 50）、`exit_plan_mode` 审阅弧 |
-| `credentials.md` | `ctx.credentials` — `CredentialProvider`（abstract seam） | `credentials/` | 配置里只放 `CredentialRef`（环境变量名）不放值、per-operation 解析 = 热更新机制、`CredentialInfo.writable`、`credentials/updated` |
+| `credentials.md` | `ctx.credentials` — `CredentialProvider`（abstract seam） | `credentials/` | 配置里只放 `CredentialRef`（环境变量名）不放值、per-operation 解析 = 热更新机制、`CredentialInfo.writable`、`credentials/reference-updated` 与 `credentials/record-updated`（0.1.1-rc 由 `credentials/updated` 拆分；records 空间配合 `ctx.authorization` flow） |
 | `lsp.md` | `ctx.lsp` — `LspService` | `lsp/` | 四个导航操作与坐标系、`LspProvider` 扩展名独占注册、`LspError` 稳定码 |
 | `code-runtime.md` | `ctx.codeRuntime` — `CodeRuntime`（abstract seam） | `code-runtime/` | `CodeRunRequest`/`Result`、bindings 作为程序全局、`CodeRunFailure` 六种正交失败 |
 | `attachment.md` | `ctx.attachments` — `AttachmentStore`（abstract seam） | `attachment/` | 图片内容寻址引用、persist-before-event 规则、`validateImage` 全量先验、`<DSH_HOME>/attachments/v1` |
 | `goal.md` | `ctx.goals` — `GoalService` | `goal/` | 同会话目标的 `GoalRef` revision CAS、`goal/change` 事件重放、激活与轮次归属 |
 | `feedback.md` | `ctx.messageFeedback` | `feedback/`（+ `client/ui-message-feedback`） | 逐条 assistant message 的可编辑评价、`ifVersion` 乐观并发、storage-domain sidecar、**一整节 Boundaries and limitations** |
 | `agent-team.md` | `ctx.agentTeams` — `TeamService` | `experimental/`（未发布） | Team 花名册快照、durable mailbox（queued-minus-delivered）、共享任务 DAG 的 revision CAS、`foldTeam()` |
-| `client-modules.md` | `ctx.clientModules` | `client/`（消费 `host/webserver`） | `dsh.client` 声明扫描、`window.__DSH_BOOT__` 引导图、`/plugins/<id>/client.js` 路由、`rebuilt()` 与 HMR |
+| `client-modules.md` | `ctx.clientModules` | `client/`（消费 `host/webserver`） | `dsh.client` 声明扫描、`__DSH_BOOT__` 引导图（0.1.1-rc 起改为 `globalThis["__DSH_BOOT__"]` 的 global injection row，经 `webserver/index-inject` 事件收集，不再由 index tap 注入首个 script）、`/plugins/<id>/client.js` 路由、`rebuilt()` 与 HMR |
 | `extensions.md` | `ctx.cordisInspect` `ctx.dynamicCordisRunner` | `extensions/` | agent 自我改造：运行时插件/服务检视、动态挂载卸载。**注意：本页几乎只有生成的 Cordis API，没有正文**，设计要看 `packages/extensions/README.md` |
 | `invariants.md` | `ctx.invariants` — `InvariantRegistry` | `runtime-diagnostics/`（**未在 packages/README.md 组表中**） | 包自有运行时不变量的注册表、`InvariantInstaller`/`InvariantFailure`、每包 `./invariant` 伴生插件的"空伴生"契约 |
 

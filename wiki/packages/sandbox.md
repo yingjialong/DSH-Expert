@@ -14,8 +14,8 @@ anchors:
   - docs/subsystems/sandbox.md
   - .agents/notes/implemented/feature/2026-07-06-sandbox.md
   - .agents/notes/implemented/feature/2026-07-14-cross-family-fs-sandbox.md
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-22
 asked_by: self
 ---
 
@@ -56,6 +56,7 @@ asked_by: self
 （四个包的 `## Known Limitations and Deferred Work` 合并要点）
 
 - **文件效果就是全部策略词汇**：`SandboxMode` 只管文件效果，seam 表达不了网络 / 进程 / syscall / 设备 / 凭据限制。
+- **进程可见性是 backend 事实而非 seam 词汇**：bwrap profile 带 `--unshare-pid` 且只挂匹配的 procfs——否则宿主 `/proc/<pid>` magic links 会绕过文件围栏；Landlock 与 Seatbelt 不改变进程可见性 [T1: packages/sandbox/sandbox-local/src/profiles.ts，commit 82db1515f，`.agents/notes/implemented/bug-fix/2026-08-06-bwrap-private-pid-namespace.md`]。网络限制至今没有任何 backend 声称。
 - **只做 same-world 限制**；一个 context 只能有一个 provider，同时组合多种机制需要 provider 级 ladder 或分开的 Cordis context。
 - **拒绝上报是 stderr 方言**：seam 返回后端签名而非类型化的运行期拒绝通道，消费者只能从子进程输出推断分类。
 - **runner 诊断是带内的**：退出码 + stderr 证据无法证明是哪个进程写了那行，故意模仿 runner 的子进程能造成可用性/诊断误判（但绕不过限制本身）。

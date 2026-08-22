@@ -12,8 +12,8 @@ anchors:
   - packages/workspace/workspace/src/paths.ts
   - docs/subsystems/workspace.md
   - .agents/notes/proposed/architecture/2026-07-24-domain-kv-storage-and-workspace.md
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-22
 asked_by: self
 ---
 

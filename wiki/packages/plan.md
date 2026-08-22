@@ -11,8 +11,8 @@ anchors:
   - packages/plan/plan-mode/src/client.ts
   - docs/subsystems/plan.md
   - .agents/notes/implemented/simplification/2026-07-22-plan-specific-collaboration-state.md
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-22
 asked_by: self
 ---
 
@@ -75,7 +75,7 @@ Plan mode 是**被记录的、per-agent 的协作状态**，**不是**通用 mod
 7. **projection 的 `pending` 是纯 replay 量**：`plan` projection unit 从 `command/run`(name=`plan`) 起一个候选目标 → 配对的 `command/done` 保留成功的选择、丢弃出错的 → `plan/mode` 提交已记录状态并清空候选。因此 host 重启、其他 tab、冷读都能只从 log 恢复它，而且**被拒的 `/plan off` 带图不可能留下一个 pending 的退出**。
 8. **提示词顺序是 50**：active 时模型看到部署配置的 `section` 原文；inactive 时**不贡献任何文本**。进入/离开会从 order 50 起改变 system prompt（KV cache 影响点）。
 9. **「dismissed review」和「rejected review」是两回事**：用户关掉请求改为说话 = dismissed，会如实报告给模型，告诉它**留在 plan mode 等消息**；其他 review 失败保留 seam 自己的消息；rejected 则是带 review feedback 的失败调用。
-10. **types 与 client 的双入口**：`SessionProjectionMap` 的 key 从 `src/types.ts` merge 进去，host consumer 走 `./types`，client aggregate 走 `./client`。写前端消费代码时别 import 包根。
+10. **types 与 client 的双入口**：`plan` unit 的 state key 从 `src/index.ts` 的 `declare module '@deepseek-ai/dsh-session-projection/types'` 并进 `SessionProjectionStateMap`（host fold state 表），wire 后的 client-visible key 再进 `SessionProjectionMap`；host consumer 走 `./types`，client aggregate 走 `./client`。写前端消费代码时别 import 包根。（0.1.1-rc.1 起 projection register 字段改名：`schema`→`stateSchema`、`view` 移入可选 `wire: { viewSchema, view }` 块——plan 的注册已随迁，页面其余结论经 diff 核对不变。）
 
 ## 去哪深入（文件路由）
 

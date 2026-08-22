@@ -18,8 +18,8 @@ anchors:
   - docs/config-catalog.md
   - docs/tool-catalog.md
   - docs/subsystems/permission-presets.md
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-22
 asked_by: self
 ---
 
@@ -68,6 +68,8 @@ dsh.profile.bundles 里每个 bundle 的 cordis.patch.yml（按清单顺序）
 - 配置里只放**引用名**（`apiKeyEnv: DEEPSEEK_API_KEY`），值永远在 provider 里；`resolve(ref)` 每次操作现读（LLM adapter 每次 model request 一次），所以换 key 下一个请求就生效，不用重启插件。
 - `.credentials.yaml` 是 `0600` + 目录 `0700`，POSIX 上多一个 group/other 权限位就在解析前 fail 并提示 `chmod 600`；**它不进 `process.env`**，而 `$DSH_HOME/.env` 会进。
 - 这道墙挡的是别的 OS 用户，**挡不住模型**：bash/fs 工具同 uid 运行，`workspace-write` 只限制写不限制读。
+- **0.1.1-rc 起文档格式与事件翻新**：`.credentials.yaml` 变为 versioned 文档（顶层 `version: 1`，下分 `refs:`（引用名→值）与 `records:`（命名凭据记录：`kind: grant` 存 provider 不解释的 payload，如 OAuth token 组；`kind: api-key` 存 env 映射或仅确认使用环境凭据链）两个 key space）；boot 识别精确匹配的旧平铺格式会**原位迁移**（原行逐字节嵌进 `refs:`），live reload 不迁移。热更新事件 `credentials/updated` 拆为 `credentials/reference-updated`（refs 维度）与 `credentials/record-updated`（records 维度）[T1: packages/credentials/credentials-local/README.md]。
+- **新增 authorization flow seam**：`@deepseek-ai/dsh-authorization`（`packages/credentials/authorization`，无 config 插件）提供 `ctx.authorization`——Authorization flow registry。flow 由知道如何取得某种凭据的插件注册、按其写入的 record 键控；seam 只拥有会话与 one-attempt-per-key 生命周期，不管协议本身。当前唯一消费者是 `llm-pi-ai`，事件 `authorization/settled`（emit）[T1: docs/capability-seams.md, docs/event-producer-consumer.md]。
 
 ## 四种运行模式的真实定义与差异
 

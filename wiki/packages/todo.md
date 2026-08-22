@@ -10,8 +10,8 @@ anchors:
   - packages/todo/tool-todo/src/types.ts
   - docs/subsystems/session.md
   - docs/tool-catalog.md
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-22
 asked_by: self
 ---
 
@@ -38,7 +38,7 @@ asked_by: self
 - 这里**没有可注册的 provider seam**。要改行为只有三条路：
   1. **Config**：`allowParallelInProgress` 是**必填、无默认**的部署选择——模型侧指令和输入校验一起随它变（`true` 请模型标注所有在做的任务并接受任意个；`false` 请求恰好一个，超了报 `Error: invalid todos: at most one task may be in_progress (got <n>)`）。
   2. **消费 `todo/write` 会话事件**：UI 订阅事件流自行渲染，当前列表 = 最近一条 `todo/write`（重放时 last-write-wins）。
-  3. **session projection**：当组合挂了 `ctx.sessionProjections`（`@deepseek-ai/dsh-session-projection`）时，本包在注入的子 context 下注册 `todos` projection unit——`init = null`、`apply` 取每条 `todo/write` 的整张列表且在每个 `turn/start` 清回 `null`、`view` 为 identity、`stateVersion = 2`。key 通过 Service Definition 包的 `/types` 出口合并进 `SessionProjectionMap`。没挂注册表的组合不受影响。
+  3. **session projection**：当组合挂了 `ctx.sessionProjections`（`@deepseek-ai/dsh-session-projection`）时，本包在注入的子 context 下注册 `todos` projection unit——`init = null`、`apply` 取每条 `todo/write` 的整张列表且在每个 `turn/start` 清回 `null`、`stateVersion = 2`。rc.8→0.1.1-rc.2 的 session-projection 重构后注册字段从 `schema` 改为 `stateSchema`（校验持久化 state），`view` 移入可选 `wire` 块：`wire: { viewSchema, view }`（本包 view 仍是 identity，并补上了 `viewSchema`）。key 通过 Service Definition 包的 `/types` 出口同时合并进 `SessionProjectionStateMap`（state 类型 `TodoItem[] | null`，重构新增）与 `SessionProjectionMap`（wire view 类型）。没挂注册表的组合不受影响。
 - **导出形态**是 function/namespace plugin：导出 `name` / `inject` / `apply`，**没有 default export**。误加 `export default` 会被 Loader 的 `unwrapExports` 折叠模块并丢掉 `inject`（`docs/postmortem/0001-acp-default-export-drops-inject.md`）。
 
 ## Known Limitations

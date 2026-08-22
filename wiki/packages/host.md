@@ -21,8 +21,8 @@ anchors:
   - docs/capability-seams.md
   - .agents/notes/implemented/architecture/2026-07-19-gui-layering-and-rpc-protocol.md
   - .agents/notes/implemented/architecture/2026-07-28-directory-picker-capability-seam.md
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-22
 asked_by: self
 ---
 
@@ -65,7 +65,8 @@ dsh Web GUI 的 host 侧：所有 client 形态共用的 API gateway（`ctx.apiP
 - **加一种新的目录选择交互** → 依赖 `@deepseek-ai/dsh-host-directory-picker`（Service Definition），通过**声明合并**往 merge-extensible 的 `DirectoryPickerCapabilities` map 里加自己的 variant，然后注册 `ctx.directoryPicker`。消费者 `switch (capability().kind)`，遇到未知 kind 应当**隐藏目录选择而不是报错**。
 - **`capability()` 返回的对象在整个 service 生命周期内必须稳定**——这是 seam 的硬性契约（`-auto` 之所以「每 boot 只采样一次」就是为了满足它）。
 - **每个后端包还有一个 browser entrypoint**，向 ui-workspace 的 directory-flow slot 注册配套交互，所以**一行 composition 同时选定 host capability 和 client flow**。
-- **加 HTTP 路由** → 依赖 `ctx.webServer`：`register(route)` 加具名 `exact`/`prefix` 路由，`registerUpgrade(route)` 加精确 pathname 的 upgrade 路由，两者都返回 disposer；`registerFallback(handler)` 是**单所有者**座位（第二次注册抛异常）；`tapIndex(transform)` 加 index.html 变换。HTTP 匹配顺序**固定**：全表 exact → 最长 prefix → fallback。
+- **加 HTTP 路由** → 依赖 `ctx.webServer`：`register(route)` 加具名 `exact`/`prefix` 路由，`registerUpgrade(route)` 加精确 pathname 的 upgrade 路由，两者都返回 disposer；`registerFallback(handler)` 是**单所有者**座位（第二次注册抛异常）。HTTP 匹配顺序**固定**：全表 exact → 最长 prefix → fallback。
+- **往 index.html 注入启动输入**（0.1.1 起）→ 首选**结构化注入**：监听 `webserver/index-inject` 事件（emit 模式，每次 index 渲染与 worker boot-payload 请求都触发），往传入的 `IndexInjection[]` 表里 push 当前行；fallback owner 通过 `renderIndex(html)` 渲染（结构化行在前，raw 变换在后）。`tapIndex(transform)` 退居**escape hatch**——只用于结构化行表达不了的 raw HTML 变换，在结构化行之后按注册顺序应用。
 - **`apiproxy` 是 transport-independent 的**：它自己不注册路由，carrier（如 HTTP）自行包裹 `ctx.apiProxy`。`AbstractApiClient` 持有全部协议不变式（rpcId 铸造、信封包装/拆解、zod 解析、SSE 帧解码、unary 超时、microtask 批量的 `subscribeEnvelopes`），平台子类只提供 `doFetch`。`InProcessApiClient` over `toFetchHandler(api)` 是「不走网络但走完整线序列化/校验」的同构点。
 - **加一个可被浏览器配置的插件** → 注册自己的 settings 命名空间即可，`apiproxy` 的 `settings.*` 域**无需改动**就会服务它（「仓库外分发的插件也能变成浏览器可配置」是明写的设计目标）。
 
@@ -76,9 +77,11 @@ dsh Web GUI 的 host 侧：所有 client 形态共用的 API gateway（`ctx.apiP
 **apiproxy**（gateway，限制最多）
 - 转发的 Remote 事件**寄生在遗留的 `HostFrame` union 上**（`host/remote-event`），读起来像是本包拥有 Remote 事件契约——其实不是（allowlist 属于 `dsh-api-remotes`，消费动词是 `ctx.remote.$on`）。
 - pending interaction 状态在 host 侧；`src/api-proxy.ts` 的表**只处理 question，没有 approval 条目**。
+- **pending question 不跨 host 重启**：registry 持有等待中 tool call 的 `resolve`/`reject`，是 host 进程内存。`events.mux` 每次重开都会重放 still-pending question（覆盖浏览器 reload 与重连），但 host 重启会连带丢失该 turn；恢复需要持久的 pending-interaction 记录，已 deferred。
 - **无协议版本字段**：client 与 host 同版本发布，`host.describe` 只有在出现独立发布的 client 时才会加版本协商字段。
 - 搜索失败会带上 provider 诊断信息——gateway 假定是单用户本地服务，多用户 carrier 必须替换成公开安全的诊断。
 - cold-list 提示只会向「可见性更高、排序更旧」的方向退化。
+- 插件 config（`ApiProxyService.Config`，`src/index.ts`）三字段的校验是 zod 源码级事实：`nativeOpen: z.boolean()`（无默认，显式钉死 `host.describe.canOpenPath` 能力，覆盖平台探测失真处）；`sessionExportCompressionLevel: z.number().step(1).min(0).max(9).default(6)`（类型 `SessionLogCompressionLevel = 0|1|…|9`）；`coldBlankProbeMaxBytes: z.natural().default(1024)`。注意 `nativeOpen` 只存在于插件 config 层——直接调 `createApiProxy(ctx, defaults)` 的 `ApiProxyDefaults` 里对应的是 `canOpenPath?: () => boolean` 回调，两层别混。
 
 **webserver**
 - **无 TLS、无 auth、无 origin 策略**。绑非 loopback 地址就等于把服务暴露给那个网络；加固或反代明确不在 dev-facing v1 范围内。
@@ -90,7 +93,7 @@ dsh Web GUI 的 host 侧：所有 client 形态共用的 API gateway（`ctx.apiP
 - `-browse`：不读 Windows hidden 属性（`hidden` 在所有平台都指 dot 前缀）；无盘符根枚举；**全文件系统范围**，没有 per-deployment browse root。
 - `-auto`：检测是从启动上下文推断操作者位置，**没有任何启动侧信号能证明这件事**——tmux 从 SSH 启动后 detach 会丢 `SSH_*` 标记；本机启动后用 `ssh -L` 访问会从 `127.0.0.1` 到达、解析成 `native`，然后在无人值守的工作站上弹出选择器。Linux 探测**只读 `PATH`**。只在 boot 时解析一次。
 
-**frontend-static**：起步 MIME 表极简，只覆盖 Vite 产出的资产集加 PWA manifest，其余扩展名一律 `application/octet-stream`。
+**frontend-static**：起步 MIME 表极简，只覆盖 Vite 产出的资产集加 PWA manifest，其余扩展名一律 `application/octet-stream`。index 服务**已显式化**（0.1.1 起）：`distIndex` 可读时 dist root 与 configured index path 渲染 `index.html`（200）、其余存在的文件直接服务，**dist root 内缺失或非文件目标（含缺失的 configured index）返回空 404**——不再对任意 miss 兜底 200；当前 client 没有 History API pathname 路由，加一条需要显式 server 规则而非放宽 fallback。
 
 **plugin-inventory**：**只有时点状态**（无持久失败历史、无订阅，没有 live root Fiber 就报 `null`，不区分原因）；**无来源也无变更能力**（不知道条目是哪个 bundle/profile/override 引入的，也不能启用/禁用/增删插件）。
 
@@ -115,6 +118,7 @@ dsh Web GUI 的 host 侧：所有 client 形态共用的 API gateway（`ctx.apiP
 | 每个 RPC 域（session/workspace/settings/credentials/llm/agentPreset/command/skill）的确切语义与错误码 | `packages/host/apiproxy/README.md`（**很长，按域查**） |
 | 四象限线消息 union、zod 两级解析、`RpcMethodMap` | 同上 `## Contract layer (/api)`；实现在 `src/api-proxy.ts` |
 | 路由匹配顺序、fallback 单所有者、dispose 语义 | `packages/host/webserver/README.md`、`docs/subsystems/web-server.md` |
+| 结构化 index 注入（`IndexInjection`、`webserver/index-inject`、`renderIndex`） | `packages/host/webserver/src/injections.ts`、`packages/host/webserver/README.md` |
 | picker seam 的判别联合、`DirectoryPickerError`、`DirectoryListing.crumbs` | `packages/host/directory-picker/README.md`、`docs/subsystems/workspace.md` |
 | `-auto` 判定 `native` 需要的全部信号 | `packages/host/directory-picker-auto/README.md` |
 | GUI 分层与 RPC 协议的原始 RFC | `.agents/notes/implemented/architecture/2026-07-19-gui-layering-and-rpc-protocol.md` |

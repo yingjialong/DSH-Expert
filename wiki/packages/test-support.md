@@ -14,8 +14,8 @@ anchors:
   - packages/runtime-diagnostics/invariants/README.md
   - docs/testing.md
   - docs/subsystems/invariants.md
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-22
 asked_by: self
 ---
 
@@ -55,7 +55,7 @@ asked_by: self
 
 ## Known Limitations
 
-- `acp-snapshot`：`runScenario` 采集持久化的 `.jsonl`，所以快照配置必须 `persistenceCompression: 'none'`；**压缩 JSONL 与 SQLite 组合没有快照采集路径**。built 模式（`DSH_EXAMPLE_MODE=lib`）要求先 `pnpm run build`。后端覆盖仍绑在 ACP driver 上。
+- `acp-snapshot`：`runScenario` 采集持久化的 `.jsonl`，所以快照配置必须 `persistenceCompression: 'none'`；**压缩 JSONL 与 SQLite 组合没有快照采集路径**。session fixture 保留 headers 与 payloads，但**省略 body sequence/time envelopes**（replay 时合成，runtime persistence 不变），格式仍是 canonical packed rows。built 模式（`DSH_EXAMPLE_MODE=lib`）要求先 `pnpm run build`。后端覆盖仍绑在 ACP driver 上。
 - `agent-loop-testkit`：只共享强制前置 spine，其余刻意留给调用方以保持场景顺序可见。
 - `client-runtime`：**只能通过仓库源码别名消费**——`lib/index.js` 在纯 Node 下不可 import（其 built 产物再导出的是浏览器 loader 脚本）。会话快照是 fixture 数据而非回放历史，`updateSnapshot` 直写快照存储，因此 fixture 可以表达生产投影永远不会产生的状态。
 - `llm-mock-server`：随机权重反映测试压力而非生产分布；请求脚本按**到达顺序**共享一个游标（并发调用者要确定性故障必须各起一个实例）；真正的连接拒绝是 listener 生命周期阶段，请求级随机只能重置已接受的连接。
