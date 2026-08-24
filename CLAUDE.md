@@ -193,5 +193,7 @@ asked_by: human | agent | self
 | `dsh-sync` | `/dsh-sync` | 同步上游、diff 锚点、批量标 stale、生成 rc→rc 变更摘要、补学变更部分 |
 | `dsh-wiki` | `/dsh-wiki` | 维护：lint、查重、补交叉链接、健康检查、批量复验 stale |
 
+**多宿主**：上表触发方式面向 Claude Code。其他遵循 AGENTS.md 约定的宿主（Codex CLI 等）经仓库根的 `AGENTS.md` 引导读取并执行同一套 SKILL.md——`AGENTS.md` 是薄壳，不承载独立事实；修改本文件或三个 SKILL.md 后，回看其要点速览与场景映射是否仍成立。
+
 主动学习：`/dsh-learn <领域>` 手动触发（由 `dsh-wiki` 承载），以及 `/dsh-sync` 后自动补学变更部分。
 **不做后台无监督自学**——那是"猜测被写成事实"的温床。

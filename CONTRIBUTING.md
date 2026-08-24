@@ -45,7 +45,7 @@ rg -oN '^\s*-\s+([a-z0-9_./-]+\.(ts|py|md|yml|yaml|json))' -r '$1' wiki/ | sort 
 done
 ```
 
-或直接在 Claude Code 中运行 `/dsh-wiki` 做 lint（格式、锚点、封顶规则、主题门槛、查重）。
+或直接让 AI 宿主执行 dsh-wiki 的 lint 流程（Claude Code：`/dsh-wiki`；Codex：按 `AGENTS.md` 的映射读取 `.claude/skills/dsh-wiki/SKILL.md` 并执行）。
 
 ## 五、PR 流程
 

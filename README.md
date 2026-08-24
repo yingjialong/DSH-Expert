@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**A knowledge base that turns Claude Code into a DeepSeek Harness (DSH) expert — with every answer traceable to an upstream commit.**
+**A knowledge base that turns Claude Code or Codex into a DeepSeek Harness (DSH) expert — with every answer traceable to an upstream commit.**
 
 [English](#english) · [中文](#中文)
 
@@ -19,7 +19,7 @@ That creates two hard problems for any LLM-based assistant:
 1. **Every model's training data predates DSH.** Answering from memory is 100% hallucination — there is no "I vaguely remember this" for a tool released after your cutoff.
 2. **Hand-written notes rot within days.** And a stale note is more dangerous than no note, because it carries false authority.
 
-DSH-Expert is not an application. It is a **knowledge infrastructure** that solves both: a curated wiki of DSH knowledge with built-in rot detection, plus a set of Claude Code skills that enforce a disciplined answering workflow on top of it. Clone this repo, open Claude Code inside it, and the assistant becomes a DSH expert that must ground every claim in upstream source code.
+DSH-Expert is not an application. It is a **knowledge infrastructure** that solves both: a curated wiki of DSH knowledge with built-in rot detection, plus a set of agent skills that enforce a disciplined answering workflow on top of it. Clone this repo, open Claude Code or Codex inside it, and the agent becomes a DSH expert that must ground every claim in upstream source code.
 
 ### How it works — three anti-corruption mechanisms
 
@@ -31,7 +31,7 @@ The wiki is based on the [LLM Wiki](https://gist.github.com/karpathy/442a6bf5559
 | **Source anchors + staleness detection** | Every entry binds to concrete upstream files/symbols plus the commit SHA it was verified against. `/dsh-sync` diffs the anchors against upstream changes; anything hit is marked `stale` and **cannot be cited until re-verified**. |
 | **Scope gates on deposition** | Only DSH knowledge (or this repo's own meta-knowledge) may enter the wiki, and it must be de-projectized: integration knowledge is keyed to an eight-dimension coordinate system (host language, runtime shape, concurrency, sandbox, tool reuse, model/credentials, deployment, version baseline) instead of to any specific project. |
 
-On top of the wiki sit three Claude Code skills:
+On top of the wiki sit three agent skills (Claude Code loads them automatically from `.claude/skills/`; Codex and other AGENTS.md-convention hosts are routed to the same workflows through `AGENTS.md`):
 
 | Skill | Trigger | What it does |
 | --- | --- | --- |
@@ -50,7 +50,7 @@ When upstream docs and source code disagree, **source code wins** and the confli
 
 ### Quick start
 
-Requirements: `git`, [Claude Code](https://claude.com/claude-code) installed.
+Requirements: `git`, [ripgrep](https://github.com/BurntSushi/ripgrep#installation) (`brew install ripgrep`), and [Claude Code](https://claude.com/claude-code) or [Codex CLI](https://github.com/openai/codex) installed.
 
 ```bash
 # 1. Clone this repository
@@ -61,8 +61,9 @@ cd dsh-expert
 git clone --filter=blob:none https://github.com/deepseek-ai/deepseek-harness.git upstream/deepseek-harness
 git clone --filter=blob:none https://github.com/cordiverse/cordis.git upstream/cordis
 
-# 3. Start Claude Code in the repo root — CLAUDE.md and the three skills load automatically
-claude
+# 3. Start your AI CLI in the repo root
+claude   # Claude Code: CLAUDE.md + the three skills load automatically
+codex    # Codex: AGENTS.md routes it to the same constraints and workflows
 ```
 
 Then just ask, in any language:
@@ -79,7 +80,8 @@ The `dsh` skill fires automatically and runs its six-step workflow: freshness se
 
 ```
 dsh-expert/
-├── CLAUDE.md                # Identity + 12 hard constraints for the assistant (the constitution)
+├── CLAUDE.md                # Identity + 12 hard constraints for the agent (the constitution)
+├── AGENTS.md                # Entry shell for AGENTS.md-convention hosts (Codex etc.)
 ├── .claude/skills/          # dsh / dsh-sync / dsh-wiki
 ├── wiki/                    # The knowledge base (facts layer)
 │   ├── index.md             # Compact index — read this first, never load the whole wiki
@@ -119,7 +121,7 @@ DSH（[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-har
 1. **所有模型的训练数据都早于 DSH 发布**——凭记忆回答等于 100% 幻觉，不存在"我大概记得"。
 2. **手写知识摘要几天内就腐烂**，而腐烂的笔记比没有笔记更危险：它带着虚假的权威性。
 
-本项目不是应用，而是一套**知识基础设施**：一个内置防腐机制的知识库 + 一组强制执行规范工作流的 Claude Code skill。clone 本仓库、在仓库目录内启动 Claude Code，助手就变成一名 DSH 专家——每条结论都必须落到上游源码上。
+本项目不是应用，而是一套**知识基础设施**：一个内置防腐机制的知识库 + 一组强制执行规范工作流的 agent skill。clone 本仓库、在仓库目录内启动 Claude Code 或 Codex，agent 就变成一名 DSH 专家——每条结论都必须落到上游源码上。
 
 ### 工作原理 — 三道防腐机制
 
@@ -131,7 +133,7 @@ DSH（[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-har
 | **源码锚点 + 失效检测** | 每条知识绑定具体文件/符号与核验时的 commit SHA；`/dsh-sync` 拉取上游后 diff 锚点，命中的条目标 `stale`，**复验前禁止引用** |
 | **沉淀双门槛** | 只收 DSH 知识（或本库元知识）；集成知识挂到八维坐标系（宿主语言 · 运行形态 · 并发与会话隔离 · 沙箱与文件系统 · 工具复用 · 模型与凭据 · 部署环境 · 版本基线），不挂在任何具体项目上，保证跨项目可复用 |
 
-三个 Claude Code skill：
+三个 agent skill（Claude Code 从 `.claude/skills/` 自动加载；Codex 等遵循 AGENTS.md 约定的宿主经 `AGENTS.md` 引导到同一套工作流）：
 
 | skill | 触发 | 职责 |
 | --- | --- | --- |
@@ -150,7 +152,7 @@ DSH（[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-har
 
 ### 快速开始
 
-前置：`git`、已安装 [Claude Code](https://claude.com/claude-code)。
+前置：`git`、[ripgrep](https://github.com/BurntSushi/ripgrep#installation)（`brew install ripgrep`）、已安装 [Claude Code](https://claude.com/claude-code) 或 [Codex CLI](https://github.com/openai/codex)。
 
 ```bash
 # 1. clone 本仓库
@@ -161,8 +163,9 @@ cd dsh-expert
 git clone --filter=blob:none https://github.com/deepseek-ai/deepseek-harness.git upstream/deepseek-harness
 git clone --filter=blob:none https://github.com/cordiverse/cordis.git upstream/cordis
 
-# 3. 在仓库根目录启动 Claude Code —— CLAUDE.md 与三个 skill 自动加载
-claude
+# 3. 在仓库根目录启动你的 AI CLI
+claude   # Claude Code：自动加载 CLAUDE.md 与三个 skill
+codex    # Codex：经 AGENTS.md 引导到同一套约束与工作流
 ```
 
 然后直接用任何语言提问：
@@ -179,7 +182,8 @@ claude
 
 ```
 dsh-expert/
-├── CLAUDE.md                # 助手的身份与 12 条硬约束（本项目宪法）
+├── CLAUDE.md                # agent 的身份与 12 条硬约束（本项目宪法）
+├── AGENTS.md                # AGENTS.md 约定宿主（Codex 等）的入口壳
 ├── .claude/skills/          # dsh / dsh-sync / dsh-wiki
 ├── wiki/                    # 知识库（事实层）
 │   ├── index.md             # 紧凑索引 —— 先读它，永远不全量加载知识库
