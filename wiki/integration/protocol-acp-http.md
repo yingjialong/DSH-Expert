@@ -2,7 +2,7 @@
 title: ACP 与 HTTP API gateway（进程外集成的两条协议路线）
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/acp/acp/README.md
   - packages/acp/acp/src/index.ts

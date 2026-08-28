@@ -4,7 +4,7 @@
 
 > 想知道「我现在到底懂多少」——看这张表，而不是听我自称。
 
-> 上游基线：DSH `b150a55`（0.1.1-rc.2）· 核验于 2026-08-22（2026-08-22 同步复验 47 页：32 确认 / 9 更新 / 4 重写）
+> 上游基线：DSH `cd5ef814`（仓库 tag `0.1.2-alpha.1`；npm `latest` / `next` 仍为 `0.1.1-rc.2`）· 2026-08-28 同步。此次跨 6421 文件，63 个内容页锚点命中并标 stale；未复验页面的掌握度只保留历史记录，不得直接支撑 alpha.1 结论。
 
 
 ## 掌握等级定义
@@ -28,7 +28,7 @@
 | Python SDK | **L2** | 31 | [integration/python-sdk.md](integration/python-sdk.md) | 8 条关键发现 |
 | SDK JSON-RPC 线协议（stdio） | **L2** | 17 | [integration/protocol-jsonrpc.md](integration/protocol-jsonrpc.md) | 8 条关键发现 |
 | ACP 与 HTTP API gateway（进程外集成的两条协议路线） | **L2** | 28 | [integration/protocol-acp-http.md](integration/protocol-acp-http.md) | 8 条关键发现 |
-| Electron 与嵌入运行时集成约束 | **L2** | 10 | [integration/electron-embedding.md](integration/electron-embedding.md) | 2026-08-22 外部集成审核沉淀：carrier 正门 / internal 缺席连锁 / asar / 激活断言边界 / pending 跨重启 |
+| Electron 与嵌入运行时集成约束 | **L2** | 57 | [integration/electron-embedding.md](integration/electron-embedding.md) | 2026-08-27：carrier / Workspace / Markdown / pi-ai / reasoning effort / Approval owner 边界 |
 
 ## 二、主题与内核
 
@@ -57,7 +57,7 @@
 | [compaction](packages/compaction.md) | L1 | Product | 4 | 13 | 9 | 8 | 2 |
 | [context](packages/context.md) | L1 | Product | 6 | 12 | 7 | 8 | 2 |
 | [core](packages/core.md) | L1 | Product | 8 | 18 | 12 | 10 | 2 |
-| [credentials](packages/credentials.md) | L1 | Product | 3 | 10 | 6 | 8 | 1 |
+| [credentials](packages/credentials.md) | L2 | Product | 3 | 12 | 6 | 8 | 1 |
 | [e2b](packages/e2b.md) | L1 | POC | 3 | 10 | 6 | 9 | 2 |
 | [examples](packages/examples.md) | L1 | Support | 3 | 11 | 6 | 8 | 1 |
 | [experimental](packages/experimental.md) | L1 | Unreleased | 2 | 13 | 6 | 10 | 2 |
@@ -67,11 +67,11 @@
 | [goal](packages/goal.md) | L1 | Product | 4 | 13 | 8 | 10 | 2 |
 | [guard](packages/guard.md) | L1 | Product | 2 | 9 | 8 | 10 | 2 |
 | [hooks](packages/hooks.md) | L1 | Product | 3 | 13 | 17 | 13 | 3 |
-| [host](packages/host.md) | L1 | Product | 8 | 22 | 16 | 14 | 3 |
+| [host](packages/host.md) | L2 | Product | 8 | 25 | 16 | 15 | 3 |
 | [identity](packages/identity.md) | L1 | Product | 1 | 5 | 4 | 4 | 2 |
-| [interaction](packages/interaction.md) | L1 | Product | 5 | 14 | 9 | 9 | 2 |
+| [interaction](packages/interaction.md) | L2 | Product | 5 | 18 | 9 | 10 | 2 |
 | [jobs](packages/jobs.md) | L1 | Product | 3 | 10 | 7 | 10 | 2 |
-| [llm](packages/llm.md) | L1 | Product | 5 | 16 | 10 | 13 | 3 |
+| [llm](packages/llm.md) | L2 | Product | 5 | 33 | 10 | 14 | 3 |
 | [lsp](packages/lsp.md) | L1 | Product | 3 | 14 | 6 | 12 | 2 |
 | [mcp](packages/mcp.md) | L1 | README 未列出 | 1 | 7 | 7 | 10 | 3 |
 | [plan](packages/plan.md) | L1 | Product | 1 | 7 | 7 | 11 | 2 |
@@ -80,9 +80,9 @@
 | [sandbox](packages/sandbox.md) | L1 | Product | 4 | 14 | 24 | 10 | 1 |
 | [schedule](packages/schedule.md) | L1 | Product | 1 | 13 | 11 | 10 | 0 |
 | [sdk](packages/sdk.md) | L1 | Product | 3 | 16 | 23 | 10 | 1 |
-| [session](packages/session.md) | L1 | Product | 13 | 21 | 24 | 13 | 2 |
+| [session](packages/session.md) | L2 | Product | 13 | 32 | 24 | 13 | 2 |
 | [session-query](packages/session-query.md) | L1 | Product | 4 | 16 | 18 | 13 | 1 |
-| [settings](packages/settings.md) | L1 | Product | 2 | 7 | 12 | 7 | 1 |
+| [settings](packages/settings.md) | L2 | Product | 2 | 9 | 12 | 7 | 1 |
 | [shell](packages/shell.md) | L1 | Product | 10 | 13 | 10 | 9 | 1 |
 | [skill](packages/skill.md) | L1 | Product | 4 | 7 | 11 | 8 | 1 |
 | [spill](packages/spill.md) | L1 | Product | 3 | 9 | 9 | 9 | 0 |
@@ -121,14 +121,14 @@
 
 | 指标 | 值 |
 |---|---|
-| 已建立页面 | 68 页（63 内容页 + 5 治理页） |
-| 掌握度分布 | L2 **10** · L1 **53** · L3/L4 **0** |
-| 锚点总数 | 892（+10：electron-embedding 新页；五页「agent 审核增量」节的行内锚点未计入页级统计） |
+| 已建立页面 | 70 页（65 内容页 + 5 治理页） |
+| 掌握度分布 | L2 **33** · L1 **32** · L3/L4 **0** |
+| 锚点总数 | 1023（按 `wiki/index.md` 65 个内容页的锚点列求和；审核增量中的重复行内引用不重复计） |
 | 已记录陷阱 | 572 条（分布在各页「陷阱」一节） |
-| 文档与源码冲突 | 75 条（见 conflicts.md） |
-| 悬而未决 | 109 条（见 open-questions.md；0.1.1 同步解答 5 条） |
+| 文档与源码冲突 | 78 条（见 conflicts.md） |
+| 悬而未决 | 108 条（见 open-questions.md；0.1.1 同步解答 5 条，2026-08-27 npm 复验解答 Q095） |
 | 认知状态 | 全部 `verified_inference`（无 `fact`，因无 L3） |
-| 新鲜度 | 全部 `fresh`（基线 `b150a55`） |
+| 新鲜度 | `stale` 63 页 · `fresh` 2 页（`packages/identity.md` 与 alpha.1 版本变更页）；固定 rc.2 问题回 tag `b150a551` 核验 |
 
 ## 六、下一步学习建议（按 `dsh-wiki` B3 优先级）
 
@@ -136,4 +136,3 @@
 2. 精读 `docs/persistence-catalog.md` 与 `graph-atlas.md`（多个包组的悬疑都指向这两篇）
 3. `apps/cli` 的 flag 家族（排错类问题的高频入口）
 4. `packages/client` 的 29 个 `ui-*` 插件逐包细读（Web GUI 问题的必经之路）
-

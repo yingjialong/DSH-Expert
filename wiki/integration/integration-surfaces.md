@@ -2,7 +2,7 @@
 title: DSH 集成表面全景（外部项目如何接入 DSH）
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/sdk/README.md
   - packages/sdk/protocol/README.md

@@ -1,18 +1,20 @@
 ---
 title: packages/settings — user-settings capability family
 status: verified_inference
-mastery: L1
-freshness: fresh
+mastery: L2
+freshness: stale
 anchors:
   - packages/settings/README.md
   - packages/settings/settings/README.md
   - packages/settings/settings/src/index.ts
+  - packages/settings/settings/tests/settings.spec.ts
   - packages/settings/settings-file/README.md
   - packages/settings/settings-file/src/index.ts
+  - packages/llm/llm-pi-ai/tests/dynamic-config.spec.ts
   - docs/subsystems/settings.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-22
-asked_by: self
+verified_at: 2026-08-27
+asked_by: agent
 ---
 
 ## 一句话定位
@@ -80,6 +82,15 @@ asked_by: self
 - 文件 provider 的写锁是 `<file>.lock` 兄弟文件（`wx` 创建，指数退避，2 秒获取超时）。**竞争者超时后不会强删旧锁**，因为无法从锁文件年龄区分「崩溃的持有者」和「暂停的活写者」——孤儿锁需要人工清理。
 - boot 与 reload 的失败策略不一样：**已存在但非法的文档会让插件加载失败（fail loud）**；运行期一次读不出/解析不了的编辑只 warn 并保留 last-good sections。
 - 解析值是 deep-frozen 快照；watcher 回调按提交顺序串行异步执行，慢的旧回调不会覆盖新回调，同步 throw 与异步 rejection 都被 contain。
+
+## 2026-08-27 审核增量：嵌入式 provider 的热发布与删除语义
+
+- `SettingsProvider.load()` 只在 service init 调一次。外部数据库、Main process 或其他自有介质发生变化时，provider 子类必须观察该变化并调用 protected `publish(完整 raw document)`；只有 `load()` 的实现不会热更新。
+- 若保存动作从 Host 内发起，公开正门是 `ctx.settings.update/replace/mutate`：基类先校验，再调用 provider `persist()`，成功后 commit 并触发 `settings/document-updated`；解析值确实变化时再触发 `settings/updated`。
+- `update()` 是递归 merge，`undefined` 被忽略，不是 tombstone。配置 UI 要删除单个 dict key，使用 `mutate([{ op: 'unset', path: [...] }], expectedRevision)`；持完整可信 user section 时也可 `replace()`。
+- `unset` / `replace` 只能移除 user layer，不能删除 Cordis composition `base` 里的值；移除 override 后会重新继承 base。要求用户动态增删的 route 必须只放 user layer，composition 只挂 dormant consumer。
+- `expectedRevision` 的检查发生在 namespace 写队列前端，能拒绝持旧 descriptor 的覆盖；外部 provider 的跨进程并发与原子性仍由该 provider 自己拥有。
+- **认知状态**：verified_inference（`packages/settings/settings/src/index.ts`、`tests/settings.spec.ts` 与 `llm-pi-ai/tests/dynamic-config.spec.ts` 源码级核验；未重新执行测试）。
 
 ## 去哪深入
 

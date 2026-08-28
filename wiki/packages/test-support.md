@@ -2,7 +2,7 @@
 title: packages/test-support — 开发与测试基础设施
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/test-support/README.md
   - packages/test-support/acp-snapshot/README.md

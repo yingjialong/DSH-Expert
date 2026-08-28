@@ -2,7 +2,7 @@
 title: packages/sdk — 从另一个进程驱动 Harness runtime
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/sdk/README.md
   - packages/sdk/protocol/README.md

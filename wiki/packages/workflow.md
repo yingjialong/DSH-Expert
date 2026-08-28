@@ -2,7 +2,7 @@
 title: packages/workflow — 动态工作流能力族
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/workflow/README.md
   - packages/workflow/workflow/README.md

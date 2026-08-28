@@ -2,7 +2,7 @@
 title: packages/goal — 同会话持久化目标（state 与 scheduling 严格分家）
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/goal/README.md
   - packages/goal/goal/README.md

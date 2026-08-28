@@ -2,7 +2,7 @@
 title: packages/fs — 文件系统 capability family（四层拆分的教科书样本）
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/fs/README.md
   - packages/fs/fs/README.md

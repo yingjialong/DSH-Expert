@@ -2,7 +2,7 @@
 title: Python SDK（deepseek-harness-sdk）源码级用法
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - python/sdk/src/deepseek_harness/api.py
   - python/sdk/src/deepseek_harness/client.py

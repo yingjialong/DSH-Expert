@@ -2,7 +2,7 @@
 title: packages/runtime-diagnostics — 包自有运行期不变式注册表
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/runtime-diagnostics/invariants/README.md
   - packages/runtime-diagnostics/invariants/src/index.ts

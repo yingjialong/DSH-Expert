@@ -2,7 +2,7 @@
 title: packages/plan — plan 协作状态
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/plan/README.md
   - packages/plan/plan-mode/README.md

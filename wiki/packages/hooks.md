@@ -2,7 +2,7 @@
 title: packages/hooks — Claude Code / Codex hook 桥接 + 共享线协议库
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/hooks/README.md
   - packages/hooks/hook-protocol/README.md

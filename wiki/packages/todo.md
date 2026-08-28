@@ -2,7 +2,7 @@
 title: packages/todo — todo / planning 能力族
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/todo/README.md
   - packages/todo/tool-todo/README.md

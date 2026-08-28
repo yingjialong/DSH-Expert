@@ -2,7 +2,7 @@
 title: 四篇事故复盘的提炼（真实踩过的坑）
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - docs/postmortem/README.md
   - docs/postmortem/0001-acp-default-export-drops-inject.md

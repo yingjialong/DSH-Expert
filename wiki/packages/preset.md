@@ -2,7 +2,7 @@
 title: packages/preset — 每会话 Agent 组合（agent preset）
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/preset/README.md
   - packages/preset/agent-presets/README.md

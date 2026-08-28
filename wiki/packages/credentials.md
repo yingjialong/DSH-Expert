@@ -1,8 +1,8 @@
 ---
 title: packages/credentials — 凭据引用能力族
 status: verified_inference
-mastery: L1
-freshness: fresh
+mastery: L2
+freshness: stale
 anchors:
   - packages/credentials/README.md
   - packages/credentials/credentials/README.md
@@ -10,10 +10,13 @@ anchors:
   - packages/credentials/credentials/src/index.ts
   - packages/credentials/credentials/src/types.ts
   - packages/credentials/credentials-local/src/index.ts
+  - packages/llm/llm-pi-ai/src/auth.ts
+  - packages/llm/llm-pi-ai/src/index.ts
+  - packages/llm/llm-pi-ai/tests/dynamic-config.spec.ts
   - docs/subsystems/credentials.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-22
-asked_by: self
+verified_at: 2026-08-27
+asked_by: agent
 ---
 
 ## 一句话定位
@@ -66,6 +69,15 @@ asked_by: self
 - **产品 CLI 下读的是 launcher 冻结的 environment snapshot 而不是 `process.env`**（只有 snapshot 能区分「来自启动 shell」还是「来自文件」）；不是产品 CLI 启动的组合则只有继承环境这一层。
 - **文档格式是 versioned 的**：`version: 1` + `refs:`（POSIX 标识符 → 非空字符串）+ `records:`（`<scope>/<id>` → 带 `kind` 标签的映射），顶层只允许这三个 key；任何偏离（非映射根、未知顶层 key、不可寻址的 key、非字符串值、空串、未知 record 标签或字段、重复 key、畸形 YAML）都是拒绝而不是跳过——boot 时 fail loud，热重载时 warn 并保留上一份好快照。**pre-release 的平面布局（无 `version` 的 `ref: value` 映射）是唯一例外**：boot 时若能精确识别（可寻址名 + 非空字符串标量 + 无 directive），会在 writer 锁下**原地迁移**成 version 1（原行逐字嵌进 `refs:`，值与注释一字不动）；其余平面形状按条目数报错并给出唯一改法，绝不读成空 store；**热重载不迁移**——运行中恢复的平面文档保持上一份好快照到下次 boot。`grant` payload 两个方向都验 JSON round trip（`.inf`、alias 环、`Date`、`bigint` 一律拒收，不存有损值）。
 - **POSIX 上权限过宽会在解析内容之前失败**（带任何 group/other 位就报错并给出 `chmod 600` 修复提示）；Windows 无 mode 可查，直接跳过而不是假装检查。
+
+## 2026-08-27 审核增量：pi-ai 的 ref 与 record 不可混为一谈
+
+- 手工 provider profile 的静态 API key 入口是 `apiKeyEnv: CredentialRef`，语法 `/^[A-Za-z_][A-Za-z0-9_]*$/`。`llm-pi-ai` 在**每次 stream operation** 调 `resolve(ref)`，只把结果固定在当前 call，不跨 operation 缓存 secret；官方动态测试覆盖了 key rotation 下一请求生效。
+- pi-ai 原生登录/OAuth/ambient provider auth 使用另一 key space：`CredentialKey = llm-pi-ai/<provider-route>`，记录为 `{kind:'api-key', key?, env?}` 或 `{kind:'grant', payload}`。`recordKeyFor()` 是 `llm-pi-ai` 根公开导出。
+- profile 明确给出 `apiKeyEnv` 后，ref 值成为 request override，不改走 record；ref 缺失会 `MISSING_CREDENTIAL`，不会回退到别的 ambient 环境 key。只有完全省略 `apiKeyEnv` 才允许 provider-native discovery。
+- route 本身在 LLM registry 只要求非空，但 record id 必须匹配 `/^[a-z][a-z0-9-]*$/`；grammar 外 route 仍可走 `apiKeyEnv`，却不能存该 route 的 pi-ai record。因此产品内部 route 采用稳定 lowercase-kebab id 是两条能力的安全交集。
+- route/settings 删除不会自动 `unset(ref)` 或 `deleteRecord(key)`；两个 seam 没有跨 owner 事务。需要“删配置即撤销 secret”的宿主必须自己定义提交顺序与恢复。
+- **认知状态**：verified_inference（`packages/llm/llm-pi-ai/src/{index,auth}.ts` 与 `tests/dynamic-config.spec.ts` 源码级核验；未重新执行测试）。
 
 ## 去哪深入（文件路由）
 

@@ -2,7 +2,7 @@
 title: packages/workspace — workspace 实体族
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/workspace/README.md
   - packages/workspace/workspace/README.md

@@ -2,7 +2,7 @@
 title: packages/examples — 现成可跑的 demo bundle
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/examples/README.md
   - packages/examples/agent-spine-demo/README.md

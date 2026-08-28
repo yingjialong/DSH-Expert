@@ -2,7 +2,7 @@
 title: 核心链 core / session / preset / llm（源码级）
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/core/agent-loop/src/agent.ts
   - packages/core/agent-loop/src/index.ts

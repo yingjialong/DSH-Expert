@@ -2,7 +2,7 @@
 title: packages/compaction — 压缩能力族
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/compaction/README.md
   - packages/compaction/compaction/README.md

@@ -2,7 +2,7 @@
 title: packages/jobs — 后台作业 capability family
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/jobs/README.md
   - packages/jobs/jobs/README.md

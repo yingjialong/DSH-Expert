@@ -2,7 +2,7 @@
 title: packages/skill — skill capability family
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/skill/README.md
   - packages/skill/skill/README.md

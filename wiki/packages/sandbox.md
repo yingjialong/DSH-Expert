@@ -2,7 +2,7 @@
 title: packages/sandbox — 进程限制（confinement）能力族
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/sandbox/README.md
   - packages/sandbox/sandbox/README.md

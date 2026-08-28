@@ -2,7 +2,7 @@
 title: DSH 文档路由地图（docs/ 顶层 19 主题）
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - docs/architecture.md
   - docs/graph-atlas.md

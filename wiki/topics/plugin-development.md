@@ -2,7 +2,7 @@
 title: 插件开发全路径（dsh-plugin 从零到发布）
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - docs/user/develop/basic/index.md
   - docs/user/develop/basic/tool.md

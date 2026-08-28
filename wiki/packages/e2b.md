@@ -2,7 +2,7 @@
 title: packages/e2b — E2B 远程运行时族（POC）
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/e2b/README.md
   - packages/e2b/e2b/README.md

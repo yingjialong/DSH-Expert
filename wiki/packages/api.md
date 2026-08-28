@@ -2,7 +2,7 @@
 title: packages/api — Remote BFF 与 Typert RPC 网关
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/api/README.md
   - packages/api/gateway/README.md

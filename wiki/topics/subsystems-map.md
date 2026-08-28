@@ -2,7 +2,7 @@
 title: 子系统路由地图（阶段一 20 篇）
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - docs/subsystems/README.md
   - docs/subsystems/core.md

@@ -2,7 +2,7 @@
 title: packages/core — 产品 API 主干
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/core/README.md
   - packages/core/agent/README.md

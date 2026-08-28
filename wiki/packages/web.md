@@ -2,7 +2,7 @@
 title: packages/web — web 能力族（search + fetch）
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/web/README.md
   - packages/web/AGENTS.md

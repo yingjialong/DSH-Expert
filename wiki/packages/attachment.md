@@ -2,7 +2,7 @@
 title: packages/attachment — 持久化附件能力族
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/attachment/README.md
   - packages/attachment/attachment/README.md

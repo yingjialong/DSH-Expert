@@ -2,7 +2,7 @@
 title: packages/spill — tool-output spill capability family
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/spill/README.md
   - packages/spill/spill/README.md

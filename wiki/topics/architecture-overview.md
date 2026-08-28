@@ -2,7 +2,7 @@
 title: DSH 整体骨架：一次输入的完整旅程
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - docs/architecture.md
   - docs/agent-lifecycle.md

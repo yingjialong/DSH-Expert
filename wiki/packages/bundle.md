@@ -2,7 +2,7 @@
 title: packages/bundle — dsh --profile 的可安装 patch 层
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/bundle/README.md
   - packages/bundle/base/README.md

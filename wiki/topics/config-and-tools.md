@@ -2,7 +2,7 @@
 title: 配置来源与覆盖顺序、工具目录、运行模式
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - .agents/notes/implemented/architecture/2026-08-04-configuration-source-ownership.md
   - packages/boot/app-boot/README.md

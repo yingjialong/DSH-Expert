@@ -2,7 +2,7 @@
 title: packages/subprocess — subprocess capability family
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/subprocess/README.md
   - packages/subprocess/subprocess/README.md

@@ -2,11 +2,14 @@
 title: packages/host — Web GUI 的 host 半（API gateway + HTTP 承载 + 目录选择 seam）
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/host/README.md
   - packages/host/apiproxy/README.md
   - packages/host/apiproxy/src/api-proxy.ts
+  - packages/host/apiproxy/src/api/events.ts#EventsApi.mux
+  - packages/host/apiproxy/src/api/approvals.ts#ApprovalResponsePayload
+  - packages/host/apiproxy/tests/api-proxy-approval.spec.ts
   - packages/host/webserver/README.md
   - packages/host/webserver/src/index.ts
   - packages/host/frontend-static/README.md
@@ -22,8 +25,8 @@ anchors:
   - .agents/notes/implemented/architecture/2026-07-19-gui-layering-and-rpc-protocol.md
   - .agents/notes/implemented/architecture/2026-07-28-directory-picker-capability-seam.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-22
-asked_by: self
+verified_at: 2026-08-27
+asked_by: agent
 ---
 
 ## 一句话定位
@@ -76,8 +79,8 @@ dsh Web GUI 的 host 侧：所有 client 形态共用的 API gateway（`ctx.apiP
 
 **apiproxy**（gateway，限制最多）
 - 转发的 Remote 事件**寄生在遗留的 `HostFrame` union 上**（`host/remote-event`），读起来像是本包拥有 Remote 事件契约——其实不是（allowlist 属于 `dsh-api-remotes`，消费动词是 `ctx.remote.$on`）。
-- pending interaction 状态在 host 侧；`src/api-proxy.ts` 的表**只处理 question，没有 approval 条目**。
-- **pending question 不跨 host 重启**：registry 持有等待中 tool call 的 `resolve`/`reject`，是 host 进程内存。`events.mux` 每次重开都会重放 still-pending question（覆盖浏览器 reload 与重连），但 host 重启会连带丢失该 turn；恢复需要持久的 pending-interaction 记录，已 deferred。
+- pending interaction 状态在 host 侧；`src/api-proxy.ts` 同时持有 process-local `pendingQuestions` 与 `pendingApprovals`。`packages/host/apiproxy/README.md` 声称“只有 question”已落后于同 commit 的源码与官方测试，见 `conflicts.md` C078。
+- **pending question / approval 都不跨 host 重启**：registry 持有等待 promise 的 settlement callback，是 host 进程内存。`events.mux` 每次重开都会以稳定 `rpcId` 重放 still-pending question / approval（覆盖 browser reload 与 client reconnect），但 host 重启不会持久恢复它们。
 - **无协议版本字段**：client 与 host 同版本发布，`host.describe` 只有在出现独立发布的 client 时才会加版本协商字段。
 - 搜索失败会带上 provider 诊断信息——gateway 假定是单用户本地服务，多用户 carrier 必须替换成公开安全的诊断。
 - cold-list 提示只会向「可见性更高、排序更旧」的方向退化。

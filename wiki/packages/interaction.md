@@ -2,7 +2,7 @@
 title: packages/interaction — 人机协作平面
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/interaction/README.md
   - packages/interaction/user-questions/README.md
@@ -12,9 +12,13 @@ anchors:
   - packages/interaction/tool-ask-user/README.md
   - packages/interaction/user-questions/src/index.ts
   - packages/interaction/user-approval/src/index.ts
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
-asked_by: self
+  - packages/core/tools/src/index.ts#ToolRuntime.serviceAsk
+  - packages/host/apiproxy/src/api-proxy.ts#pendingApprovals
+  - packages/host/apiproxy/tests/api-proxy-approval.spec.ts
+  - packages/client/ui-conversation/src/client/skeleton/ApprovalPanel.tsx#ApprovalPanel
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-27
+asked_by: agent
 ---
 
 ## 一句话定位
@@ -100,6 +104,15 @@ asked_by: self
 - **steer 的目标是 next-step（最近 step 边界 + wake），不是 next-turn**；仅 abort 后的 waking 输入 reclassify 为 next-turn；`followup` 才是 next-turn（"sole ordinary message of its own turn"）。宿主 admission 拦截额外输入无官方钩子（天然是宿主 carrier 行为），但撤回/保留有上述 inbox API 支撑。
 - **两个易混的部署配置各归其包**：`AgentLoop.Config.maxParallelToolCalls`（`packages/core/agent-loop/src/index.ts` 约 L253-260，默认 10，`1`=串行；只作用于 opt-in `isConcurrencySafe` 的并行组，exclusive call 是 barrier）≠ `ToolTodo.Config.allowParallelInProgress`（`packages/todo/tool-todo/src/index.ts` 约 L37-42，**必填** boolean，"a deployment choice, not a fixed rule"）。
 - **code-mode 不是独立包**：是 `dsh-tools` 内建的 presentation mode（`tools` 配置 `mode: 'native'|'code'|'both'`，默认 native）+ 可选 `packages/code-runtime` 组合；不设 code mode 时 `run_code` 不出现。描述为"注册/不注册 code-mode 包"不准确。
+
+## 2026-08-27 agent 审核增量（Approval 的 owner lifetime 与 presentation 可见性）
+
+- **取消权威是请求信号，不是 presentation 可见性**：`ApprovalRequest` 只有 `agent/toolName/callId?/reason?/signal?`；`signal` abort 才会 withdraw 请求、结算 `cancelled` 并丢弃迟到回答。公共词汇只有 `allowed-once | rejected | cancelled | unavailable`，没有 window focus/visibility 或 `closed` outcome。
+- **ToolRuntime 保留 caller owner**：`serviceAsk()` 把当前 `exec.signal` 原样交给 `approval.request()`；只有 `allowed-once` 可继续 dispatch，其他 outcome 全部 fail closed。官方测试钉住 cancellation 在等待 approval 期间胜出时 tool body 不运行。
+- **Host 的 pending approval 刻意跨 client disconnect 存活**：`apiproxy` 以稳定 `rpcId` 保存条目，新 mux 重放 still-pending request；只在有效 answer、ask signal abort 或整个 gateway registry teardown 时结算。官方 `api-proxy-approval.spec.ts` 覆盖了断线、重连后仍可回答。
+- **第一方 ApprovalPanel 不拥有 blur/hide 取消**：只提交 `allowed-once` / `rejected`，面板移除由 Host 的 `approval/resolved` 帧驱动；没有 `blur` / `hide` / `visibilitychange` / unmount cleanup。官方 conversation 甚至让 pending composer takeover 在切换其他 conversation view 后保持 mounted。
+- **集成结论**：只改变可见性、不改变 request/Agent/channel owner 的短暂遮挡不是 DSH cancellation point。宿主可以制定更严的 UX policy，但不能把它写成 rc.2 规范要求。`user dismisses the prompt` 可映射 `cancelled`，但上游没有把 OS occlusion 或普通失焦定义为 dismissal。
+- **timeout 边界**：官方 `tool-call-timeout-policy` 位于 approval 之后的 `tools/execute` around-dispatch 阶段，不为 pending approval 自动提供 deadline；额外 approval timeout 属宿主 owner policy。
 
 ## 去哪深入（文件路由）
 

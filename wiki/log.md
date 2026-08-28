@@ -131,3 +131,127 @@
 | `session_prompt()` 只返回排队回执就立即返回，**不等回合结束**；绕开 `Session.run()` 就得自己拥有活动边界 | `python/sdk/src/deepseek_harness/client.py#session_prompt` |
 | ACP 的 stdout 被协议帧独占，任何调试打印都会污染 JSON-RPC 帧 | `packages/acp/acp/src/index.ts` |
 | ACP 插件加 default export 会让 Loader 丢掉 namespace 使 `inject` 静默失效（0001 号事故主角） | `docs/postmortem/0001-acp-default-export-drops-inject.md` |
+
+## 2026-08-25 · 教学 1.2 课（Cordis 内核）与一条新冲突
+
+- **提问者**：human（教学推进）
+- **准备**：workflow `dsh-lesson-1-2-prep`（5 路：wiki cordis-primer + docs/cordis-primer + tutorial 01/02 + upstream/cordis 源码级 ctx-key 探索 + postmortem 0001）
+- **本次现查**：`vendor/cordis/src/events.ts:32` 复验 DispatchMode 为 5 种（含 bail），发现官方 primer 只列 4 种 → 新增 conflicts.md C076，cordis-primer.md 补"文档简化差异"一行并更新 verified_at
+- **纠正记录**：教学预设中的 `definePlugin` API 不存在——Cordis 插件协议是 named export 的 `apply` 函数 / `{ apply }` object / `Service` 子类三形态（tutorial 01 现查）
+- **上游基线**：DSH `b150a55` FRESH · Cordis 镜像 8cc9e33（注意 vendor 是 4.0.0-rc.7 + 18 条 local mods，权威源是 vendor/）
+
+## 2026-08-26 · 教学 1.2 课重讲（零基础版）
+
+- **提问者**：human
+- **反馈**：第一版 1.2 课术语密度过高（假设了 Cordis/依赖注入背景），用户要求按"不懂 Cordis 的人"的起点重讲
+- **动作**：零基础重讲（问题驱动 → 词汇表白话化 → 贯穿例子 → 机制深水区后置为可选）；无新 DSH 事实核验，纯教学组织
+- **上游基线**：DSH `b150a55`（教学连续性内，未再触发同步）
+
+## 2026-08-27 · 跨会话问答：本地嵌入 Host 的 Workspace 与 SSH 远程 cwd
+
+- **提问者**：agent（跨会话）
+- **问题**：Electron SSH 宿主集成 DSH 时，官方 Workspace 应绑本地 anchor 还是远程 SSH cwd？
+- **结论**：DSH Host 在本地运行时必须绑 Host 可见且存在的本地 anchor；远程 cwd 属于宿主自有映射或成对 SSH `ctx.fs` / `ctx.subprocess` provider 的 execution world。仅当 DSH Host 本身在远端，或远程目录已挂载到 Host 文件系统时，Workspace 才能使用对 Host 可见的该路径。
+- **本次现查**：`WorkspaceRegistry.create` 直接调本机 Node `fs.realpath/stat`；`session.create({ workspaceId })` 写入 `workspace.path` 为 `SessionHeader.cwd`；`attachSession` 严格复验；文件与 Bash 工具默认沿用该 cwd。第一方 provider 清单只有 local / sandbox / E2B，全仓未见 SSH provider；`glob` / `grep` 经 `ctx.subprocess` 运行 `rg`，远程集成不能只替换 `ctx.fs`。
+- **依据锚点**：`packages/workspace/workspace/src/{paths,index,entity}.ts`、`packages/host/apiproxy/src/api-proxy.ts`、`packages/fs/tool-fs/src/session-cwd.ts`、`packages/shell/tool-bash/src/index.ts`、`packages/fs/README.md`、`packages/subprocess/README.md`、`packages/e2b/README.md`
+- **上游基线**：DSH `b150a55`（`0.1.1-rc.2`，本地 HEAD = 远程 HEAD）
+- **实测**：无（静态源码已能确定 Workspace path 的 Host-local 约束，按规范不做冗余实测）
+- **沉淀**：`integration/electron-embedding.md` §8（`verified_inference`，L2 不变）；`index.md` 摘要已更新。
+
+## 2026-08-27 · 跨会话问答：DSH 最新稳定版、预发布版与 monorepo 版本口径
+
+- **提问者**：agent（跨会话）
+- **问题**：截至 2026-08-27 的 DSH 最新稳定版、最新预发布版、HEAD 相对最新 tag 的状态，以及多包 monorepo 应如何表述“版本”。
+- **结论**：公开稳定版尚无；最新预发布版为 `0.1.1-rc.2`。远端 `HEAD` / `master` / `dsh-v0.1.1-rc.2` 均为 `b150a55`，ahead/behind 均为 0。推荐表述为“DSH release family `0.1.1-rc.2` + tag + commit”，讨论安装物时再限定具体包和 registry channel。
+- **本次现查**：GitHub 4 个公开 Release 全为 prerelease；npm CLI 主包 `latest=next=0.1.1-rc.2`，三个 SDK 包已发布 rc.2 但仅 `next` 指向它；PyPI SDK/runtime-bin 均为 `0.1.1rc1`。`scripts/release/families.ts` 确认 227 个 DSH 可发布成员共享版本，vendor/native 等另走版本线。
+- **依据锚点**：`package.json`、`apps/cli/package.json`、`packages/sdk/{client,protocol,server}/package.json`、`scripts/release/{families,bump,publish}.ts`、`scripts/build-python-release.py`、`python/development.zh.md`
+- **上游基线**：DSH `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`（`0.1.1-rc.2`，本地 HEAD = 远端 HEAD = 最新 tag）
+- **联网验证**：GitHub Releases/Tags/Compare API；npm registry `@deepseek-ai/dsh` 与三个 SDK 包；PyPI `deepseek-harness-sdk` / `deepseek-harness-runtime-bin`。
+- **沉淀**：版本变更主题页追加“当前发布状态复验”；删除已解答 Q095；index/coverage 同步。掌握度仍为 L2，认知状态封顶 `verified_inference`。
+
+## 2026-08-27 · 跨会话问答：嵌入宿主复用官方 Assistant Markdown primitive
+
+- **提问者**：agent（跨会话）
+- **问题**：只消费 `ConversationSnapshot.chat` 的 Electron 宿主，能否从公共根导出复用 `MarkdownText`；应否优先于 `react-markdown`；逐消息流式状态不精确时能否默认 settled；需保留哪些安全/owner 边界。
+- **结论**：复用公共 `MarkdownText` 符合 DSH projection / presentation ownership，且在固定 rc.2 时应优先于第二套 Markdown renderer。官方用 `assistant-step.data.status` 驱动逐消息 streaming，session-wide `running` 不能代替；一一对应已丢失时省略 `streaming` / 传 `false` 是安全保守值，同时应省略 settled-only 的 `fileMentions`。
+- **本次现查**：primitives 根 export 与 package manifest；官方 conversation 的同路径消费；`MarkdownText` 默认值、增量/finalize 和 file mention 生命周期；raw HTML、链接、图片与 KaTeX 安全实现；assistant node status 与 session snapshot running 的分层；相关测试断言。
+- **依据锚点**：`.agents/notes/implemented/feature/2026-07-23-web-assistant-markdown.md`、`packages/client/ui-primitives/{package.json,src/index.ts,src/markdown/{MarkdownText,render,katex}.tsx,tests/markdown*.client.spec.tsx}`、`packages/client/ui-conversation/src/client/{chat/{AssistantMarkdown,AssistantNodeView}.tsx,contract/chat-nodes.ts}`、`packages/client/runtime/src/client/sessions/conversation.ts`
+- **上游基线**：DSH `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`（`0.1.1-rc.2`；本地 HEAD = 远程 HEAD = `dsh-v0.1.1-rc.2`）
+- **实测**：未运行；上游镜像无 `node_modules`，静态实现与官方测试断言已足以确定公共导出、安全策略和状态 owner。
+- **沉淀**：`integration/electron-embedding.md` §9（`verified_inference`，L2 不变）；`index.md` 摘要与锚点数已更新。
+
+## 2026-08-27 · 跨会话问答：cold Session 列表标题与 projection cache
+
+- **提问者**：agent（跨会话）
+- **问题**：自定义 SessionPersistence 的嵌入 Host 如何让所有 cold 历史标题直接进入首个 `session.list` baseline；cache 的发布/API/介质 owner、20-code-point 标题上限及旧日志回填边界是什么？
+- **结论**：rc.2 已公开发布 `@deepseek-ai/dsh-session-projection-cache`；cold list 只读其同步 `cachedSnapshot(meta)`，不读日志。Session log 继续归 `SessionPersistence`，cache row 归 `StorageBackend.kv` 上的 `session_projcache` domain；通用 Workspace backend 可复用。旧日志不会自动扫描，但公共 `coldSnapshot(id)` 能以 `readFrom` + registry restore 回填，无需 open Session。80-byte cap 能容纳任意 20 code points，但不等价于最多 20 code points；token cap 不应机械换算。
+- **本次现查**：npm rc.2 tarball 与 dist-tags；cache 包公开 `.d.ts`、service inject/config、domain spec、cold restore/write-back；API Proxy cold list 与 client list seeding；storage backend/domain 公共接口；title UTF-8 normalize、LLM token failure；官方 Loader 组合和相关测试源码。
+- **文档冲突**：新增 `conflicts.md` C077——client/runtime 与 host/apiproxy README 的 cold-title 描述落后于同 commit 的源码、类型和测试。
+- **依据锚点**：`packages/session/session-projection-cache/{package.json,src/{index,spec}.ts,tests/cache.spec.ts}`、`packages/host/apiproxy/src/{api-proxy.ts,api/sessions.ts}`、`packages/client/runtime/src/client/sessions/manager.ts`、`packages/storage/{storage/src/backend.ts,storage-domain/src/index.ts}`、`packages/session/session-title/src/{index,normalize}.ts`、`packages/bundle/web-app/cordis.patch.yml`
+- **上游基线**：DSH `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`（`0.1.1-rc.2`；本地 HEAD = 远程 HEAD = tag）
+- **实测**：未运行；上游镜像无 `node_modules`。已静态交叉核对实现、公开声明、官方测试断言和 npm 发布 tarball。
+- **沉淀**：`packages/session.md` 新增 2026-08-27 审核增量，掌握度 L1→L2；`index.md` / `coverage.md` / `conflicts.md` 同步。
+
+## 2026-08-27 · 跨会话问答：pi-ai 动态多模型 route、凭据与 Session 选择
+
+- **提问者**：agent（跨会话）
+- **问题**：嵌入式 Host 在 rc.2 中如何用官方 `llm-pi-ai` 表达 OpenAI Chat / Responses / Anthropic Messages 多配置，并对齐 route/model owner、CredentialProvider、Settings 热更新、Session 选择持久性与安全边界。
+- **结论**：一份独立 key/endpoint/protocol/lifecycle 配置对应一条 provider route；三种 protocol 精确为 `openai-completions` / `openai-responses` / `anthropic-messages`。静态 key 走每 operation 解析的 `apiKeyEnv` ref，pi-ai 原生登录/OAuth 才走 `llm-pi-ai/<route>` record。pi-ai topology 可热更新，但自定义 SettingsProvider 必须让外部变更进入 write API 或 `publish(fullDoc)`；只有 `load()` 不够。
+- **Session 边界**：`selectModel` 接受 route + model id，是 live Session 的 next-step selection；选择动作本身不写日志，后续模型请求消费后才记 `request/header`。route 删除/改名无 alias 或自动迁移，历史选择会不可路由。
+- **安全边界**：`baseURL` 无 DSH 级 SSRF/scheme/host 限制；`headers` 无 secret owner 语义；provider error 原文无脱敏保证且可耐久化；图片必须走 durable attachment 与请求预算管线。
+- **本次现查**：`llm-pi-ai` config/provider/auth/adapter/index/discovery/stream 源码、Settings/Credentials service 源码、API Proxy 模型选择与 Agent loop request header 路径、官方 dynamic/model-selection tests；正式 npm JS/d.ts/README 产物。
+- **上游基线**：DSH `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`（`dsh-v0.1.1-rc.2`，本地 HEAD = 远程 HEAD = tag）；`@deepseek-ai/dsh-llm-pi-ai@0.1.1-rc.2` tarball shasum `4391158740196fea86b25a5f6575cc75d0a5d289`。
+- **实测**：未运行；上游 mirror 无 `node_modules`。已交叉核对 tag 实现、官方测试断言与正式 npm 产物。
+- **沉淀**：`integration/electron-embedding.md` §10；`packages/{llm,settings,credentials}.md` 审核增量；`llm/settings/credentials` 掌握度对齐为 L2；Q113 标注 `llm-pi-ai` schema 已解答。
+
+## 2026-08-27 · 跨会话问答：Approval pending 跨 app switch / macOS occlusion 的 owner 边界
+
+- **提问者**：agent（跨会话）
+- **问题**：嵌入式 Electron 宿主的信任 approval 回答面，是否应在普通 window blur/hide 或 macOS occlusion 时取消 pending approval？
+- **结论**：rc.2 把 withdrawal 归给 request/ToolRuntime `AbortSignal` 与 channel/Agent owner teardown，不归给 presentation visibility。官方 Host 甚至让 pending approval 跨 client disconnect 存活、在 mux reopen 以同一 `rpcId` 重放；因此 owner/authority 不变时跨普通 app switch / occlusion 保留符合 DSH ownership。上游无 blur/hide 必须取消的规范。
+- **本次现查**：`ApprovalRequest`/closed outcome 词汇、ToolRuntime `serviceAsk`、Host `pendingApprovals` 注册/重放/撤回、client runtime `PendingWait`、官方 `ApprovalPanel` 与 reconnect/abort/teardown 测试。
+- **文档冲突**：新增 `conflicts.md` C078——`host/apiproxy` README 仍称 pending table 只有 question，但同 commit 源码与官方测试已有 approval registry。
+- **依据锚点**：`packages/interaction/user-approval/src/index.ts`、`packages/core/tools/src/index.ts`、`packages/host/apiproxy/src/{api-proxy.ts,api/events.ts,api/approvals.ts}`、`packages/host/apiproxy/tests/api-proxy-approval.spec.ts`、`packages/client/ui-conversation/src/client/{skeleton/ApprovalPanel.tsx,contract/slots.ts}`。
+- **上游基线**：DSH `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`（`dsh-v0.1.1-rc.2`；本地 HEAD = 远程 HEAD = `master` = tag）。
+- **实测**：未运行；上游镜像无 `node_modules`，静态实现、公开类型与官方测试断言已足以确定该 ownership 边界。
+- **沉淀**：`packages/interaction.md` 与 `integration/electron-embedding.md` 增补 visibility/owner 边界；`packages/host.md` 纠正 pending registry 描述；`host` / `interaction` 覆盖度对齐为 L2。
+
+## 2026-08-27 · 跨会话问答：pi-ai 手工模型与 `reasoningEffort:'off'`
+
+- **提问者**：agent（跨会话）
+- **问题**：手工 `anthropic-messages` 模型未声明 `reasoningEfforts` 时，为何显式 `session.selectModel(... reasoningEffort:'off')` 返回 `model-unavailable`；客户端和 UI 怎样遵守 exact-model capability ownership？
+- **结论**：真正手工 model 不公开 `reasoning`，而 `off` 不是核心通用能力；任何显式未公布 effort 都先被 LLM core 以 `UNSUPPORTED_REASONING_EFFORT` 拒绝，再由 Host 映射成 `model-unavailable`。纯模型切换省略 effort；只有 exact model metadata 明确包含用户选择时才提交。省略把默认所有权交还 adapter/provider，并清除旧模型继承值。
+- **UI 边界**：无 metadata 时不伪造 `Off`，显示默认或隐藏控件；条目缺席只能说能力未知。显式偏好不兼容时须明示未应用或阻止发送，不能静默映射；Host 拒绝后保留原 selection。
+- **本次现查**：pi-ai catalog/adapter、LLM exact-model capability gate、Host model RPC、Agent selection snapshot/旧 effort 清除、一方 model selector 与相关官方测试；正式 npm 公共声明。
+- **上游基线**：DSH `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`（`dsh-v0.1.1-rc.2`，本地 HEAD = 远程 `HEAD` = `master` = tag）。
+- **实测**：未运行；上游镜像无 `node_modules`，且该结论由实现分支和官方测试源码交叉闭环，不调用任何模型凭据。
+- **沉淀**：`packages/llm.md` 与 `integration/electron-embedding.md`（`verified_inference`，L2 不变）；index / coverage 同步。
+
+## 2026-08-28 · 跨会话问答：pi-ai wire protocol 与展示标签分层
+
+- **提问者**：agent（跨会话）
+- **问题**：把产品界面的 “OpenAI Chat” 改为 “OpenAI Completions”，但保持产品内部枚举、持久化值及 DSH `api` 映射不变，是否会改变实际 wire protocol？
+- **结论**：不会。rc.2 以精确 `api: 'openai-completions'` 选择 `openAICompletionsApi`；展示名称与 `api` 在配置、建模和 catalog 中相互独立。只要界面文案不被复用为 option value、序列化 key 或映射输入，改名仅属于 presentation。
+- **本次现查**：`llm-pi-ai` 的协议表、provider schema、provider materialization、catalog 与 SDK options 官方测试。
+- **依据锚点**：`packages/llm/llm-pi-ai/src/{provider,config,adapter}.ts`、`packages/llm/llm-pi-ai/tests/{catalog,sdk-options}.spec.ts`
+- **上游基线**：DSH `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`（`dsh-v0.1.1-rc.2`；package `@deepseek-ai/dsh-llm-pi-ai@0.1.1-rc.2`）
+- **实测**：未运行；实现、公开 schema 与官方测试已足以确定字段分层和协议分派。
+- **沉淀**：命中 `packages/llm.md` 既有审计结论，无重复新增主题内容。
+
+## 2026-08-28 · /dsh-sync：0.1.1-rc.2 → 0.1.2-alpha.1 知识防腐
+
+- **提问者**：self（DSH 问答新鲜度自检触发）
+- **结论**：上游镜像从 `b150a551` 同步到 `cd5ef814`（`dsh-v0.1.2-alpha.1`），1079 个提交、6421 个文件（+323745 / −126827）；Cordis 仍为 `8cc9e33`。npm `@deepseek-ai/dsh` 的 `latest` / `next` 仍为 `0.1.1-rc.2`，PyPI SDK 仍为 `0.1.1rc1`。
+- **破坏性主线**：`host-apiproxy` 与 `client-runtime` 删除，Session/Workspace/Settings controller 与 Client Store 接管 owner，Gateway 增加 generation-aware stream，`CallId` 重命名 `ToolCallId`，Code Mode 产品词汇迁到 PTC。
+- **防腐动作**：63 个内容页锚点命中，统一标为 `stale`；固定 rc.2 问题必须回 tag `b150a551` 核验，不用 alpha HEAD 替代已发布公共面。
+- **沉淀**：新建 `topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md`；`index.md` / `coverage.md` 更新基线、新鲜度和覆盖数。
+- **未完成复验**：本次差异规模超过单轮可靠重写范围；63 页保持 stale，未声称已对 alpha.1 全量补学。
+
+## 2026-08-28 · 跨会话问答：Session archive、MCP carrier 与 reasoning default 的 rc.2 边界
+
+- **提问者**：agent（跨会话）
+- **问题**：rc.2 是否已具备 Session unarchive/archive-remove/delete 闭环；MCP 是“没有一站式包”还是“有包但缺可注入 carrier/tool-generation metadata”；DSH 是否通用默认 `high`。
+- **结论**：rc.2 只有单向 `WorkspaceRegistry.archiveSession` / `archivedSessionIds`，无反向 lifecycle 且 `SessionPersistence` 无 delete；alpha.1 仍明确单向。rc.2 已有一站式 `@deepseek-ai/dsh-mcp-client`，但根导出只允许内建 stdio/Streamable HTTP，内部 transport/connection/tool-generation 不是 npm 可组合注入面。DSH core 无通用 `high`；reasoning 完全由 exact adapter/model metadata 与可选 `defaultEffort` 持有，省略则保留 adapter/provider default。
+- **依据锚点**：rc.2 `packages/workspace/workspace/src/{index,spec,types}.ts`、`packages/session/session-persistence/src/index.ts`、`packages/mcp/mcp-client/{package.json,src/{index,transport,connection,tools}.ts,tests/*.spec.ts}`、`packages/llm/llm/src/{index,types}.ts`、`packages/host/apiproxy/src/api/sessions.ts`。alpha.1 复核 `packages/workspace/workspace/README.md`、`packages/client/ui-workspace/README.md` 与 MCP 包导出。
+- **实测**：无；公共类型、实现分支、package export map 与官方测试已能静态闭环，不消耗任何模型凭据。
+- **沉淀**：本次要点写入同步日志；相关 package 页因 alpha.1 大规模变更仍保持 stale，等专项复验时再重写。

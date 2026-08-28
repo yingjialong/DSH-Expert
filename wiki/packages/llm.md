@@ -2,19 +2,36 @@
 title: packages/llm — LLM capability family
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/llm/README.md
   - packages/llm/llm/README.md
   - packages/llm/llm/src/index.ts
+  - packages/llm/llm/tests/service.spec.ts
   - packages/llm/llm-deepseek/README.md
   - packages/llm/llm-pi-ai/README.md
+  - packages/llm/llm-pi-ai/src/config.ts
+  - packages/llm/llm-pi-ai/src/catalog.ts
+  - packages/llm/llm-pi-ai/src/provider.ts
+  - packages/llm/llm-pi-ai/src/auth.ts
+  - packages/llm/llm-pi-ai/src/index.ts
+  - packages/llm/llm-pi-ai/src/adapter.ts
+  - packages/llm/llm-pi-ai/tests/catalog.spec.ts
+  - packages/llm/llm-pi-ai/tests/adapter.spec.ts
+  - packages/llm/llm-pi-ai/tests/dynamic-config.spec.ts
+  - packages/host/apiproxy/src/api/sessions.ts
+  - packages/host/apiproxy/src/api-proxy.ts
+  - packages/host/apiproxy/tests/api-proxy-models.spec.ts
+  - packages/core/agent/src/model-selection.ts
+  - packages/core/agent/tests/model-selection.spec.ts
+  - packages/client/ui-model-selection/src/client/ModelSelect.tsx
+  - packages/client/ui-model-selection/tests/model-select.client.spec.tsx
   - packages/llm/llm-retry/README.md
   - packages/llm/token-meter/README.md
   - docs/subsystems/llm-streaming.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-22
-asked_by: self
+verified_at: 2026-08-27
+asked_by: agent
 ---
 
 ## 一句话定位
@@ -59,7 +76,7 @@ LLM seam 及其 provider 适配器。组 README 的原话很关键：**`llm` 包
 - `token-meter`：固定启发式是近似的（**四字符一 token** + 结构开销）；每次测量都克隆当前 surface，读是 O(surface)；provider usage **只在 canonical envelope 完全一致时**才可复用；缺失的 legacy `sourceEventSeqs` 保守处理。
 - `llm-retry`：**agent turn 是唯一的重试边界**（直接调 `ctx.llm.stream()` 的消费者仍是单次）；**always 模式会重试永久性失败**（认证、配额、非法请求、协议、不可恢复的 context 错误都会一直重试直到成功/取消/dispose）；有限预算会**叠加**；恢复策略按 waterfall 顺序组合；`llm/retry` 记录的是**调度**而非完成。
 - `llm-deepseek`：settings 的 `models` 列表**整体替换**组合层列表；`tool_choice` 未映射；用 raw `fetch` 而非 `@cordisjs/plugin-http`（`TODO(http)`）；plugin 新增的 block 类型被跳过，空 tool 输出以字面量 `(no output)` 过线；图片是**输入-only 的 durable attachment**。
-- `llm-pi-ai`：条目最多的一个包（11 条）。重点：图片请求预算 0.1.1 起拆成两键——`maxRequestFilesBytes`（Files API 上传路径）+ `maxInlineRequestImageBytes`（inline 路径），另有 `maxImagesPerRequest` 与一组 Files API offload 旋钮（`imageOffloadByteQuantum` / `inlineImageOffloadByteQuantum` / `imageOffloadCountQuantum` / `filesApiTimeoutMs` / `fileExpiresAfterSeconds` / `fileRefreshMarginSeconds` / `fileQuotaCleanupBatch`）；**仅靠 OAuth 认证的 provider 不被提供**；provider-native 发现**只读进程环境变量**，看不到 harness credential seam；settings 能加/覆盖路由但**不能删除 composition 路由**；分层 merge **对 dict key 没有 delete**；`headers` 里塞的凭据**不会被 redactor 看到**；路由的 catalog **永不自刷新**；**一个路由只能一种 wire protocol**（`supportedProtocols()` 返回且仅返回 `openai-completions` / `openai-responses` / `anthropic-messages`，表序即默认序；Azure/Codex 等不在内是凭据形态表达不了，catalog 路由不受此限）；modality 声明**不被校验**，over-claim 会把被拒图片永久留在 session log 里（恢复手段只有换模型/fork/新 session）；无凭据路由能否工作取决于协议；**`GenerateOptions.stop` 不受支持**。
+- `llm-pi-ai`：settings 能加/覆盖/删除 **user layer** 路由，但删除 composition base 路由只会重新继承 base；完全动态的路由应让插件裸挂载、全部放进 `llm-pi-ai.providers` user layer。`headers` 是普通设置，凭据不会被 redactor 看见；路由 catalog 永不自刷新；一个手工路由只能一种 wire protocol（`openai-completions` / `openai-responses` / `anthropic-messages`）；手工 route 必须有 endpoint、协议和非空 model list。`baseURL` 没有 scheme/host/私网防线。图片只从 durable attachment 生成受 `maxRequestImageBytes`、`requestImagePixelBudget`、`requestImageMaxBytes` 约束的 inline request version；无凭据路由能否工作取决于 provider-native auth；**`GenerateOptions.stop` 不受支持**。
 
 ## 陷阱
 
@@ -76,6 +93,18 @@ LLM seam 及其 provider 适配器。组 README 的原话很关键：**`llm` 包
 11. **`llm-retry` 的 always 模式与「provider 给的 Retry-After」交互反直觉**：超过 `maxDelayMs` 上限的 provider 延迟会让 normal 模式**委派**（delegate），而 always 模式改用自己配置的本地 backoff，**这样它就不会被那条指令终止**。
 12. **重试策略配在 adapter 上，不配在 `llm-retry` 上**：`llm-retry` 自己没有 policy config。多 provider 的 `llm-pi-ai` 把 `retryPolicy` 放进每个 provider profile 里。
 13. **text-only 模型的图片在 runtime 层被投影，不是被拒绝**：dispatch 前，若 exact model 的 `inputModalities` 已声明且不含 `'image'`、而 messages 含图片（含嵌套 tool-result 里的图片），`LlmRuntime` 会用 `projectImagesForTextModel()` 把图片替换成确定性占位文本（`textOnlyImageText`，带 attachment sha256 digest 前 8 位），只改本次 transient request、不动 durable session history。因此经 `ctx.llm.stream()` 给 text-only 模型发图不会触发 llm-deepseek adapter 自己的 `UNSUPPORTED_CONTENT` 图片门（投影发生在进 adapter 之前）；`inputModalities` 未声明（`undefined`）则不投影、交由 adapter 处理。
+14. **`off` 不是核心通用能力**：reasoning effort 是 exact route/model 的 adapter-owned opaque id。精确模型未公开 `reasoning` 时，显式传任何 effort（包括 `off`）都会在 provider I/O 前以 `UNSUPPORTED_REASONING_EFFORT` 被拒；`session.selectModel` 再把它映射为 `model-unavailable`。省略字段才表示把默认所有权交还 adapter/provider，而不是显式关闭推理。
+
+## 2026-08-27 审核增量：pi-ai 动态多 route 与 Session 选择
+
+- **配置 ownership**：`Config` 是 `{ providers?: Record<route, PiAiProviderProfile> }`，字典键就是 provider route。`apiKeyEnv`、`api`、`baseURL`、`headers` 与 transport/retry/image policy 都归 route；`models[]` 只归 model identity/capability。不同 key、endpoint 或 wire protocol 必须拆 route；仅共享全部 route 事实、只差 model id 时才合并进同一路由。[T1: `packages/llm/llm-pi-ai/src/config.ts`、`src/catalog.ts`]
+- **协议与命名**：手工 route 的公开 runtime 协议精确为 `openai-completions`、`openai-responses`、`anthropic-messages`；“OpenAI Chat”对应第一项。core route 仅要求非空且全局唯一，model id 仅要求非空且 route 内唯一；若还要兼容 credential record，内部 route 应取 lowercase-kebab 稳定 id。显示名只写 `displayName`，不能用可编辑标签当 route identity。[T1: `src/provider.ts`、`src/config.ts`、`src/auth.ts`]
+- **凭据两条路**：显式静态 key 配 `apiKeyEnv: CredentialRef`，每次 stream operation 通过 `ctx.credentials.resolve(ref)` 重读，不跨 operation 缓存 secret；pi-ai 原生登录/OAuth 才使用 `llm-pi-ai/<route>` record。设置了 ref 但解析缺失会 `MISSING_CREDENTIAL`，不回退 ambient key。[T1: `src/index.ts#resolveApiKey`、`src/auth.ts#recordKeyFor`、`tests/dynamic-config.spec.ts`]
+- **热更新**：插件通过 `SettingsScope.watch()` 与 adapter registration `replace()` 原子更新 route set，当前 operation 保留旧 snapshot、下一 operation 读新配置；无需因 pi-ai topology 重启 Host。动态 route 应让 Cordis 裸挂载 `llm-pi-ai`，用户层删除用 `settings.mutate([{op:'unset', path:['providers', route]}])`；composition base 路由不能由 user layer 真正删除。[T1: `src/index.ts`、`tests/dynamic-config.spec.ts`]
+- **选择生命周期**：`session.selectModel` 传 `{provider: route, model: id, reasoningEffort?}`，保存的是 live Session 的 next-step selection；点击本身不写 Session log，只有后续模型请求消费选择时才写 `request/header`。route 删除/改名后旧 pair 不自动迁移，`session.models().current` 可仍显示旧值但 `routable:false`，下一 prompt 返回 `model-unavailable`；route 还在而 model 被删时则可能晚到 adapter 的 `UNKNOWN_MODEL`。[T1: `packages/host/apiproxy/tests/api-proxy-models.spec.ts`]
+- **reasoning effort ownership**：手工 pi-ai model 无同 id 的 installed-catalog base 且省略 `reasoningEfforts` 时，不公开 exact-model `reasoning`；DSH 刻意不把 pi-ai 的伪 `off` 暴露给 selector，因为它只是省略 wire 参数，不能保证关闭 provider 默认推理。纯模型切换应省略 effort；只有 exact model 的 `reasoning.efforts` 明确包含用户选择时才显式提交。省略会清除旧模型继承的 effort，并恢复目标模型的 adapter/provider default；若模型声明 `defaultEffort`，Host 会先物化并回传该 adapter default。`groups` 是建议目录：条目缺席只能说明能力未知/未公布，不能证明不可路由。[T1: `packages/llm/llm-pi-ai/src/{catalog,adapter}.ts`、`packages/llm/llm/src/index.ts`、`packages/core/agent/src/model-selection.ts`、`packages/host/apiproxy/src/api-proxy.ts`]
+- **安全边界**：`baseURL` 是 Host 网络能力而非受保护 URL，宿主设置 owner 必须自做 SSRF/origin policy；secret 不得进入 `headers` 或 URL。provider `errorMessage` 没有 secret/PII redaction 保证，并可进入 durable turn end，普通 UI/日志不能把原文当可信内容。[T1: `src/stream.ts`、`src/discovery.ts`、`src/adapter.ts`]
+- **认知状态**：verified_inference（tag 源码、正式 npm JS/d.ts 与官方测试源码交叉核对；未重新执行测试）。
 
 ## 去哪深入（文件路由）
 

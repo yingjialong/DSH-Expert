@@ -2,7 +2,7 @@
 title: packages/terminal — 持久 PTY 能力族
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/terminal/README.md
   - packages/terminal/terminal/README.md

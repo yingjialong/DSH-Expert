@@ -2,7 +2,7 @@
 title: packages/boot — app-bin 启动胶水与 profile 机制
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/boot/README.md
   - packages/boot/app-boot/README.md

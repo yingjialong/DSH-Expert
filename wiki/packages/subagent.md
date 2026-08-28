@@ -2,7 +2,7 @@
 title: packages/subagent — subagent capability family
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/subagent/README.md
   - packages/subagent/subagent/README.md

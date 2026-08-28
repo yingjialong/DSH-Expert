@@ -2,7 +2,7 @@
 title: packages/storage — non-session storage family
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/storage/README.md
   - packages/storage/storage/README.md

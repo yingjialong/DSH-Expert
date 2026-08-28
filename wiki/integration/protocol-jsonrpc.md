@@ -2,7 +2,7 @@
 title: SDK JSON-RPC 线协议（stdio）— 源码级契约
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/sdk/protocol/src/transport.ts
   - packages/sdk/protocol/src/types.ts

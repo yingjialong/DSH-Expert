@@ -1,8 +1,8 @@
 ---
 title: packages/session — 持久 Session 数据平面
 status: verified_inference
-mastery: L1
-freshness: fresh
+mastery: L2
+freshness: stale
 anchors:
   - packages/session/README.md
   - packages/session/session-persistence/README.md
@@ -12,17 +12,28 @@ anchors:
   - packages/session/session-checkpoint-policy/README.md
   - packages/session/session-projection/src/index.ts
   - packages/session/session-projection-cache/README.md
+  - packages/session/session-projection-cache/src/index.ts
+  - packages/session/session-projection-cache/src/spec.ts
+  - packages/session/session-projection-cache/tests/cache.spec.ts
   - packages/session/session-stats/README.md
   - packages/session/session-title/src/index.ts
+  - packages/session/session-title/src/normalize.ts
   - packages/session/session-telemetry/src/index.ts
   - packages/session/session-telemetry-otel/README.md
+  - packages/host/apiproxy/src/api-proxy.ts
+  - packages/host/apiproxy/src/api/sessions.ts
+  - packages/host/apiproxy/tests/api-proxy-projections.spec.ts
+  - packages/client/runtime/src/client/sessions/manager.ts
+  - packages/storage/storage/src/backend.ts
+  - packages/storage/storage-domain/src/index.ts
+  - packages/bundle/web-app/cordis.patch.yml
   - docs/subsystems/persistence.md
   - docs/subsystems/session-projection.md
   - docs/subsystems/session-title.md
   - docs/subsystems/session-telemetry.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-22
-asked_by: self
+verified_at: 2026-08-27
+asked_by: agent
 ---
 
 ## 一句话定位
@@ -107,6 +118,19 @@ asked_by: self
 - **版本机制是双轨的**：`SESSION_FORMAT_VERSION=0` 层面 no migration；但读取路径对 legacy 事件形状（steering/message、旧 turn/end envelope、pre-identity message）做 deterministic in-place 升级，并**显式拒绝** request/header-delta、mode/set、fallback reason 三种 v0 遗留形状（coordinator.ts `assertSupportedEvents` / `migrateLegacy*`）。
 - **SQLite backend 细节**：`tornMarker` 类型是 number（`SqliteStore implements PersistenceBackend<number>`）；schema 校验含 `application_id` 与 before-mutation 复检（schema.ts 约 L265-274 "schema changed before mutation"）；`user_version=0` 的库视为**全新库初始化**而非拒绝。rc.8→rc.2 之间 `SCHEMA_VERSION` 仍为 17、`DEFAULT_MAX_RETRIES` 仍为 5，无新断裂；schema 15→17 的实质是物理 chunk 行压缩（上游笔记：105-session 语料 709.57 MB → 75.01 MB，−89.4%，打包行上限 1,024 事件 / 1 MiB），"不迁移"是 pre-release 政策下的明确否决决策，SQLite 后端仍为 opt-in、官方默认组合继续用 JSONL。
 - **checkpoint 失败是 fail-closed 的**："Checkpoint failures are fail-closed at the model and tool side-effect boundaries: the downstream adapter or tool body is not invoked"（`session-checkpoint-policy/src/index.ts` 约 L58-59）——flush 不完成则 LLM 请求与 tool 副作用都不发起。宿主在 checkpoint 边界上叠自己的授权/派发闸时，这条直接决定时序。
+
+## 2026-08-27 agent 审核增量（cold 列表标题、投影 cache 与标题长度）
+
+适用条件：Host 组合已挂 `sessions`、`sessionPersistence`、`sessionProjections`、`sessionTitle` 与 API Proxy；客户端以 `session.list` 为 reconnect baseline；历史 Session 已持久化但未 attach。结论保持宿主无关：
+
+- **cold list 的标题来自投影 cache，不直接读日志**：attached row 读 live registry snapshot；cold row 只同步调用可选 `ctx.sessionProjectionCache.cachedSnapshot(meta)`。无插件或无可用 row 时整个 `projections` 列缺失，client 把它当“尚无 title”；打开后 registry 才从内存日志 lazy fold。`SessionPersistence.locate()` 只影响 cold blank probe，与标题 cache 无关。
+- **rc.2 的 cache 是公开发布包**：`@deepseek-ai/dsh-session-projection-cache@0.1.1-rc.2` 从包根公开 default/named service、`Config`、`cachedSnapshot()`、`write()` 与 `coldSnapshot()`；官方 Web bundle 以 `writeEveryEvents: 200`、`writeIntervalMs: 5000` 挂载。两项都是部署选择且必填，不是库默认。
+- **owner 分成两条公共 seam**：Session log 仍归 `SessionPersistence`；cache row 归 `session_projcache` domain，经 `StorageBackend.kv` 持久化。通用 backend 可以同时承载 `workspace` 与 `session_projcache` 两个 unit；若复用，插件必须注册命名 backend，并提供 `storageBackendServiceKey(name)` 生命周期服务。不能用 SessionPersistence 直接替代 StorageBackend。
+- **旧日志不会自动扫描，但能用公共 cold seam 回填**：cache init 与 `session.list` 都不枚举旧日志。`coldSnapshot(id)` 在无 row 时走 `readFrom(id, 0)` → registry restore → fail-soft write-back，不 open Session，也不把事件 fold ownership 移给宿主。要让首个 list baseline 完整，需在 `title` unit 注册后、对外开放 list 前，对旧 id 做一次有限并发 warm-up；上游没有 bulk migration API。无 checkpoint 的成本是每 Session 全日志读与全量 projection fold。
+- **write-back 是 fail-soft**：`coldSnapshot()` 可能在写 cache 失败时仍返回 snapshot并只记 warning。把首屏标题当硬验收时，应在 warm-up 后再用 `cachedSnapshot(meta)` 验证 `title` key 已落盘。旧日志没有 `session/title` 时只会恢复 `title: null`，不会触发模型补标题。
+- **标题上限是 UTF-8 bytes，不是 code points**：`normalizeSessionTitle()` 清理控制字符并用 `for...of` 按 code point 安全截断。80 bytes 能容纳任意 20 个最多四字节的 Unicode scalar value，但也能容纳 80 个 ASCII，所以它只解决 byte cap 不抢先截断，不能独立实施“最多 20 code points”。fallback 若也要同等容量，`fallbackMaxBytes` 同设 80；`fallbackMaxBytes <= maxTitleBytes` 是硬约束。
+- **输出 token cap 不与字符数线性换算**：官方字段是 `maxOutputTokens`；命中 `max-tokens` 会使 provider 结果失败，不会接受一个截断标题。扩大 code-point 展示上限不构成机械调整 token cap 的依据。`targetCjkCharacters` 只是 prompt 目标，不是校验。既有 `session/title` 事件不会因配置变更被重写或补长。
+- **版本内文档冲突**：`client/runtime` 与 `host/apiproxy` README 仍把 cold title 笼统写成必须等 open/resume；同 commit 的 API 类型、实现和测试已支持 cold `session.list` projection cache。源码结论优先，README 只描述“无 cache plugin/row”的降级组合（见 `conflicts.md` C077）。
 
 ## 去哪深入（文件路由）
 

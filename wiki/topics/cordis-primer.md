@@ -2,7 +2,7 @@
 title: Cordis 内核入门（DSH 的插件/服务/事件模型）
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - docs/cordis-primer.md
   - docs/cordis-api/context.md
@@ -27,7 +27,7 @@ anchors:
   - packages/AGENTS.md
   - cordis:packages/core/src/context.ts
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-22
+verified_at: 2026-08-25
 asked_by: self
 ---
 
@@ -78,7 +78,9 @@ Cordis 自述为 "A Meta-Framework of Spatiotemporal Composability"，上游是 
 
 事件名与签名靠 TypeScript declaration merging（`declare module '@deepseek-ai/cordis' { interface Events { ... } }'`）声明，**dispatch mode 是事件公共契约的一部分**，DSH 要求用 `@mode` JSDoc 标注，由生成器校验声明与派发点是否一致（`docs/cordis-primer.md`，仓库 AGENTS.md 约定）。
 
-五种模式：`emit`（同步广播，不收返回值）、`bail`（同步版 serial，遇第一个非 null/false/undefined 返回即停）、`serial`（有序 await 版 bail）、`parallel`（并发 await 全部）、`waterfall`（around-middleware，最后一个参数是 `next`）[T1: vendor/cordis/src/events.ts#DispatchMode]。
+五种模式：`emit`（同步广播，不收返回值）、`bail`（同步版 serial，遇第一个非 null/false/undefined 返回即停）、`serial`（有序 await 版 bail）、`parallel`（并发 await 全部）、`waterfall`（around-middleware，最后一个参数是 `next`）[T1: vendor/cordis/src/events.ts#DispatchMode，2026-08-25 复验 `export type DispatchMode = 'emit' | 'parallel' | 'serial' | 'bail' | 'waterfall'`]。
+
+**文档简化差异**：`docs/cordis-primer.md` 的 Dispatch Modes 一节只列 4 种（`emit` / `waterfall` / `parallel` / `serial`），未提 `bail`；以源码 5 种为准（conflicts.md 已登记）。
 
 **要查"某个事件谁发、谁听"，直接去 `docs/event-producer-consumer.md`**——生成的全仓矩阵，列出每个 harness 事件的 mode、声明位置、dispatcher 包、listener 包，比逐个 subsystem 页翻快得多。框架自身的 `internal/*` 事件在同页末尾单列；`internal/dispatch` 只对非 `internal/` 事件触发 [T1: vendor/cordis/src/events.ts]。
 

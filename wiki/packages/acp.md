@@ -2,7 +2,7 @@
 title: packages/acp — Agent Client Protocol 自动化服务端
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/acp/README.md
   - packages/acp/acp/README.md

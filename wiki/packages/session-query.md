@@ -2,7 +2,7 @@
 title: packages/session-query — Session 检索能力族
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/session-query/README.md
   - packages/session-query/session-query/README.md

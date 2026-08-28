@@ -6,7 +6,7 @@
 
 > `/dsh-sync` 时对 `retry_on_sync: true` 的条目重新查证。
 
-> 冷启动填充于 2026-08-20 · 上游 `141eb6f` · 原 114 条；2026-08-22 同步 0.1.1-rc.2 时重试：**5 条已解答删除**（Q014 credentials/updated 事件签名→事件已拆分见 errors.md E008；Q034 apiproxy config 校验→zod 源码确认；Q042 supportedProtocols→三协议源码确认；Q106 ACP 图片失败→AcpContentError 分类源码确认；Q114 credentials writable 语义→describe() 源码确认），**1 条更新进展**（Q043 catalog 清单需 pi-ai 运行时），现存 109 条。多数仍需实测或等上游补文档。
+> 冷启动填充于 2026-08-20 · 上游 `141eb6f` · 原 114 条；2026-08-22 同步 0.1.1-rc.2 时重试：**5 条已解答删除**（Q014 credentials/updated 事件签名→事件已拆分见 errors.md E008；Q034 apiproxy config 校验→zod 源码确认；Q042 supportedProtocols→三协议源码确认；Q106 ACP 图片失败→AcpContentError 分类源码确认；Q114 credentials writable 语义→describe() 源码确认），**1 条更新进展**（Q043 catalog 清单需 pi-ai 运行时）；2026-08-27 联网复验 npm registry 后删除 Q095（SDK 包已公开发布，当前同版产物位于 `next`）。现存 108 条。多数仍需实测或等上游补文档。
 
 
 | # | 来源单元 | 问题 |
@@ -102,7 +102,6 @@
 | Q092 | `四篇事故复盘的提炼（DSH postmortems）` | entry disabled 的插值能力是在哪个 PR 补上的（即 postmortem 0002 之后何时从「不插值」改为「每次挂载决策时插值」）？本次未查提交历史。 |
 | Q093 | `四篇事故复盘的提炼（DSH postmortems）` | 0003 提到的 RFC/note 与 dsh web --dev 只挂载 HMR receiver 的细节，未进一步核对 apps/web 与 dsh web 的实际实现。 |
 | Q094 | `集成表面全景` | PyPI 上 `deepseek-harness`（无 -sdk 后缀）这个第三方包的具体归属与内容无法从上游镜像证实——仓库内只有官方 dist 名的证据，需联网到 PyPI 才能核对。 |
-| Q095 | `集成表面全景` | packages/sdk/* 与 apps/cli 的 package.json 都是 publishConfig.access=public、version 0.1.0-rc.8，但镜像内无法确认 npm 上实际已发布哪些版本、以及 @deepseek-ai/dsh-sdk-client 是否真的可被外部安装。 |
 | Q096 | `集成表面全景` | HTTP /api 的完整方法清单（RpcMethodMap 的实际成员）未逐一核对——本页只依据 apiproxy README 的散文描述，若需给非 TS 宿主写 HTTP 客户端，需要进一步读 packages/host/apiproxy/src/api/ 下的类型定义。 |
 | Q097 | `集成表面全景` | 是否存在把 DSH 自身暴露为 MCP server 的通路：镜像内 packages/mcp 只有 mcp-client 一个包，未见 server 侧实现，但未穷尽搜索全仓是否有其他 MCP 服务端入口。 |
 | Q098 | `Python SDK` | bundled 单文件 exe（dsh-jsonrpc-agent-pkg-*）与 node 载体闭包都不入 git，本次镜像里不存在，因此 exe/node 两种载体的实际启动行为、serverInfo.version 取值、以及 test_bundled_runtime.py 的真实通过情况均无法在 L2 阶段验证（该测试自身会 skip）。 |
@@ -119,4 +118,4 @@
 | Q110 | `配置、工具目录与运行模式` | “Standard / Code / Minimal / Creator” 这套英文名只在 packages/client/ui-agent-preset/src/client/locales.ts 的 BUILT_IN_PRESET_KEYS 里；preset.yml 里的源文案是中文（标准模式 / PTC 模式 / 极简模式 / 创造模式）。是否还有 CLI/TUI surface 用第三套名字，本仓无法验证（TUI 不在这个仓库里）。 |
 | Q111 | `配置、工具目录与运行模式` | DSH_TOOLS_MODE（host `tools` 行）与 per-agent agent-tool-presentation 同时设置时的最终优先级只从 config 声明与注释推断，未实测运行（L2 封顶，无实测）。 |
 | Q112 | `配置、工具目录与运行模式` | headless profile 是否真的完全没有 agent preset 机制（即 `dsh --profile headless` 无法选运行模式）只从 packages/bundle/headless/cordis.patch.yml 缺 agent-presets 行推断，未实测。 |
-| Q113 | `配置、工具目录与运行模式` | $DSH_HOME/settings.yaml 里各 namespace（permission / agent-loop / agent-default-model / agent-presets / shell / llm-deepseek / llm-pi-ai / web-search-deepseek）的完整 schema 字段未逐一核对，只确认了 namespace 名字与注册位置。 |
+| Q113 | `配置、工具目录与运行模式` | $DSH_HOME/settings.yaml 的 `llm-pi-ai` namespace 已在 2026-08-27 逐字段核对（见 `packages/llm.md`）；permission / agent-loop / agent-default-model / agent-presets / shell / llm-deepseek / web-search-deepseek 的完整 schema 仍未逐一核对。 |

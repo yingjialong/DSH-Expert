@@ -2,7 +2,7 @@
 title: packages/context — 请求上下文扩展
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/context/README.md
   - packages/context/agent-instructions/README.md

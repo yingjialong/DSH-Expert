@@ -2,7 +2,7 @@
 title: packages/extensions — Agent 自改运行时（self-referential Cordis toolset）
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/extensions/README.md
   - packages/extensions/tool-cordis/README.md

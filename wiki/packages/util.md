@@ -2,7 +2,7 @@
 title: packages/util — 零依赖底层共享工具
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/util/README.md
   - packages/util/brand/README.md

@@ -2,7 +2,7 @@
 title: packages/mcp — Model Context Protocol 桥接
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/mcp/README.md
   - packages/mcp/mcp-client/README.md

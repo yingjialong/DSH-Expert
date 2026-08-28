@@ -2,7 +2,7 @@
 title: packages/experimental — 私有实验包
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/experimental/README.md
   - packages/experimental/AGENTS.md

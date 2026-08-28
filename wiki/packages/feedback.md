@@ -2,7 +2,7 @@
 title: packages/feedback — 人类反馈的两条互不相通的契约
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/feedback/README.md
   - packages/feedback/command-feedback/README.md

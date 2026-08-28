@@ -2,7 +2,7 @@
 title: packages/schedule — Session 本地定时提醒
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/schedule/README.md
   - packages/schedule/AGENTS.md

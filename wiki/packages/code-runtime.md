@@ -2,7 +2,7 @@
 title: packages/code-runtime — 代码执行能力族（Code Mode 的底座）
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/code-runtime/README.md
   - packages/code-runtime/code-runtime/README.md

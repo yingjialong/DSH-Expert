@@ -2,7 +2,7 @@
 title: packages/client — Web GUI 浏览器半边
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/client/README.md
   - packages/client/AGENTS.md

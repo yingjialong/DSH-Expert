@@ -4,7 +4,7 @@
 
 > 引用上游文档作为结论前，先查这里有没有该文档的已知偏差。
 
-> 建于 2026-08-20 · 上游 `141eb6f` · 共 75 条
+> 建于 2026-08-20 · 当前复验上游 `b150a55` · 共 78 条
 
 
 | # | 来源单元 | 冲突内容 |
@@ -84,3 +84,6 @@
 | C073 | `配置、工具目录与运行模式` | apps/cli/reference/README.md:9 的 composition 层序列表止于 `--patch` overlay，漏了 apps/cli/src/profile-boot.ts#composeProfile 在其后追加的两层 app 自有 overlay（agent-presets roots + telemetry 关闭 patch）。源码 docstring 提到了 telemetry，但两处都没提 agent-presets roots 会整体覆盖用户配的 roots。 |
 | C074 | `配置、工具目录与运行模式` | apps/cli/reference/README.md:85 描述极简模式时说 “the shared browser, workspace, persistence, sandbox, and permission host stays in place”，与 minimal preset 用裸 dsh-fs-local 遮蔽 dsh-fs-sandbox 的事实相抵触（bash 侧成立，fs 侧不成立）。 |
 | C075 | `配置、工具目录与运行模式` | 既有 wiki 页 wiki/packages/settings.md 写 “dsh-shell 导出 SHELL_SETTINGS_NAMESPACE = 'bash'”，源码是 settingsNamespace('shell')（packages/shell/shell/src/index.ts:22）。该页需要修正。 |
+| C076 | `Cordis 内核入门（DSH 的插件/服务/事件模型）` | docs/cordis-primer.md 的 Dispatch Modes 一节只列 4 种 mode（emit/waterfall/parallel/serial），漏 `bail`；vendor/cordis/src/events.ts:32 的 `DispatchMode` 是 5 种（含 `'bail'`），且 EventsService 提供 bail/serial 两个方法。以源码为准（2026-08-25 教学复验，b150a55）。 |
+| C077 | `session` | `packages/client/runtime/README.md:65-67` 与 `packages/host/apiproxy/README.md:33` 仍称 cold persisted Session 必须等 open/resume 才能得到 log-backed title、title 不进入 `session.list`；同 commit 的 `host/apiproxy/src/api/{sessions.ts}`、`src/api-proxy.ts`、`tests/api-proxy-projections.spec.ts` 与 `client/runtime/src/client/sessions/manager.ts` 已明确让 cold list row 携带 projection-cache baseline，并有零日志读取和无需 open 显示标题的测试。以源码/API 类型/测试为准；README 只适用于无 cache plugin/row 的降级组合。 |
+| C078 | `host/apiproxy` | `packages/host/apiproxy/README.md:78` 声称 pending table “only covers questions; there are no approval entries”，但同 commit 的 `src/api-proxy.ts` 已有 `pendingApprovals` registry，明写跨 client disconnect 保留并在 mux reopen 重放；`tests/api-proxy-approval.spec.ts` 覆盖断线重连、signal withdraw 与 gateway teardown。以 T1 源码/测试为准，README 该 Known Limitation 已过时。 |

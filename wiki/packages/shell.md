@@ -2,7 +2,7 @@
 title: packages/shell — bash / pwsh capability family
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/shell/README.md
   - packages/shell/shell/README.md

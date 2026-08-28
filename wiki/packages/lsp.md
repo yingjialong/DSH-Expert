@@ -2,7 +2,7 @@
 title: packages/lsp — LSP capability family
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/lsp/README.md
   - packages/lsp/lsp/README.md

@@ -2,7 +2,7 @@
 title: packages/typert — 类型图生成、加载与运行时注册表
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/typert/README.md
   - packages/typert/registry/README.md

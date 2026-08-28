@@ -2,7 +2,7 @@
 title: packages/guard — loop 卫生守卫（不是能力，是消费者）
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - packages/guard/README.md
   - packages/guard/repeat-tool-reminder/README.md
