@@ -87,7 +87,7 @@
 | [lsp](packages/lsp.md) [stale] | LSP 能力 seam：恰好四个语义操作、无 JSON-RPC 逃生口；lsp-stdio 通用 stdio 后端与模型侧 lsp 工具（一基 UTF-16 光标坐标）。 | Product | 3 | 14 |
 | [mcp](packages/mcp.md) [stale] | MCP 客户端桥：把外部 server 的 tool 以 mcp__<serverName>__<rawName> 注册到 ctx.tools；注意 packages/README 组表格漏列了该组。 | README 未列出 | 1 | 7 |
 | [plan](packages/plan.md) [stale] | plan mode 是 log-only 的 per-agent 协作状态而非 capability seam；/plan 命令进入，exit_plan_mode 经用户审批退出。 | Product | 1 | 7 |
-| [preset](packages/preset.md) [stale] | 每会话 agent 组合：一个 preset 目录装一份 agent.cordis.yml，挂载后该 session 独享自己的 tools 与 prompt sections，其他 session 不受影响。 | Product | 2 | 12 |
+| [preset](packages/preset.md) [stale] | 每会话 agent 组合；含 rc.2 文件系统 roster、Session 只耐久 preset id、动态目录发现、冷恢复与定义缺失的分支边界。 | Product | 2 | 12 |
 | [runtime-diagnostics](packages/runtime-diagnostics.md) [stale] | 包自有运行期不变式注册表 ctx.invariants：每个包发布 ./invariant companion，检查自己拥有的事件关系与可变数据关系。 | README 未列出 | 1 | 10 |
 | [sandbox](packages/sandbox.md) [stale] | 进程限制能力族：ctx.sandbox.confine(argv, policy) 返回替代原 argv 的包装 argv，无可用后端就抛错；只管同世界子进程。 | Product | 4 | 14 |
 | [schedule](packages/schedule.md) [stale] | Session 本地定时提醒：持久状态只存在原 Session 事件日志，到期项通过 Agent 普通 follow-up 队列回到同一段对话，无外部通知。 | Product | 1 | 13 |
@@ -96,7 +96,7 @@
 | [session-query](packages/session-query.md) [stale] | Session 检索能力族：逻辑语料、有界读取、血缘追踪、事件关系、语义过滤与 SQLite FTS5 全文搜索，独立于 compaction。 | Product | 4 | 16 |
 | [settings](packages/settings.md) [stale] | 用户配置 namespace seam；含 `load`/`publish` provider 生命周期、update/replace/mutate 热提交、revision 与 composition base 不可由 user layer 删除的边界。 | Product | 2 | 9 |
 | [shell](packages/shell.md) [stale] | bash/pwsh 执行器 seam 与本地、沙箱两类 provider，加模型侧 bash/pwsh 工具及两个走 ctx.terminals 的常驻版 | Product | 10 | 13 |
-| [skill](packages/skill.md) [stale] | skill provider 注册表与本地文件发现，加模型侧目录与 skill 加载工具；查分层去重、invocation policy | Product | 4 | 7 |
+| [skill](packages/skill.md) [stale] | skill provider 注册表、本地发现与模型侧工具；含 rc.2 不具备 per-Session selected-skill 持久语义、AgentPreset 仅能间接编码 composition 的边界。 | Product | 4 | 7 |
 | [spill](packages/spill.md) [stale] | 超大工具输出落盘并换成有界预览加 locator；查 SpillStore seam、本地文件布局与 post-execute 策略 | Product | 3 | 9 |
 | [storage](packages/storage.md) [stale] | session 日志以外数据的存储枢纽：命名后端 json/sqlite 加 domain 数据形态；查后端注册与域路由 | Product | 4 | 10 |
 | [subagent](packages/subagent.md) [stale] | 子 agent 委派能力族 11 包：多 provider 注册表、continuable 子代编排、父子双向三类模型侧工具 | Product | 11 | 12 |

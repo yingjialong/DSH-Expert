@@ -176,4 +176,15 @@
 
 ---
 
+### E014 — Session 持久化 preset ID，不等于持久化 preset 定义
+
+- **类型**：概念陷阱 / 过度泛化
+- **错误内容**：看到 `SessionHeader.agentPreset` 与 `agent-preset/selected` 可耐久恢复，就断言 DSH 能仅凭 Session log 重建任意动态 preset，或断言定义缺失时所有公开路径都统一 fail closed。
+- **正解**：rc.2 Session 只存 id；`AgentPresets` 仍从当前文件系统 roots 解析 `<id>/agent.cordis.yml`，没有任意 definition 注册、versioned backend 或 Session-owned definition snapshot。roster 存在但 id 缺失时真实 Agent resume 不回退 default；冷 transcript / skill-list 读侧会退到 global scope；整个 roster 服务未装配时 ApiProxy 采用 Host composition。已运行 standing mount 则可跨文件删除继续到进程结束。
+- **根因**：混淆了 selection identity、definition storage 与不同 API 的恢复/展示路径。
+- **发现于**：2026-08-30 · 上游 `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/preset.md](packages/preset.md)、[packages/skill.md](packages/skill.md) 已补专项边界。
+
+---
+
 > 更多**按包组分布**的文档与源码冲突（共 78 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

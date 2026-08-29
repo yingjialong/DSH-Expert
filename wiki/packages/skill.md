@@ -83,3 +83,11 @@ asked_by: self
 - 本地发现根、`SKILL.md` 解析、watcher 策略 → `packages/skill/skill-filesystem/README.md`
 - 模型侧目录快照与 `skill` 工具行为 → `packages/skill/tool-skill/README.md`
 - 子系统参考（discovery priority、catalog snapshots、`skill` loader）→ `docs/subsystems/skills.md`
+
+## 2026-08-30 · rc.2 专项复验：per-Session 选择与 AgentPreset
+
+- rc.2 的 Skill 公共面没有“某 Session 已选择 0..N Skill”的 header、event、projection 或启停 API。`registerProvider()` / `register()` 只是当前 Cordis scope 的运行期注册；`list()` / `snapshot()` / `get()` 只按 `cwd`、`scope`、`signal` 观察当前目录。
+- AgentPreset 可通过普通 plugin rows 间接决定某 Session 可见的 Skill provider 层；若每个内容摘要 id 对应一份不可变 composition，可以在产品层把 selection 编码为 preset id。但 DSH Session 仍只持久化 id，不持久化 exact Skill 集合或 preset 定义。
+- `dsh-tool-skill` 的 durable `skill-catalog` 消息记录模型当时看到的目录，并在 provider 变化时追加 replacement；它不是 selection truth，也不会在冷恢复时重建已经消失的 provider/definition。
+- 因此“无需宿主另存或重施加、仍能恢复任意 0..N immutable Skill 选择”缺少的最小闭环，是 DSH-owned 的 durable composition/selection snapshot（或等价的官方持久 definition store）以及 cold-resume 前按该 identity 解析、校验并 mount 的公开契约。仅增加一个宿主提供的 resolver 仍会把定义真源留给宿主，不能满足该限定。
+- `dsh-v0.1.2-alpha.1` tag 增加 Session-addressed cold skill list，但未增加 selected-skill 集合语义；相关 skill 包截至本次查询没有 alpha.1 npm 版本。

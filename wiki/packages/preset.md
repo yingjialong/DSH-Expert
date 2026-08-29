@@ -12,9 +12,9 @@ anchors:
   - apps/cli/config/agent-presets/
   - .agents/notes/implemented/architecture/2026-08-03-per-session-agent-presets.md
   - .agents/notes/implemented/architecture/2026-08-08-per-preset-standing-mounts.md
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
-asked_by: self
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-30
+asked_by: agent
 ---
 
 ## 一句话定位
@@ -81,3 +81,13 @@ asked_by: self
 | 设计决策：为什么是 per-session preset | `.agents/notes/implemented/architecture/2026-08-03-per-session-agent-presets.md` |
 | 设计决策：per-preset standing mount（一次挂载多 session 共享） | `.agents/notes/implemented/architecture/2026-08-08-per-preset-standing-mounts.md` |
 | 出厂 preset 实物 | `apps/cli/config/agent-presets/{standard,code,cordis,minimal}/agent.cordis.yml` |
+
+## 2026-08-30 · rc.2 专项复验：动态定义与冷恢复
+
+- rc.2 没有 `registerPreset(id, definition)`、`AgentPresetProvider` 或 definition backend。`AgentPreset` 是文件系统发现结果，不是可注册的 composition definition；正式写入口只有整目录 `copy()`，不接受任意 composition 文本。
+- 可支持的运行期扩展是：宿主在服务构造时已经配置的 root 下物化 `<id>/agent.cordis.yml`。`list()` / `resolve()` 每次重新扫描，所以下一次 `session.create({ agentPreset: id })` 可立即选择它；root 集合本身在服务构造时固定。
+- 创建时的 resolved id 写入 `SessionHeader.agentPreset`；空白 Session 后续切换才追加 `agent-preset/selected`。JSONL / SQLite persistence 持久化的是这个 id 与事件，不是 composition 内容、digest 或 generation。
+- 冷恢复会从 header + 最后一个 selection event 取 recorded id，再向当前 roster 解析并于 Agent publication 前 mount。因此定义文件仍在 root 时无需每次手工注册；若定义只存在于宿主内存，则每次 boot 必须在恢复前重新物化。
+- 缺定义不是统一的 fallback 契约：roster 仍装配但 exact id 缺失时，真实 Agent resume 不回退 default，且 publication 失败；只读 transcript / cold skill catalog 会退到 global presenter/scope；若整个 `agentPresets` 服务都未装配，rc.2 ApiProxy 会采用 rosterless Host composition。最后一条缺少专门一方测试，按实现证据仅标 `verified_inference`。
+- 已运行 Session 的 standing mount 可在文件删除后继续；进程重启后仍依赖磁盘定义。相同 id 的内容可漂移，DSH 不验证 id 是否等于内容摘要。
+- `dsh-v0.1.2-alpha.1` tag 把当前 id fold 改为 Session projection、增加 Typert remote 与 shipped root，但仍是文件系统 roster，无任意 definition 注册/持久化 seam；截至本次查询，preset 包无 alpha.1 npm 版本。

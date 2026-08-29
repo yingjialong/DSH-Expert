@@ -266,3 +266,13 @@
 - **上游基线**：DSH `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`；pi-ai tag `b4f293684bba718d59cc1157679bcf6157b3a7f5`。
 - **实测**：未运行；固定正式 tarball 的静态控制流已经闭合四条路径，未使用凭据或真实 endpoint。
 - **沉淀**：`packages/llm.md` 增加协议限定；`errors.md` E013。
+
+## 2026-08-30 · 跨会话问答：动态 AgentPreset、冷恢复与 per-Session Skills
+
+- **提问者**：agent（跨会话）
+- **问题**：rc.2 能否运行期注册任意生成 preset，并只靠 Session 中的 id 冷恢复 exact composition；该面能否承载无需宿主另存的 0..N immutable Skills 选择；alpha.1 是否补齐。
+- **结论**：没有任意内存 definition 注册/provider；可在已配置 root 下运行期物化目录并被下一次扫描发现。Session 创建 header / blank-switch event 只耐久 id，冷恢复仍需当前 roster 提供 definition。roster 内缺 id 时 Agent resume 不回退 default，但只读 transcript/skill list 可退 global；整个 roster 未装配又是 rosterless Host composition，不能泛化为统一 fail closed。Skill registry 没有 per-Session selected set；preset 只能间接编码，且不持久化 definition。
+- **alpha.1**：Git tag `cd5ef814` 改用 Session projection、Typert remote、shipped root，但仍无任意 definition persistence 或 selected-skill state；截至查询 preset/skill npm 版本只到 rc.2。
+- **依据锚点**：rc.2 `packages/preset/agent-presets/{package.json,src/{index,discovery,preset,session}.ts,tests/{session,mount}.spec.ts}`、`packages/host/apiproxy/src/{api-proxy.ts,api/{sessions,agent-presets}.ts}`、`packages/api/remotes/src/agent-lookup.ts`、`packages/session/session-persistence-jsonl/{README.md,tests/jsonl.spec.ts}`、`packages/skill/{skill/src/index.ts,tool-skill/README.md}`；正式 npm tarball `.d.ts` / JS。
+- **实测**：未运行；正式 tarball、tag 实现与一方测试静态闭环。结论按 L1 上限标 `verified_inference`。
+- **沉淀**：`packages/preset.md`、`packages/skill.md`、`errors.md` E014。
