@@ -69,7 +69,7 @@
 | [compaction](packages/compaction.md) [stale] | 会话压缩能力族：CompactionEngine seam、token 压力摘要 provider、无模型 tool-result 剪枝伴生、人类 /compact 命令。 | Product | 4 | 13 |
 | [context](packages/context.md) [stale] | 请求上下文扩展组：工作区 AGENTS.md 指令加载、@file 引用 seam 与本地 provider、跨会话快照、时间与 tmux 位置上下文。 | Product | 6 | 12 |
 | [core](packages/core.md) [stale] | 产品 API 主干：session 日志、system-prompt 组装、tools 注册与执行流水线、Agent seam 与注册表、默认模型、唯一那份具体 loop。 | Product | 8 | 18 |
-| [credentials](packages/credentials.md) [stale] | 凭据两个 key space：CredentialRef 每 operation 解析静态 key，CredentialKey record 归 owner 的 API-key/grant；含 pi-ai `apiKeyEnv` 与 `llm-pi-ai/<route>` record 分界。 | Product | 3 | 12 |
+| [credentials](packages/credentials.md) [stale] | 凭据两个 key space：CredentialRef 每 operation 解析静态 key，CredentialKey record 归 owner 的 API-key/grant；含 pi-ai request-time 解析、缺失/非法凭据错误边界与 catalog 非 readiness 语义。 | Product | 3 | 13 |
 | [e2b](packages/e2b.md) [stale] | E2B 远程运行时 POC：sandbox 生命周期所有者加 fs/subprocess 两个 adapter，让 bash、PTY、LSP 消费者无需分叉即可搬进沙箱。 | POC | 3 | 10 |
 | [examples](packages/examples.md) [stale] | 现成可跑的 demo bundle：agent-spine-demo 共享主干，acp-demo 与 sdk-jsonrpc-demo 各加一个入口点；非产品 API。 | Support | 3 | 11 |
 | [experimental](packages/experimental.md) [stale] | 私有实验包组：只含 Agent Teams（ctx.agentTeams 域服务与模型面工具），private、无稳定性承诺、release 包不得依赖。 | Unreleased | 2 | 13 |

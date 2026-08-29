@@ -187,4 +187,15 @@
 
 ---
 
+### E015 — 把 `AUTH` / `TRANSPORT` 当成出网阶段证明，或把缺失命名凭据归成 `AUTH`
+
+- **类型**：错误码语义过推 / 阶段混淆
+- **错误内容**：断言命名 `apiKeyEnv` 解析不到值会在 HTTP 前产生 `AUTH`；或看到 `AUTH` / `TRANSPORT` 就断言请求一定已到达 endpoint / 一定已开始 HTTP。
+- **正解**：rc.2 `llm-pi-ai` 在进入 pi-ai SDK 前把缺失/空命名凭据归为 `MISSING_CREDENTIAL`，把非空但不可安全使用的凭据归为 `INVALID_CREDENTIAL`。`AUTH` 与 `TRANSPORT` 是对 pi-ai 扁平 terminal error message 的正则分类：前者匹配独立 `401/403`，后者匹配 truncation 或网络/连接词。formatter/buildParams 错误也走这条文本分类，所以 code 不携带 I/O provenance；无效 reasoning 则是独立的 `UNSUPPORTED_REASONING_EFFORT`。
+- **根因**：混淆了 DSH 内建 preflight、pi-ai 的统一 error event，以及 DSH 对 error text 的后置归类。
+- **发现于**：2026-08-30 · DSH `b150a551` / pi-ai `0.82.1` (`b4f29368`)
+- **牵连条目**：[packages/llm.md](packages/llm.md)、[packages/credentials.md](packages/credentials.md) 已补固定 rc.2 边界。
+
+---
+
 > 更多**按包组分布**的文档与源码冲突（共 78 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

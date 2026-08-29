@@ -276,3 +276,15 @@
 - **依据锚点**：rc.2 `packages/preset/agent-presets/{package.json,src/{index,discovery,preset,session}.ts,tests/{session,mount}.spec.ts}`、`packages/host/apiproxy/src/{api-proxy.ts,api/{sessions,agent-presets}.ts}`、`packages/api/remotes/src/agent-lookup.ts`、`packages/session/session-persistence-jsonl/{README.md,tests/jsonl.spec.ts}`、`packages/skill/{skill/src/index.ts,tool-skill/README.md}`；正式 npm tarball `.d.ts` / JS。
 - **实测**：未运行；正式 tarball、tag 实现与一方测试静态闭环。结论按 L1 上限标 `verified_inference`。
 - **沉淀**：`packages/preset.md`、`packages/skill.md`、`errors.md` E014。
+
+## 2026-08-30 · 跨会话问答：pi-ai 凭据、终端错误码与 Session turn-error
+
+- **提问者**：agent（跨会话）
+- **问题**：固定 rc.2 + pi-ai 0.82.1 下，命名凭据缺失/非法、reasoning 校验、HTTP 401/403、连接失败与解析失败分别如何归码；`AUTH` / `TRANSPORT` 是否证明已经出网；最终 code 是否进入 Session/UI。
+- **结论**：命名 ref 缺失或空字符串在 SDK 前是 `MISSING_CREDENTIAL`，非空但 trim 后为空或 HTTP-header 不安全是 `INVALID_CREDENTIAL`；不支持的 effort 是 `UNSUPPORTED_REASONING_EFFORT`。pi-ai terminal message 中独立 `401/403` 归 `AUTH`，连接/截断关键词归 `TRANSPORT`，其余通常归 `PI_AI_ERROR`；这两个 code 是文本分类而非 I/O provenance。最终未被 recovery listener 恢复的 `LlmError.failure.code` 原样耐久为 `turn/end` 并投影为 `TurnErrorNode.code`。
+- **配置/readiness 边界**：`CredentialInfo.configured` 语义上应与当时 `resolve()` 一致，但 route/catalog 注册不读取凭据；实际缺 key 可先发布模型目录，到首个 operation 才失败，不代表 credential ready。
+- **依据锚点**：DSH rc.2 `packages/credentials/credentials/src/index.ts`、`packages/llm/llm/src/{index,api-key,adapter-failure}.ts`、`packages/llm/llm-pi-ai/src/{index,adapter,stream}.ts`、`packages/core/agent-loop/src/agent.ts`、`packages/core/session/src/types.ts`、`packages/client/ui-conversation/src/client/conversation-nodes/turn-error.ts` 及一方测试；pi-ai 0.82.1 `dist/api/{openai-completions,openai-responses,lazy}.js`、`dist/utils/error-body.js`。
+- **正式发布物**：`@deepseek-ai/dsh-llm-pi-ai@0.1.1-rc.2` shasum `4391158740196fea86b25a5f6575cc75d0a5d289`；`@deepseek-ai/dsh-llm@0.1.1-rc.2` shasum `968b03f5fbfe5d0f054e301405bc0cff44dec8df`；`@deepseek-ai/dsh-credentials@0.1.1-rc.2` shasum `ec27f8a509c867fb04f698cc887e92c3bb0adb87`；`@earendil-works/pi-ai@0.82.1` shasum `02ebdfc2997fd88ca1f51a7b5c01f337a9462f34`。
+- **上游基线**：固定 tag `dsh-v0.1.1-rc.2` / `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`；查询时远端 HEAD 为 `cd5ef8148158c3a752a658978873241fdf8e2bbc`，未用于反推 rc.2。
+- **实测**：本轮未重跑一方测试、未访问真实 endpoint、未使用真实凭据；以 tag 源码、正式 tarball JS/d.ts 与一方测试源码交叉核验。
+- **沉淀**：`packages/{llm,credentials}.md`、`errors.md` E015、`index.md`；掌握度均保持 L2，因 alpha.1 大改继续标 stale。

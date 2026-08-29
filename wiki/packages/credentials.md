@@ -12,10 +12,11 @@ anchors:
   - packages/credentials/credentials-local/src/index.ts
   - packages/llm/llm-pi-ai/src/auth.ts
   - packages/llm/llm-pi-ai/src/index.ts
+  - packages/llm/llm-pi-ai/tests/adapter.spec.ts
   - packages/llm/llm-pi-ai/tests/dynamic-config.spec.ts
   - docs/subsystems/credentials.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-27
+verified_at: 2026-08-30
 asked_by: agent
 ---
 
@@ -78,6 +79,12 @@ asked_by: agent
 - route 本身在 LLM registry 只要求非空，但 record id 必须匹配 `/^[a-z][a-z0-9-]*$/`；grammar 外 route 仍可走 `apiKeyEnv`，却不能存该 route 的 pi-ai record。因此产品内部 route 采用稳定 lowercase-kebab id 是两条能力的安全交集。
 - route/settings 删除不会自动 `unset(ref)` 或 `deleteRecord(key)`；两个 seam 没有跨 owner 事务。需要“删配置即撤销 secret”的宿主必须自己定义提交顺序与恢复。
 - **认知状态**：verified_inference（`packages/llm/llm-pi-ai/src/{index,auth}.ts` 与 `tests/dynamic-config.spec.ts` 源码级核验；未重新执行测试）。
+
+## 2026-08-30 审核增量：`describe`、`resolve` 与 request-time failure
+
+- 公共签名是 `resolve(ref): Promise<ResolvedCredential | undefined>`，成功值为 `{ value, source }`，不是裸字符串。`CredentialInfo.configured` 的契约含义是“当前 `resolve()` 会返回值”；同一时刻 `describe().configured === true` 而 `resolve() === undefined` 违反 provider 语义，但两次独立调用之间没有原子快照保证，外部事实可以变化。
+- `llm-pi-ai` 注册 route、adapter catalog 与 model metadata 时不调用 `describe()` / `resolve()`；命名 ref 只在 model discovery 或真实 stream operation 解析。因此凭据实际缺失不妨碍 route/catalog 发布，首次 provider operation 才以 `MISSING_CREDENTIAL` 失败。不能据此把一个自相矛盾的 provider 实现称为契约允许，也不能把“catalog 已发布”解释为凭据 ready。
+- **认知状态**：verified_inference（`packages/credentials/credentials/src/index.ts`、`packages/llm/llm-pi-ai/src/index.ts`、`tests/adapter.spec.ts` 与正式 `.d.ts`/JS 交叉核对；未重新执行测试）。
 
 ## 去哪深入（文件路由）
 

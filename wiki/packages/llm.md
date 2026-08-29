@@ -7,6 +7,7 @@ anchors:
   - packages/llm/README.md
   - packages/llm/llm/README.md
   - packages/llm/llm/src/index.ts
+  - packages/llm/llm/src/adapter-failure.ts
   - packages/llm/llm/tests/service.spec.ts
   - packages/llm/llm-deepseek/README.md
   - packages/llm/llm-pi-ai/README.md
@@ -16,6 +17,7 @@ anchors:
   - packages/llm/llm-pi-ai/src/auth.ts
   - packages/llm/llm-pi-ai/src/index.ts
   - packages/llm/llm-pi-ai/src/adapter.ts
+  - packages/llm/llm-pi-ai/src/stream.ts
   - packages/llm/llm-pi-ai/tests/catalog.spec.ts
   - packages/llm/llm-pi-ai/tests/adapter.spec.ts
   - packages/llm/llm-pi-ai/tests/dynamic-config.spec.ts
@@ -24,13 +26,16 @@ anchors:
   - packages/host/apiproxy/tests/api-proxy-models.spec.ts
   - packages/core/agent/src/model-selection.ts
   - packages/core/agent/tests/model-selection.spec.ts
+  - packages/core/agent-loop/src/agent.ts
+  - packages/core/agent-loop/tests/contract-regressions.spec.ts
+  - packages/client/ui-conversation/src/client/conversation-nodes/turn-error.ts
   - packages/client/ui-model-selection/src/client/ModelSelect.tsx
   - packages/client/ui-model-selection/tests/model-select.client.spec.tsx
   - packages/llm/llm-retry/README.md
   - packages/llm/token-meter/README.md
   - docs/subsystems/llm-streaming.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-27
+verified_at: 2026-08-30
 asked_by: agent
 ---
 
@@ -105,6 +110,14 @@ LLM seam 及其 provider 适配器。组 README 的原话很关键：**`llm` 包
 - **reasoning effort ownership**：手工 pi-ai model 无同 id 的 installed-catalog base 且省略 `reasoningEfforts` 时，不公开 exact-model `reasoning`；DSH 刻意不把 pi-ai 的伪 `off` 暴露给 selector，因为它只是省略 common `reasoning` option，不能保证关闭 provider 默认推理。纯模型切换应省略 effort；只有 exact model 的 `reasoning.efforts` 明确包含用户选择时才显式提交。省略会清除旧模型继承的 effort，但最终 wire 仍由目标 adapter/profile 决定：在 pi-ai 0.82.1 的 `openai-responses` 中，exact model 一旦显式发布 `off`，显式 Off 与 request/route 双省略都会进入 `thinkingLevelMap.off` fallback，分别发声明值或 `none`，并不保留远端 provider 的 omitted-field default；只有完全不发布 `off`（map 值为 `null`）才省略 `reasoning`。route `reasoning` 若受 exact model 支持，则成为 `defaultEffort` 并在双省略时优先物化。`groups` 是建议目录：条目缺席只能说明能力未知/未公布，不能证明不可路由。[T1: `packages/llm/llm-pi-ai/src/{catalog,adapter}.ts`、`packages/llm/llm/src/index.ts`、`packages/core/agent/src/model-selection.ts`、`packages/host/apiproxy/src/api-proxy.ts`；pi-ai 0.82.1 `dist/api/openai-responses.js#streamSimple,#buildParams`]
 - **安全边界**：`baseURL` 是 Host 网络能力而非受保护 URL，宿主设置 owner 必须自做 SSRF/origin policy；secret 不得进入 `headers` 或 URL。provider `errorMessage` 没有 secret/PII redaction 保证，并可进入 durable turn end，普通 UI/日志不能把原文当可信内容。[T1: `src/stream.ts`、`src/discovery.ts`、`src/adapter.ts`]
 - **认知状态**：verified_inference（tag 源码、正式 npm JS/d.ts 与官方测试源码交叉核对；未重新执行测试）。
+
+## 2026-08-30 审核增量：pi-ai 凭据与终端错误码边界
+
+- **出网前顺序**：pi-ai adapter 先校验 stop、route/model、exact reasoning，再解析命名 `apiKeyEnv`，最后才进入 pi-ai `streamSimple()`。不支持的 effort 是 `UNSUPPORTED_REASONING_EFFORT`，未知 route/model 分别是 `NO_ADAPTER` / `UNKNOWN_MODEL`；命名 ref 解析缺失或空字符串是 `MISSING_CREDENTIAL`，非空但 trim 后为空或不能安全放进 HTTP header 的值是 `INVALID_CREDENTIAL`。这些内建校验不会主动产生 `AUTH` / `TRANSPORT`。[T1: `packages/llm/llm-pi-ai/src/{adapter,index}.ts`、`packages/llm/llm/src/{index,api-key}.ts`、`tests/adapter.spec.ts`]
+- **`AUTH` / `TRANSPORT` 是文本分类，不是 I/O provenance**：pi-ai terminal error message 含独立 `401` / `403` 时归 `AUTH`；含 stream truncation、fetch/network/connection/socket/ECONN 等词时归 `TRANSPORT`；其余通常是 `PI_AI_ERROR`。formatter / `buildParams` 也在同一 pi-ai catch 内，因此错误文案若意外命中正则，即使尚未发 HTTP 也可能得到这两个 code；反过来也不能只凭 code 证明 endpoint 已收到请求。[T1: `packages/llm/llm-pi-ai/src/stream.ts`；pi-ai 0.82.1 `dist/api/{openai-completions,openai-responses}.js`]
+- **合法 reasoning 不跨域改码**：exact model 已发布 `medium` 且 route 默认也为 `medium` 时，reasoning 只负责能力校验与 wire 物化，本身没有 `AUTH` / `TRANSPORT` 分支；前者属于凭据/认证文本，后者属于传输或命中文本分类。无效显式/default effort 会在 credential 与 provider I/O 前失败。
+- **Session 投影保留最终 failure code**：Llm runtime 把 `LlmError.failure.code` 放进 terminal finish；AgentLoop 可按 recovery listener 重试，最终未恢复失败原样写入 durable `turn/end.reason.error`；conversation projection 再复制到 `TurnErrorNode.code`。因此 UI 看到的是最终 attempt 的 code，不保证是首个失败，也不携带是否出网的阶段证据。[T1: `packages/llm/llm/src/adapter-failure.ts`、`packages/core/agent-loop/src/agent.ts`、`packages/core/session/src/types.ts`、`packages/client/ui-conversation/src/client/conversation-nodes/turn-error.ts`]
+- **认知状态**：verified_inference（固定 tag、正式 npm JS/d.ts 与一方测试源码交叉核对；未重跑测试，未调用真实 endpoint）。
 
 ## 去哪深入（文件路由）
 
