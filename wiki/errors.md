@@ -165,4 +165,15 @@
 
 ---
 
+### E013 — pi-ai Responses 发布 `off` 后，省略 effort 不再保留 provider default
+
+- **类型**：文档与源码不符 / 过度泛化
+- **错误内容**：把 `llm-pi-ai` README 的「省略 profile `reasoning` 会保留 provider default」当成所有 exact model profile 的通用结论，或把 `off: null` 的「send nothing」理解成最终 Responses payload 省略 `reasoning`。
+- **正解**：固定 `dsh-llm-pi-ai@0.1.1-rc.2` + `pi-ai@0.82.1` 下，DSH adapter 把显式 `off` 与 request/route 双省略都变成 common options 中没有 `reasoning`。若 exact Responses model 已发布 `off`，pi formatter 随后读取 `thinkingLevelMap.off`：字符串值原样发送，值缺席则发送 `none`；因此 `off: none`、`off: null` 都不会保留 omitted-field default。只有完全不声明 `off`、使 map 值为 `null`，才省略最终 `reasoning`。普通 custom route 适用；pi 对 provider id `github-copilot` 有特判。
+- **根因**：README 同时描述 DSH→pi common option 与协议 formatter 的最终 wire，`off` 与「没有偏好」在 adapter 边界已不可区分，而 Responses formatter又有自己的 off fallback。
+- **发现于**：2026-08-30 · DSH `b150a551` / pi-ai `0.82.1` (`b4f29368`)
+- **牵连条目**：[packages/llm.md](packages/llm.md) 的 reasoning effort ownership 已加协议限定；该页仍因 alpha.1 同步保持 stale，固定 rc.2 问题须回 tag 复验。
+
+---
+
 > 更多**按包组分布**的文档与源码冲突（共 78 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

@@ -255,3 +255,14 @@
 - **依据锚点**：rc.2 `packages/workspace/workspace/src/{index,spec,types}.ts`、`packages/session/session-persistence/src/index.ts`、`packages/mcp/mcp-client/{package.json,src/{index,transport,connection,tools}.ts,tests/*.spec.ts}`、`packages/llm/llm/src/{index,types}.ts`、`packages/host/apiproxy/src/api/sessions.ts`。alpha.1 复核 `packages/workspace/workspace/README.md`、`packages/client/ui-workspace/README.md` 与 MCP 包导出。
 - **实测**：无；公共类型、实现分支、package export map 与官方测试已能静态闭环，不消耗任何模型凭据。
 - **沉淀**：本次要点写入同步日志；相关 package 页因 alpha.1 大规模变更仍保持 stale，等专项复验时再重写。
+
+## 2026-08-30 · 跨会话问答：OpenAI Responses 的 Off 与省略默认语义
+
+- **提问者**：agent（跨会话）
+- **问题**：custom `openai-responses` exact model 同时发布 `off: none` 与多个非 Off effort 时，显式选择、request/route 双省略及 route 默认分别形成什么 wire。
+- **结论**：显式 Off 发 `reasoning.effort: none`；显式非 Off 发其 map 值并带 `summary: auto`；request/route 双省略与显式 Off 在 adapter 边界不可区分，普通 custom route 同样发 `none`，不能保留远端 omitted-field default；支持的 route `reasoning` 会成为 exact model `defaultEffort`，并在双省略时形成对应非 Off wire。
+- **文档冲突**：README 对「省略 profile reasoning 保留 provider default」与 `off: null`「send nothing」的表述只能解释 common option 层，不能覆盖 Responses 最终 formatter；登记 `errors.md` E013。
+- **依据锚点**：DSH rc.2 `packages/llm/llm-pi-ai/src/{catalog,adapter}.ts`、`tests/{catalog,adapter}.spec.ts`、正式 npm `lib/index.js`；pi-ai 0.82.1 正式 npm `dist/{models.js,api/openai-responses.js}`。
+- **上游基线**：DSH `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`；pi-ai tag `b4f293684bba718d59cc1157679bcf6157b3a7f5`。
+- **实测**：未运行；固定正式 tarball 的静态控制流已经闭合四条路径，未使用凭据或真实 endpoint。
+- **沉淀**：`packages/llm.md` 增加协议限定；`errors.md` E013。
