@@ -398,3 +398,11 @@
 - **依据锚点**：`packages/host/apiproxy`、`packages/client/{runtime,connection}`、`packages/llm/{llm,llm-retry}`、`packages/core/{tools,agent-loop,session}`、`packages/session/session-persistence`、`packages/preset/agent-presets`、`packages/credentials`、`packages/mcp/mcp-client`及一方tests。
 - **实测**：无；未调用模型、未执行native effect、未提交secret。
 - **沉淀**：`packages/{host,llm,core,preset,credentials,mcp}.md`、`errors.md` E024–E027、index/coverage/log；等级不变。
+
+## 2026-08-30 · 跨会话核验：alpha.2发布闭包、Skill mutation与MCP协议边界
+
+- **提问者**：agent（跨会话；完整答案先回传并确认成功）
+- **问题**：alpha.2正式npm闭包是否补齐per-Session exact Skill/MCP refs、Skill observation lease/CAS、caller幂等commit query，以及MCP 2026-07-28与Host carrier/generation seam。
+- **结论**：245个非private tag package标识现均有alpha.2 tarball，但未做真实install/native boot。Session skill API只有catalog读取；required event vocabulary无Skill/MCP active-set。Skill snapshot仍只有`complete`，无public generation/lease。prompt新增`requestId`关联但Host不去重且无commit-status query。MCP固定构造stdio/HTTP transport，SDK 1.29.0 latest protocol为2025-11-25，根无carrier或generation identity。
+- **依据锚点**：alpha.2正式`dsh-skill`、`dsh-mcp-client`、`dsh-api-session-controller`、`dsh-session` tarball JS/.d.ts；tag的`packages/{core/session,skill/skill,api/session-controller,mcp/mcp-client,acp/acp}`源码与一方tests；SDK 1.29.0正式tarball protocol constants。
+- **沉淀**：alpha.2版本页、CLAUDE/README、index/coverage、errors E016/E017、open Q115与本日志。

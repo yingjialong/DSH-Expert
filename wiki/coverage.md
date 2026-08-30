@@ -4,7 +4,7 @@
 
 > 想知道「我现在到底懂多少」——看这张表，而不是听我自称。
 
-> 上游基线：DSH `0a53fb55`（仓库tag / npm根包`alpha`为`0.1.2-alpha.2`；根包`latest` / `next`仍为`0.1.1-rc.2`）· 2026-08-30同步。alpha.1→alpha.2跨234提交/1604文件；244个非private tag标识（含根包）中208个已有alpha.2。144个既有锚点命中；通用页此前已stale，两篇动态alpha.1页新增stale。
+> 上游基线：DSH `0a53fb55`（仓库tag / npm根包`alpha`为`0.1.2-alpha.2`；根包`latest` / `next`仍为`0.1.1-rc.2`）· 2026-08-30同步。alpha.1→alpha.2跨234提交/1604文件；当前245个非private tag package标识均有alpha.2 tarball，真实install/native闭包未验证。144个既有锚点命中；通用页此前已stale，两篇动态alpha.1页新增stale。
 
 
 ## 掌握等级定义
@@ -44,7 +44,7 @@
 | 插件开发全路径（dsh-plugin） | **L2** | 35 | [topics/plugin-development.md](topics/plugin-development.md) | 8 条关键发现 |
 | 核心链 core / session / preset / llm（源码级 L2） | **L2** | 27 | [topics/core-chain.md](topics/core-chain.md) | 10 条关键发现 |
 | 配置、工具目录与运行模式 | **L2** | 26 | [topics/config-and-tools.md](topics/config-and-tools.md) | 8 条关键发现 |
-| alpha.1→alpha.2版本变更 | **L1** | 9 | [topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md](topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md) | 发布渠道、ignorable恢复、RemoteError与依赖owner重组 |
+| alpha.1→alpha.2版本变更 | **L1** | 16 | [topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md](topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md) | 发布渠道、ignorable、Skill/Session correlation、MCP public seam与依赖owner重组 |
 
 ## 三、包组（51 组 / 251 包）
 
@@ -127,7 +127,7 @@
 |---|---|
 | 已建立页面 | 75 页（69 内容页 + 6 治理页） |
 | 掌握度分布 | L2 **35** · L1 **34** · L3/L4 **0** |
-| 锚点总数 | 880（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
+| 锚点总数 | 887（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
 | 已记录陷阱 | 572 条（分布在各页「陷阱」一节） |
 | 文档与源码冲突 | 79 条（见 conflicts.md） |
 | 悬而未决 | 110 条（见 open-questions.md） |

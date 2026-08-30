@@ -202,9 +202,9 @@
 
 - **类型**：发布闭包陷阱 / public seam 误判
 - **错误内容**：看到 rc.2 多个包的 exports 写了 `"./src/*": "./src/*"`，就断言 out-of-tree 宿主可正式 import `@deepseek-ai/.../src/...`。
-- **正解**：Skill/Preset/MCP 等已核 tarball 的 `files` 不含 `src`，正式产物也没有 `package/src/`；export target 实际不存在。公共面必须取 package exports 与 tarball成员的交集，再核根/子路径 `.d.ts` 和 JS exports。以 `dsh-mcp-client` 为例，内部虽 bundle 了 transport/connection/tools helpers，根最终只导出 `Config/apply/inject/name`，没有 carrier factory 或 generation API。
+- **正解**：Skill/Preset/MCP 等已核 rc.2 / alpha.2 tarball 的正式产物没有 `package/src/`；即使 `package.json` 声明了 `./src/*`，export target 仍实际不存在。公共面必须取 package exports 与tarball成员的交集，再核根/子路径 `.d.ts` 和 JS exports。以 `dsh-mcp-client` 为例，内部虽 bundle 了 transport/connection/tools helpers，根最终只导出 `Config/apply/inject/name`，没有 carrier factory 或 generation API。
 - **根因**：把 monorepo 源码开发映射当成 npm 发布闭包；上游一方测试直接 import `src/*` 也只证明仓内测试面。
-- **发现于**：2026-08-30 · DSH `b150a551`（`0.1.1-rc.2`）正式 npm tarball复核
+- **发现于**：2026-08-30 · DSH `b150a551`（`0.1.1-rc.2`）/ `0a53fb55`（`0.1.2-alpha.2`）正式 npm tarball复核
 - **牵连条目**：[packages/mcp.md](packages/mcp.md)、[packages/skill.md](packages/skill.md) 已修正。
 
 ---
@@ -213,7 +213,7 @@
 
 - **类型**：发布渠道混淆
 - **错误内容**：看到GitHub prerelease便断言npm完全未发布，或看到npm根包已发布便把tag内全部package manifests都称为正式tarball闭包；又或只读`latest`/`next`而漏掉`alpha` dist-tag。
-- **正解**：alpha.1只有GitHub source archive、没有npm alpha.1；alpha.2的GitHub release先于npm发布约19分钟，本轮查询期间npm状态发生变化。最终快照中根包`@deepseek-ai/dsh@0.1.2-alpha.2`已发布到`alpha`，`latest`/`next`仍为rc.2；244个非private tag标识（含根包）中208个有alpha.2，36个没有。Tag manifest、单包tarball、dist-tag与可安装递归闭包必须分开核验。
+- **正解**：alpha.1只有GitHub source archive、没有npm alpha.1；alpha.2的GitHub release先于npm发布约19分钟，当天npm package family又分批补齐。最终复验时根包`@deepseek-ai/dsh@0.1.2-alpha.2`位于`alpha`，`latest`/`next`仍为rc.2；tag内245个非private package标识（含根CLI与Web frontend）均已有alpha.2 tarball。Tag manifest、单包tarball、dist-tag与真实可安装递归/native闭包仍必须分开核验。
 - **根因**：混淆GitHub release、npm package publication与PyPI runtime publication三个独立渠道。
 - **发现于**：2026-08-30 · `cd5ef814`/`0a53fb55` · GitHub release + npm package-family/PyPI复验
 - **牵连条目**：[alpha.1版本变更](topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md)、[alpha.2版本变更](topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md)、[alpha.1 Host嵌入](integration/alpha1-full-host-embedding.md)。

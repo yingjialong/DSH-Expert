@@ -157,7 +157,7 @@ DSH 于 **2026-08-13** 首次发布，我的训练数据截止早于该日期。
 | 可对比基线 | master / GitHub prerelease / npm根包`alpha`均为`0.1.2-alpha.2`（`0a53fb55`）；根包`next` / `latest`仍为`0.1.1-rc.2`，PyPI SDK仍为`0.1.1rc1` |
 | 基线变更方式 | 用户实际升级后，更新本节与 `wiki/index.md` |
 
-回答时若 0.1.1-rc.2 与 master 行为不同，**必须同时说明两者**，并指出升级会踩什么。npm已发布`@deepseek-ai/dsh@0.1.2-alpha.2`及部分companion，根包dist-tag为`alpha`；根包`latest`/`next`仍指向rc.2，且tag package family并非全部都有alpha.2 tarball，必须按目标闭包逐包核验。破坏性变更见`wiki/topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md`与`wiki/topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md`；固定rc.2问题仍回tag`b150a551`核验。
+回答时若 0.1.1-rc.2 与 master 行为不同，**必须同时说明两者**，并指出升级会踩什么。npm已发布`@deepseek-ai/dsh@0.1.2-alpha.2`及本tag的245个非private package标识，根包dist-tag为`alpha`；根包`latest`/`next`仍指向rc.2。Tarball齐备不等于完整安装、native helper与第三方依赖闭包已经验证，仍须按目标profile做真实install/boot核验。破坏性变更见`wiki/topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md`与`wiki/topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md`；固定rc.2问题仍回tag`b150a551`核验。
 
 ---
 

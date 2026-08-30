@@ -119,5 +119,5 @@
 | Q111 | `配置、工具目录与运行模式` | DSH_TOOLS_MODE（host `tools` 行）与 per-agent agent-tool-presentation 同时设置时的最终优先级只从 config 声明与注释推断，未实测运行（L2 封顶，无实测）。 |
 | Q112 | `配置、工具目录与运行模式` | headless profile 是否真的完全没有 agent preset 机制（即 `dsh --profile headless` 无法选运行模式）只从 packages/bundle/headless/cordis.patch.yml 缺 agent-presets 行推断，未实测。 |
 | Q113 | `配置、工具目录与运行模式` | $DSH_HOME/settings.yaml 的 `llm-pi-ai` namespace 已在 2026-08-27 逐字段核对（见 `packages/llm.md`）；permission / agent-loop / agent-default-model / agent-presets / shell / llm-deepseek / web-search-deepseek 的完整 schema 仍未逐一核对。 |
-| Q115 | `alpha完整Host嵌入` | alpha.2根包及208/244个非private tag标识已有npm tarball，但36个没有alpha.2（9个registry不存在、27个已有包无该版本）；partial family是否为预期发布闭包、根包递归安装是否覆盖所有profile组合，尚未做正式install/pack闭环。 |
+| Q115 | `alpha完整Host嵌入` | alpha.2的245个非private tag package标识现均有npm tarball；但根包递归安装、native helper、可选profile与第三方依赖是否构成可boot的完整闭包，尚未做正式install/pack/boot闭环。 |
 | Q116 | `alpha完整Host嵌入` | 是否会提供完整语言无关Remote协议、正式Electron IPC carrier实现或第三方desktop embedding兼容保证；截至alpha.2仍未找到正式承诺。 |

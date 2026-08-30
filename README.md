@@ -104,7 +104,7 @@ dsh-expert/
 | Item | Value |
 | --- | --- |
 | Default answer baseline | **0.1.1-rc.2** (npm `latest`; it jumped from 0.1.0-rc.7 — rc.8 only ever shipped on `next`) |
-| Latest prerelease | **0.1.2-alpha.2** (`0a53fb55`) on GitHub and npm `alpha`; npm `latest` / `next` still point to rc.2, and not every tag package has an alpha.2 tarball |
+| Latest prerelease | **0.1.2-alpha.2** (`0a53fb55`) on GitHub and npm `alpha`; all 245 non-private tag package identifiers now have tarballs, while npm `latest` / `next` still point to rc.2; end-to-end install/native closure remains unverified |
 | Python SDK | `deepseek-harness-sdk` on PyPI (0.1.1rc1, one rc behind npm) |
 | ⚠️ Trap | The PyPI package `deepseek-harness` (0.2.0) is an **unrelated third-party package**; the official one is `deepseek-harness-sdk` |
 | Breaking changes rc.8 → 0.1.1-rc.2 | See `wiki/topics/版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md` |
@@ -209,7 +209,7 @@ dsh-expert/
 | 项 | 值 |
 | --- | --- |
 | 默认回答基线 | **0.1.1-rc.2**（npm `latest`；从 0.1.0-rc.7 直接跳过来 —— rc.8 只上过 `next` tag） |
-| 最新预发布 | **0.1.2-alpha.2**（`0a53fb55`），已发布到GitHub和npm `alpha`；npm `latest` / `next`仍指向rc.2，且并非每个tag package都有alpha.2 tarball |
+| 最新预发布 | **0.1.2-alpha.2**（`0a53fb55`），已发布到GitHub和npm `alpha`；当前245个非private tag package标识均已有tarball，npm `latest` / `next`仍指向rc.2；完整install/native闭包仍未实测 |
 | Python SDK | PyPI `deepseek-harness-sdk`（0.1.1rc1，落后 npm 一个 rc） |
 | ⚠️ 陷阱 | PyPI 上的 `deepseek-harness`（0.2.0）是**无关第三方包**，官方包是 `deepseek-harness-sdk` |
 | rc.8 → 0.1.1-rc.2 破坏性变更 | 见 `wiki/topics/版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md` |
