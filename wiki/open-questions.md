@@ -121,3 +121,4 @@
 | Q113 | `配置、工具目录与运行模式` | $DSH_HOME/settings.yaml 的 `llm-pi-ai` namespace 已在 2026-08-27 逐字段核对（见 `packages/llm.md`）；permission / agent-loop / agent-default-model / agent-presets / shell / llm-deepseek / web-search-deepseek 的完整 schema 仍未逐一核对。 |
 | Q115 | `alpha完整Host嵌入` | alpha.2的245个非private tag package标识均有tarball；根+Skill/Preset/MCP/Session相关包的`--ignore-scripts`依赖解析与`npm ls --all`已通过（215个DSH包全为alpha.2）。lifecycle scripts、native helper、全部可选profile与真实boot仍未闭环。 |
 | Q116 | `alpha完整Host嵌入` | 是否会提供完整语言无关Remote协议、正式Electron IPC carrier实现或第三方desktop embedding兼容保证；截至alpha.2仍未找到正式承诺。 |
+| Q117 | `MCP modern generation` | 官方是否、何时会发布MCP 2026-07-28 subscriptions/listen、公开且耐久的server/tool generation snapshot，以及fresh observation→request/header→generation-bound call/result barrier；rc.2/alpha.2与SDK 1.29/1.30均未提供，未来API名与版本未知。 |

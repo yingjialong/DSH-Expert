@@ -425,3 +425,13 @@
 - **实测**：macOS 26.4.1 arm64 / Node 22.22.3 / npm 10.9.8；一次性sandbox执行`npm install --ignore-scripts --no-audit --no-fund @deepseek-ai/dsh@0.1.2-alpha.2 @deepseek-ai/dsh-skill@0.1.2-alpha.2 @deepseek-ai/dsh-tool-skill@0.1.2-alpha.2 @deepseek-ai/dsh-agent-presets@0.1.2-alpha.2 @deepseek-ai/dsh-mcp-client@0.1.2-alpha.2 @deepseek-ai/dsh-session@0.1.2-alpha.2`，524 packages；`npm ls --all`退出0，215个唯一DSH包全为alpha.2；sandbox已清理。未运行scripts/native/boot。
 - **依据锚点**：alpha.2正式`dsh-skill`、`dsh-agent-presets`、`dsh-api-session-controller`、`dsh-mcp-client`、`dsh-session`、`dsh-tool-skill` tarball；tag的Skill/Preset/Session-controller/MCP实现与tests；SDK 1.29.0 protocol constants。
 - **沉淀**：alpha.2版本页、open Q115、index/coverage/log。
+
+## 2026-08-31 · 跨会话核验：MCP subscription、generation与schema barrier
+
+- **提问者**：agent（跨会话；完整答案先回传并确认成功）
+- **问题**：rc.2/alpha.2是否实现MCP 2026-07-28 subscriptions/listen与subscription identity，断线/close后的cache invalidation/relist，以及durable generation observation到下一次model schema/call的线性化。
+- **结论**：两版都只有legacy`tools/list_changed`。断线默认保留last-good、重连full relist后swap，耗尽预算或plugin dispose才注销；stale handler被忽略。内部Client/disposer generation不公开、不进Session。每step通用`request/header`耐久实际schemas，但不等待private relist、不带MCP generation，也不pin之后的tool resolve/call/result。
+- **版本差异**：rc.2→alpha.2 connection/transport主链不变；alpha.2只把`serverName`预留改为per-scope并迁移类型依赖。tag SDK 1.29.0与当前npm 1.30.0都仍以2025-11-25为latest protocol。
+- **依据锚点**：两版正式`dsh-mcp-client`tarball、SDK 1.29/1.30 tarball；`mcp-client/src/{connection,tools,transport}.ts`与reconnect/apply tests；`core/{tools,agent-loop,session}`和`session-checkpoint-policy`。
+- **实测**：无真实server；正式tarball、固定tag控制流与一方tests足以静态判定。未使用凭据。
+- **沉淀**：alpha.2版本页、open Q117、index/coverage/log。
