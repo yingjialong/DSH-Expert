@@ -361,3 +361,22 @@
 - **依据锚点**：`packages/preset/agent-presets/src/index.ts`、`packages/core/{scope,session,agent-loop}`、`packages/skill/{skill,tool-skill}`、`packages/session/session-persistence`及scope-layer一方tests。
 - **实测**：无；正式npm integrity、固定tag源码/类型/测试闭环。
 - **沉淀**：`packages/{preset,skill}.md`、`errors.md` E020增补/E021、index/log同步。
+
+## 2026-08-30 · /dsh-sync：0.1.2-alpha.1 → 0.1.2-alpha.2知识防腐
+
+- **提问者**：self（DSH问答新鲜度自检触发）
+- **结论**：上游镜像从`cd5ef814`同步到`0a53fb55`（`dsh-v0.1.2-alpha.2`），234提交、1604文件、+27862/−14050；Cordis同步到`b912d399`。npm发布在核验中途发生：根包14:10Z新增alpha.2并挂`alpha`，`latest`/`next`仍为rc.2，PyPI SDK仍`0.1.1rc1`。
+- **破坏性/兼容信号**：恢复`SessionEvent.ignorable`、统一`RemoteError`、新增schedule UI、plugin inventory/preset切换与connection retry；runtime dependency owner及vendor闭包变化。alpha.1的controller/client-store拓扑仍在，未发现ApiProxy/client-runtime回归。
+- **防腐动作**：144个既有锚点命中；通用页此前已stale，两篇含动态HEAD断言的alpha.1页新增stale。新建alpha.2版本页；固定rc.2/alpha.1问题继续回目标tag核验。
+- **实测/查询**：`git fetch/pull`、GitHub release、npm/PyPI registry、tag diff/manifests；穷举244个非private tag标识，208个已有alpha.2、36个没有。无模型调用、无凭据。
+- **沉淀**：`topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md`、`CLAUDE.md`、README、index/coverage/errors/open-questions/log。
+
+## 2026-08-30 · 跨会话核验：Skill catalog完整性、冲突观察与invocation policy
+
+- **提问者**：agent（跨会话；完整答案先回传并确认成功）
+- **问题**：rc.2能否用SkillRegistry对base/global与selected overlay做canonical冲突检查并保证到durable append不变；provider失败、shadowed候选和双false invocation的精确语义。
+- **结论**：`snapshot()`只有单次`complete`，无公开generation；provider throw被跳过并令snapshot incomplete，`list()`隐藏该状态，`skills/change`无token/barrier。公共目录只见merged winner，不能观察shadowed/collision，也无exclude provider/layer。模型tool和用户gesture都拒绝双false注入，但Registry `get()`仍可读取，且gesture是先get后检查。Skill observation与Session append无共同原子屏障。
+- **依据锚点**：rc.2 `packages/skill/skill/src/index.ts`、`packages/skill/tool-skill/src/index.ts`、`packages/skill/{skill,tool-skill}/tests/*.spec.ts`；正式npm根`.d.ts`/JS。
+- **上游基线**：固定`dsh-v0.1.1-rc.2` / `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`；远端HEAD已另同步至alpha.2，不用于反推。
+- **实测**：未运行；固定tag实现、公开类型、一方测试和正式npm声明已静态闭环。
+- **沉淀**：`packages/skill.md`、`errors.md` E022/E023、index/log；掌握度保持L1，因alpha.2变更仍标stale。

@@ -209,14 +209,14 @@
 
 ---
 
-### E017 — GitHub prerelease tag 不等于 npm/PyPI package 已发布
+### E017 — GitHub tag、npm dist-tag与package-family发布闭包必须分别核验
 
 - **类型**：发布渠道混淆
-- **错误内容**：看到官方`dsh-v0.1.2-alpha.1` release/tag，就把tag内`package.json` exports称为“正式npm发布物”，或建议第三方直接安装alpha.1包。
-- **正解**：GitHub prerelease存在且只有source archive；npm根包与239个tag内非private DSH package name均无`0.1.2-alpha.1`版本，PyPI两个官方dist也停在`0.1.1rc1`。Tag manifest只能证明源码意图，不能证明最终tarball成员、JS/.d.ts或companion closure。
+- **错误内容**：看到GitHub prerelease便断言npm完全未发布，或看到npm根包已发布便把tag内全部package manifests都称为正式tarball闭包；又或只读`latest`/`next`而漏掉`alpha` dist-tag。
+- **正解**：alpha.1只有GitHub source archive、没有npm alpha.1；alpha.2的GitHub release先于npm发布约19分钟，本轮查询期间npm状态发生变化。最终快照中根包`@deepseek-ai/dsh@0.1.2-alpha.2`已发布到`alpha`，`latest`/`next`仍为rc.2；244个非private tag标识（含根包）中208个有alpha.2，36个没有。Tag manifest、单包tarball、dist-tag与可安装递归闭包必须分开核验。
 - **根因**：混淆GitHub release、npm package publication与PyPI runtime publication三个独立渠道。
-- **发现于**：2026-08-30 · `cd5ef814` / GitHub release + npm/PyPI exhaustive query
-- **牵连条目**：[版本变更页](topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md)、[alpha.1 Host嵌入](integration/alpha1-full-host-embedding.md)。
+- **发现于**：2026-08-30 · `cd5ef814`/`0a53fb55` · GitHub release + npm package-family/PyPI复验
+- **牵连条目**：[alpha.1版本变更](topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md)、[alpha.2版本变更](topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md)、[alpha.1 Host嵌入](integration/alpha1-full-host-embedding.md)。
 
 ---
 
@@ -259,6 +259,28 @@
 - **错误内容**：看到`SkillRegistry.registerProvider()`可注册进Agent/Preset scope，便断言该scope能只看provider给出的selected exact Skill集合，或把opaque locator当DSH验证并持久的immutable ref。
 - **正解**：Skill目录按global→farthest ancestor→nearest scope合并，nearest只覆盖同名entry；没有allow/deny、provider exclusion或selected-set filter，不同名的继承Skill仍可见。locator由provider拥有，Registry只往返并校验definition name/shape，不验证digest/immutability，也不持久locator或body。
 - **根因**：把“局部贡献+同名shadow”误读为“对完整继承目录做减法”，又把opaque handle误读为DSH-owned identity。
+- **发现于**：2026-08-30 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/skill.md](packages/skill.md)。
+
+---
+
+### E022 — `snapshot.complete`不是可跨操作持有的catalog generation
+
+- **类型**：一致性语义过推
+- **错误内容**：看到`SkillRegistry.snapshot().complete === true`或收到`skills/change`，便断言catalog从检查到后续Session event append期间保持不变，或把provider失败当成可精确诊断的结构化结果。
+- **正解**：`complete`只说明该次collect在内部revision观察下完成且可缓存；公共结果没有revision/generation token。provider throw只被warn并跳过，snapshot降为incomplete但没有failure明细；`list()`甚至丢掉complete。`skills/change`是无参invalidate通知，不提供ack/barrier。因此这些公共面不能与后续`Session.append()`形成原子或线性化证明。
+- **根因**：把单次观测完整性、变更通知和跨owner事务当成同一概念。
+- **发现于**：2026-08-30 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/skill.md](packages/skill.md)。
+
+---
+
+### E023 — Skill invocation双false不等于definition不可读取
+
+- **类型**：policy边界过推
+- **错误内容**：把`modelInvocable:false, userInvocable:false`解释为Registry拒绝加载正文，或断言用户gesture在读body前就会拒绝。
+- **正解**：`ctx.skills.get()`是policy-neutral加载原语，一方测试直接读取`trusted-only`。官方模型tool在`get()`前检查summary并在读取后复查；用户gesture相反，会先`get()`再检查`userInvocable`。双false不会经这两条官方Consumer注入模型，但不代表provider/body完全不被读取，也不约束其他Consumer。
+- **根因**：把Consumer调用策略误当成SkillRegistry访问控制。
 - **发现于**：2026-08-30 · DSH `b150a551`（`0.1.1-rc.2`）
 - **牵连条目**：[packages/skill.md](packages/skill.md)。
 

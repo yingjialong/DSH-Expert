@@ -4,7 +4,7 @@
 
 > 想知道「我现在到底懂多少」——看这张表，而不是听我自称。
 
-> 上游基线：DSH `cd5ef814`（仓库 tag `0.1.2-alpha.1`；npm `latest` / `next` 仍为 `0.1.1-rc.2`）· 2026-08-28 同步。此次跨 6421 文件，63 个内容页锚点命中并标 stale；未复验页面的掌握度只保留历史记录，不得直接支撑 alpha.1 结论。
+> 上游基线：DSH `0a53fb55`（仓库tag / npm根包`alpha`为`0.1.2-alpha.2`；根包`latest` / `next`仍为`0.1.1-rc.2`）· 2026-08-30同步。alpha.1→alpha.2跨234提交/1604文件；244个非private tag标识（含根包）中208个已有alpha.2。144个既有锚点命中；通用页此前已stale，两篇动态alpha.1页新增stale。
 
 
 ## 掌握等级定义
@@ -30,7 +30,7 @@
 | ACP 与 HTTP API gateway（进程外集成的两条协议路线） | **L2** | 28 | [integration/protocol-acp-http.md](integration/protocol-acp-http.md) | 8 条关键发现 |
 | Electron 与嵌入运行时集成约束 | **L2** | 57 | [integration/electron-embedding.md](integration/electron-embedding.md) | 2026-08-27：carrier / Workspace / Markdown / pi-ai / reasoning effort / Approval owner 边界 |
 | rc.2完整Web Profile与原生壳插件边界 | **L2** | 28 | [integration/rc2-full-web-native-shell.md](integration/rc2-full-web-native-shell.md) | 正式tarball、custom Profile、dual-face Client、platform capability owner与alpha断点 |
-| alpha.1完整Host与嵌入控制面 | **L2** | 20 | [integration/alpha1-full-host-embedding.md](integration/alpha1-full-host-embedding.md) | GitHub/npm分叉、Remote/controllers、owner矩阵、public plugin与安全边界 |
+| alpha.1完整Host与嵌入控制面 | **L2** | 20 | [integration/alpha1-full-host-embedding.md](integration/alpha1-full-host-embedding.md) | `[stale]`：GitHub/npm分叉、Remote/controllers、owner矩阵、public plugin与安全边界 |
 
 ## 二、主题与内核
 
@@ -44,36 +44,37 @@
 | 插件开发全路径（dsh-plugin） | **L2** | 35 | [topics/plugin-development.md](topics/plugin-development.md) | 8 条关键发现 |
 | 核心链 core / session / preset / llm（源码级 L2） | **L2** | 27 | [topics/core-chain.md](topics/core-chain.md) | 10 条关键发现 |
 | 配置、工具目录与运行模式 | **L2** | 26 | [topics/config-and-tools.md](topics/config-and-tools.md) | 8 条关键发现 |
+| alpha.1→alpha.2版本变更 | **L1** | 9 | [topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md](topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md) | 发布渠道、ignorable恢复、RemoteError与依赖owner重组 |
 
-## 三、包组（51 组 / 247 包）
+## 三、包组（51 组 / 251 包）
 
 | 包组 | 掌握度 | 稳定性 | 包数 | 锚点 | 扩展点 | 陷阱 | 悬疑 |
 |---|---|---|---|---|---|---|---|
 | [acp](packages/acp.md) | L1 | Product | 1 | 9 | 5 | 7 | 1 |
-| [api](packages/api.md) | L1 | Product | 2 | 11 | 12 | 7 | 1 |
+| [api](packages/api.md) | L1 | Product | 5 | 11 | 12 | 7 | 1 |
 | [attachment](packages/attachment.md) | L1 | Product | 2 | 9 | 10 | 7 | 0 |
 | [boot](packages/boot.md) | L1 | Product | 2 | 10 | 14 | 10 | 1 |
-| [bundle](packages/bundle.md) | L1 | Product | 3 | 12 | 8 | 9 | 0 |
-| [client](packages/client.md) | L1 | Product | 40 | 16 | 14 | 14 | 2 |
+| [bundle](packages/bundle.md) | L1 | Product | 6 | 12 | 8 | 9 | 0 |
+| [client](packages/client.md) | L1 | Product | 44 | 16 | 14 | 14 | 2 |
 | [code-runtime](packages/code-runtime.md) | L1 | Product | 3 | 13 | 12 | 10 | 2 |
 | [compaction](packages/compaction.md) | L1 | Product | 4 | 13 | 9 | 8 | 2 |
 | [context](packages/context.md) | L1 | Product | 6 | 12 | 7 | 8 | 2 |
 | [core](packages/core.md) | L1 | Product | 8 | 18 | 12 | 10 | 2 |
 | [credentials](packages/credentials.md) | L2 | Product | 3 | 12 | 6 | 8 | 1 |
 | [e2b](packages/e2b.md) | L1 | POC | 3 | 10 | 6 | 9 | 2 |
-| [examples](packages/examples.md) | L1 | Support | 3 | 11 | 6 | 8 | 1 |
-| [experimental](packages/experimental.md) | L1 | Unreleased | 2 | 13 | 6 | 10 | 2 |
+| [examples](packages/examples.md) | L1 | Support | 1 | 11 | 6 | 8 | 1 |
+| [experimental](packages/experimental.md) | L1 | Unreleased | 8 | 13 | 6 | 10 | 2 |
 | [extensions](packages/extensions.md) | L1 | Product | 4 | 17 | 8 | 8 | 2 |
 | [feedback](packages/feedback.md) | L1 | Product | 2 | 9 | 7 | 9 | 2 |
 | [fs](packages/fs.md) | L1 | Product | 7 | 19 | 12 | 11 | 2 |
 | [goal](packages/goal.md) | L1 | Product | 4 | 13 | 8 | 10 | 2 |
 | [guard](packages/guard.md) | L1 | Product | 2 | 9 | 8 | 10 | 2 |
 | [hooks](packages/hooks.md) | L1 | Product | 3 | 13 | 17 | 13 | 3 |
-| [host](packages/host.md) | L2 | Product | 8 | 25 | 16 | 15 | 3 |
+| [host](packages/host.md) | L2 | Product | 7 | 25 | 16 | 15 | 3 |
 | [identity](packages/identity.md) | L1 | Product | 1 | 5 | 4 | 4 | 2 |
 | [interaction](packages/interaction.md) | L2 | Product | 5 | 18 | 9 | 10 | 2 |
 | [jobs](packages/jobs.md) | L1 | Product | 3 | 10 | 7 | 10 | 2 |
-| [llm](packages/llm.md) | L2 | Product | 5 | 33 | 10 | 14 | 3 |
+| [llm](packages/llm.md) | L2 | Product | 7 | 33 | 10 | 14 | 3 |
 | [lsp](packages/lsp.md) | L1 | Product | 3 | 14 | 6 | 12 | 2 |
 | [mcp](packages/mcp.md) | L1 | README 未列出 | 1 | 7 | 7 | 10 | 3 |
 | [plan](packages/plan.md) | L1 | Product | 1 | 7 | 7 | 11 | 2 |
@@ -82,7 +83,7 @@
 | [sandbox](packages/sandbox.md) | L1 | Product | 4 | 14 | 24 | 10 | 1 |
 | [schedule](packages/schedule.md) | L1 | Product | 1 | 13 | 11 | 10 | 0 |
 | [sdk](packages/sdk.md) | L1 | Product | 3 | 16 | 23 | 10 | 1 |
-| [session](packages/session.md) | L2 | Product | 13 | 32 | 24 | 13 | 2 |
+| [session](packages/session.md) | L2 | Product | 14 | 32 | 24 | 13 | 2 |
 | [session-query](packages/session-query.md) | L1 | Product | 4 | 16 | 18 | 13 | 1 |
 | [settings](packages/settings.md) | L2 | Product | 2 | 9 | 12 | 7 | 1 |
 | [shell](packages/shell.md) | L1 | Product | 10 | 13 | 10 | 9 | 1 |
@@ -90,12 +91,12 @@
 | [spill](packages/spill.md) | L1 | Product | 3 | 9 | 9 | 9 | 0 |
 | [storage](packages/storage.md) | L1 | Product | 4 | 10 | 9 | 9 | 1 |
 | [subagent](packages/subagent.md) | L1 | Product | 11 | 12 | 14 | 13 | 2 |
-| [subprocess](packages/subprocess.md) | L1 | Product | 2 | 10 | 9 | 10 | 1 |
+| [subprocess](packages/subprocess.md) | L1 | Product | 3 | 10 | 9 | 10 | 1 |
 | [terminal](packages/terminal.md) | L1 | Product | 3 | 9 | 6 | 6 | 2 |
 | [test-support](packages/test-support.md) | L1 | Support | 6 | 10 | 8 | 4 | 2 |
 | [todo](packages/todo.md) | L1 | Product | 1 | 6 | 5 | 5 | 1 |
 | [typert](packages/typert.md) | L1 | Product | 4 | 7 | 10 | 5 | 2 |
-| [util](packages/util.md) | L1 | Support | 7 | 11 | 7 | 5 | 1 |
+| [util](packages/util.md) | L1 | Support | 12 | 11 | 7 | 5 | 1 |
 | [web](packages/web.md) | L1 | Product | 6 | 12 | 7 | 6 | 2 |
 | [workflow](packages/workflow.md) | L1 | Product | 4 | 10 | 8 | 7 | 2 |
 | [webhook](packages/webhook.md) | L1 | Product | 2 | 10 | 8 | 8 | 2 |
@@ -124,14 +125,14 @@
 
 | 指标 | 值 |
 |---|---|
-| 已建立页面 | 70 页（65 内容页 + 5 治理页） |
-| 掌握度分布 | L2 **33** · L1 **32** · L3/L4 **0** |
-| 锚点总数 | 1023（按 `wiki/index.md` 65 个内容页的锚点列求和；审核增量中的重复行内引用不重复计） |
+| 已建立页面 | 75 页（69 内容页 + 6 治理页） |
+| 掌握度分布 | L2 **35** · L1 **34** · L3/L4 **0** |
+| 锚点总数 | 866（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
 | 已记录陷阱 | 572 条（分布在各页「陷阱」一节） |
-| 文档与源码冲突 | 78 条（见 conflicts.md） |
-| 悬而未决 | 108 条（见 open-questions.md；0.1.1 同步解答 5 条，2026-08-27 npm 复验解答 Q095） |
+| 文档与源码冲突 | 79 条（见 conflicts.md） |
+| 悬而未决 | 110 条（见 open-questions.md） |
 | 认知状态 | 全部 `verified_inference`（无 `fact`，因无 L3） |
-| 新鲜度 | `stale` 63 页 · `fresh` 2 页（`packages/identity.md` 与 alpha.1 版本变更页）；固定 rc.2 问题回 tag `b150a551` 核验 |
+| 新鲜度 | `stale` 65页 · `fresh` 4页（identity、webhook、固定rc.2 Host页、alpha.2版本页）；固定版本问题回目标tag核验 |
 
 ## 六、下一步学习建议（按 `dsh-wiki` B3 优先级）
 

@@ -2,7 +2,7 @@
 title: alpha.1 完整 Host 与嵌入控制面
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - README.md
   - SAFETY.md

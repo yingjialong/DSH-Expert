@@ -154,10 +154,10 @@ DSH 于 **2026-08-13** 首次发布，我的训练数据截止早于该日期。
 | 项 | 值 |
 | --- | --- |
 | **默认回答基线** | **0.1.1-rc.2**（npm `latest`；2026-08-22 起取代 rc.7） |
-| 可对比基线 | master（npm `next` 与 `latest` 同为 0.1.1-rc.2）；PyPI SDK 落后一个 rc（`0.1.1rc1`） |
+| 可对比基线 | master / GitHub prerelease / npm根包`alpha`均为`0.1.2-alpha.2`（`0a53fb55`）；根包`next` / `latest`仍为`0.1.1-rc.2`，PyPI SDK仍为`0.1.1rc1` |
 | 基线变更方式 | 用户实际升级后，更新本节与 `wiki/index.md` |
 
-回答时若 0.1.1-rc.2 与 master 行为不同，**必须同时说明两者**，并指出升级会踩什么。npm `latest` 从 0.1.0-rc.7 直接跳到 0.1.1-rc.2（rc.8 仅上过 `next` tag）；破坏性变更按仓库区间 rc.8→0.1.1-rc.2 记录，见 `wiki/topics/版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md` 与 `wiki/errors.md` E008–E011。
+回答时若 0.1.1-rc.2 与 master 行为不同，**必须同时说明两者**，并指出升级会踩什么。npm已发布`@deepseek-ai/dsh@0.1.2-alpha.2`及部分companion，根包dist-tag为`alpha`；根包`latest`/`next`仍指向rc.2，且tag package family并非全部都有alpha.2 tarball，必须按目标闭包逐包核验。破坏性变更见`wiki/topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md`与`wiki/topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md`；固定rc.2问题仍回tag`b150a551`核验。
 
 ---
 

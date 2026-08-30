@@ -110,3 +110,13 @@ asked_by: agent
 - 有`ctx.fs`时，list/resolve/stat/readText与symlink可见性归该FileSystem provider；无`ctx.fs`时Node fallback对root直属symlink用`stat()`跟随，一方测试覆盖指向root外的directory/flat file。断链和special file忽略。
 - `watchFollowSymlinks`只控制Chokidar watcher（默认true），不是读取sandbox。watch只因直属目录、flat Markdown、直接`SKILL.md`变化失效；references/scripts/assets内容变化不刷新catalog。
 - **认知状态**：verified_inference（rc.2 README、provider实现与symlink/watcher一方测试）。
+
+## 2026-08-30 · rc.2 catalog observation、冲突可见性与invocation policy
+
+- 公共`list()`只返回排序后的winning summaries，会丢失完整性；`snapshot()`返回`{ skills, complete }`；`get()`只返回winning definition或`undefined`。三者都不返回revision/generation token。Registry内部虽有private monotonic `revision`，collect发现并发变化时最多重试一次，第二次仍变化便返回`complete:false`，但该revision不能被外部持有或比较。
+- provider `list()`抛错时该provider整项被跳过、warning写日志、整次snapshot标`complete:false`；provider显式返回`{ candidates, complete:false }`时可用candidates仍参与winner合并，但snapshot同样不完整。公共结果没有provider failure数组或per-provider diagnostic，且调用`list()`会把这一状态隐藏掉。
+- `invalidate()`只递增private revision、清cache并发无参`skills/change`；事件没有revision、snapshot、ack或barrier。它只能提示消费者重读，不能证明一次检查到随后`Session.append()`之间catalog未变化。
+- 同层先按rank/order选winner，跨层nearest覆盖farther；公共`list/snapshot/get`只暴露最终winner，shadowed candidate、collision和provenance chain不可见。只有overlay尚未注册，或overlay位于独立child scope且调用方本来就持有parent/base `ScopeKey`时，才可用同一Registry观察base view；没有“排除provider/layer”参数，也不能从child公开反推parent。两次读取之间仍无共同token。
+- invocation policy是Consumer责任：官方模型`skill`工具先检查summary的`modelInvocable`，再`get()`并复查definition；用户`/<name>` gesture则先`get()`，再检查`userInvocable`。因此双false不会经这两条官方路径注入模型，但gesture可能已触发provider/body读取；`ctx.skills.get()`本身policy-neutral，其他公开Consumer仍可读取双false定义。一方测试直接验证`trusted-only`可被`get()`加载。
+- 固定rc.2没有把Skill catalog observation与Session durable event append绑定到同一原子或线性化屏障的公共契约。
+- **认知状态**：verified_inference（固定tag源码、正式npm根声明与一方tests交叉核对；未运行上游测试）。
