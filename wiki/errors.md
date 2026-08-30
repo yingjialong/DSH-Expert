@@ -246,10 +246,21 @@
 
 - **类型**：跨owner提交边界过推
 - **错误内容**：看到blank preset切换在`recompose()`返回后追加`agent-preset/selected`，就断言ensure/rebind/append任一步失败都会同时保留旧live composition与旧durable selection，或断言select与首prompt共享同一序列化闸门。
-- **正解**：`recompose()`只保证new standing在scope parent移动前就绪，unknown/mount/cycle失败不改旧link；ApiProxy在它返回后才单独`Session.append()`，append前置检查失败没有反向rebind。`presetSwitches`只串行select；prompt直接入Agent inbox，`turn/start`由driver稍后追加。因此既无跨scope/log事务，也无select/prompt统一linearization。
+- **正解**：`recompose()`只保证new standing在scope parent移动前就绪，unknown/mount/cycle失败不改旧link；ApiProxy在它返回后才单独`Session.append()`，append前置检查失败没有反向rebind。旧exact generation虽仍存活，但binding与historical key不公开，`recompose(id)`只认current standing，也无per-session generation release。`presetSwitches`只串行select；prompt直接入Agent inbox，`turn/start`由driver稍后追加。因此既无跨scope/log事务，也无公开all-or-old补偿或select/prompt统一linearization。
 - **根因**：把“durable event位于成功控制流之后”误读为两个owner共享事务，又把select内部blank recheck误读为first-prompt reservation。
 - **发现于**：2026-08-30 · DSH `b150a551`（`0.1.1-rc.2`）
 - **牵连条目**：[packages/preset.md](packages/preset.md)。
+
+---
+
+### E021 — scope-local Skill provider只会merge/shadow，不会过滤继承目录
+
+- **类型**：scope layering过推
+- **错误内容**：看到`SkillRegistry.registerProvider()`可注册进Agent/Preset scope，便断言该scope能只看provider给出的selected exact Skill集合，或把opaque locator当DSH验证并持久的immutable ref。
+- **正解**：Skill目录按global→farthest ancestor→nearest scope合并，nearest只覆盖同名entry；没有allow/deny、provider exclusion或selected-set filter，不同名的继承Skill仍可见。locator由provider拥有，Registry只往返并校验definition name/shape，不验证digest/immutability，也不持久locator或body。
+- **根因**：把“局部贡献+同名shadow”误读为“对完整继承目录做减法”，又把opaque handle误读为DSH-owned identity。
+- **发现于**：2026-08-30 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/skill.md](packages/skill.md)。
 
 ---
 

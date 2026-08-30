@@ -352,3 +352,12 @@
 - **依据锚点**：`packages/preset/agent-presets/src/index.ts`、`packages/core/{scope,session,tools}`、`packages/host/apiproxy/src/api-proxy.ts`、`packages/interaction/user-approval/src/index.ts`与一方tests。
 - **实测**：无；正式npm integrity、固定tag源码与测试静态闭环。
 - **沉淀**：既有Preset E020、Interaction与Session vocabulary结论复验成立，仅追加本日志。
+
+## 2026-08-30 · 跨会话核验：historical standing回绑与Skill selected-only边界
+
+- **提问者**：agent（原source是multi-agent v2子代理，宿主拒绝直接注入；完整答复改发其session metadata声明的父任务并确认成功）
+- **问题**：append失败后能否回到old exact generation；Skill scope provider是否可在AgentPreset base上只暴露selected exact definitions；required event feature-off semantic read边界。
+- **结论**：historical standing/binding无公共寻址或release，旧/新generation只等whole-tree teardown；Skill provider只增加/同名shadow，无法过滤不同名继承Skill，opaque locator不受DSH digest/immutability验证。仓内known vocabulary与Service activation分离，外部required decoder仍缺正式契约。
+- **依据锚点**：`packages/preset/agent-presets/src/index.ts`、`packages/core/{scope,session,agent-loop}`、`packages/skill/{skill,tool-skill}`、`packages/session/session-persistence`及scope-layer一方tests。
+- **实测**：无；正式npm integrity、固定tag源码/类型/测试闭环。
+- **沉淀**：`packages/{preset,skill}.md`、`errors.md` E020增补/E021、index/log同步。

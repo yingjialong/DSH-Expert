@@ -98,7 +98,7 @@
 | [session-query](packages/session-query.md) [stale] | Session 检索能力族：逻辑语料、有界读取、血缘追踪、事件关系、语义过滤与 SQLite FTS5 全文搜索，独立于 compaction。 | Product | 4 | 16 |
 | [settings](packages/settings.md) [stale] | 用户配置 namespace seam；含 `load`/`publish` provider 生命周期、update/replace/mutate 热提交、revision 与 composition base 不可由 user layer 删除的边界。 | Product | 2 | 9 |
 | [shell](packages/shell.md) [stale] | bash/pwsh 执行器 seam 与本地、沙箱两类 provider，加模型侧 bash/pwsh 工具及两个走 ctx.terminals 的常驻版 | Product | 10 | 13 |
-| [skill](packages/skill.md) [stale] | skill provider 注册表、本地发现与模型侧工具；含精确 frontmatter、正式 tarball入口及无 per-Session exact revision selection 的边界。 | Product | 4 | 9 |
+| [skill](packages/skill.md) [stale] | skill provider注册表、本地发现与模型侧工具；含精确frontmatter、正式tarball入口、scope只merge/shadow不filter及无per-Session exact selection边界。 | Product | 4 | 9 |
 | [spill](packages/spill.md) [stale] | 超大工具输出落盘并换成有界预览加 locator；查 SpillStore seam、本地文件布局与 post-execute 策略 | Product | 3 | 9 |
 | [storage](packages/storage.md) [stale] | session 日志以外数据枢纽；含 json/sqlite/domain 路由及 `:memory:` 仅随单一 live connection 存活的生命周期。 | Product | 4 | 10 |
 | [subagent](packages/subagent.md) [stale] | 子 agent 委派能力族 11 包：多 provider 注册表、continuable 子代编排、父子双向三类模型侧工具 | Product | 11 | 12 |

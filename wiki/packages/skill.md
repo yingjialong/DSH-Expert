@@ -89,6 +89,8 @@ asked_by: agent
 ## 2026-08-30 · rc.2 专项复验：per-Session 选择与 AgentPreset
 
 - rc.2 的 Skill 公共面没有“某 Session 已选择 0..N Skill”的 header、event、projection 或启停 API。`registerProvider()` / `register()` 只是当前 Cordis scope 的运行期注册；`list()` / `snapshot()` / `get()` 只按 `cwd`、`scope`、`signal` 观察当前目录。
+- scope-local provider能在同一官方SkillRegistry/`dsh-tool-skill`链中增加外部definitions，并对**同名**farther entry做nearest-layer shadow；但目录按global→ancestor→nearest合并，没有allow/deny/provider-exclusion filter。它无法隐藏继承层中其他名字的Skill，因此不构成“base之上只看selected exact set”的active-set contract。
+- provider的`locator`是borrowed opaque handle，Registry只把winning candidate交回同一provider并校验definition shape/name；provider可自带digest/ref，但DSH不验证content-addressing、immutability或revision，也不持久locator/body。
 - AgentPreset 可通过普通 plugin rows 间接决定某 Session 可见的 Skill provider 层；若每个内容摘要 id 对应一份不可变 composition，可以在产品层把 selection 编码为 preset id。但 DSH Session 仍只持久化 id，不持久化 exact Skill 集合或 preset 定义。
 - `dsh-tool-skill` 的 durable `skill-catalog` 消息记录模型当时看到的目录，并在 provider 变化时追加 replacement；它不是 selection truth，也不会在冷恢复时重建已经消失的 provider/definition。
 - 因此“无需宿主另存或重施加、仍能恢复任意 0..N immutable Skill 选择”缺少的最小闭环，是 DSH-owned 的 durable composition/selection snapshot（或等价的官方持久 definition store）以及 cold-resume 前按该 identity 解析、校验并 mount 的公开契约。仅增加一个宿主提供的 resolver 仍会把定义真源留给宿主，不能满足该限定。
