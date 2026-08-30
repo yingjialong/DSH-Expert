@@ -35,11 +35,11 @@ On top of the wiki sit three agent skills (Claude Code loads them automatically 
 
 | Skill | Trigger | What it does |
 | --- | --- | --- |
-| `dsh` | any DSH question (auto) | Freshness check → wiki lookup → verify against upstream source → answer with citations → write back new knowledge |
+| `dsh` | any DSH question (auto) | Freshness check → wiki lookup → verify upstream → form the answer → for delegated questions, return and confirm it first → write back knowledge |
 | `dsh-sync` | `/dsh-sync` | Pull upstream, diff anchors, batch-mark stale entries, re-learn what changed |
 | `dsh-wiki` | `/dsh-wiki`, `/dsh-learn` | Wiki health checks: lint, dedup, stale re-verification, coverage report; manual domain learning |
 
-When a delegated question carries a source-thread identifier, the agent must return the complete answer through the host's cross-session reply capability and confirm delivery; completing only the local conversation is not sufficient.
+When a delegated question carries a source-thread identifier, the agent must return the complete answer through the host's cross-session reply capability and confirm delivery; completing only the local conversation is not sufficient. This delivery is latency-sensitive and **must happen before any wiki, playbook, or documentation write-back**. Deposition starts only after the source session has received the answer.
 
 ### Relationship to upstream
 
@@ -74,7 +74,7 @@ Then just ask, in any language:
 How do I integrate DSH into a long-running Python service with multiple users?
 ```
 
-The `dsh` skill fires automatically and runs its six-step workflow: freshness self-check → wiki lookup (index → errors → coverage → hit pages) → source verification in `upstream/` → decide whether a live test is needed → answer (conclusion first, epistemic status per claim, version baseline declared) → write new knowledge back.
+The `dsh` skill fires automatically and runs its six-step workflow: freshness self-check → wiki lookup (index → errors → coverage → hit pages) → source verification in `upstream/` → decide whether a live test is needed → form the answer (conclusion first, epistemic status per claim, version baseline declared) → for delegated questions, return and confirm it → write new knowledge back.
 
 `sandbox/` (gitignored) is created on demand for minimal reproductions; it never enters the repository.
 
@@ -139,11 +139,11 @@ DSH（[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-har
 
 | skill | 触发 | 职责 |
 | --- | --- | --- |
-| `dsh` | 任何 DSH 问题（自动） | 新鲜度自检 → 查库 → 回上游源码核验 → （必要时）实测 → 带出作答 → 沉淀写回 |
+| `dsh` | 任何 DSH 问题（自动） | 新鲜度自检 → 查库 → 回上游源码核验 → （必要时）实测 → 形成答复 →（跨会话：先回传并确认）→ 沉淀写回 |
 | `dsh-sync` | `/dsh-sync` | 同步上游、锚点 diff、批量标 stale、补学变更部分 |
 | `dsh-wiki` | `/dsh-wiki`、`/dsh-learn` | 知识库健康检查（lint / 查重 / 复验 / 覆盖度报告）；手动指定领域学习 |
 
-当跨会话委派携带来源会话标识时，agent 必须通过宿主的跨会话回复能力把完整答案回传来源会话并确认送达；只完成当前本地会话不算交付完成。
+当跨会话委派携带来源会话标识时，agent 必须通过宿主的跨会话回复能力把完整答案回传来源会话并确认送达；只完成当前本地会话不算交付完成。该交付是延迟敏感的，**必须先于任何 wiki、playbooks 或项目文档沉淀**；只有来源会话收到答案后才能开始写回。
 
 ### 与上游的关系
 
@@ -178,7 +178,7 @@ codex    # Codex：经 AGENTS.md 引导到同一套约束与工作流
 我想把 DSH 集成进一个多用户长驻 Python 服务，怎么选型？
 ```
 
-`dsh` skill 自动触发并执行六步流程：新鲜度自检 → 查库（index → errors → coverage → 命中页）→ `upstream/` 源码核验 → 判断是否实测 → 作答（结论先行、每条主张带认知状态、声明版本基线）→ 沉淀写回。
+`dsh` skill 自动触发并执行六步流程：新鲜度自检 → 查库（index → errors → coverage → 命中页）→ `upstream/` 源码核验 → 判断是否实测 → 形成答复（结论先行、每条主张带认知状态、声明版本基线）→（跨会话：先回传并确认）→ 沉淀写回。
 
 `sandbox/`（gitignored）用于最小复现实测，按需创建，永不入库。
 
