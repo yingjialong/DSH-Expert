@@ -15,7 +15,12 @@ anchors:
   - packages/core/agent-tool-presentation/README.md
   - packages/core/agent/src/index.ts
   - packages/core/agent-loop/src/agent.ts
+  - packages/core/agent-loop/src/tool-calls.ts
+  - packages/core/agent-loop/src/index.ts
+  - packages/core/agent-loop/tests/tool-calls.spec.ts
   - packages/core/tools/src/index.ts
+  - packages/core/tools/tests/tools.spec.ts
+  - packages/core/tools/tests/code-mode.spec.ts
   - packages/core/session/src/surface.ts
   - packages/core/session/src/repair.ts
   - packages/session/session-persistence/tests/contract.ts
@@ -23,7 +28,7 @@ anchors:
   - docs/subsystems/tools.md
   - docs/tool-execution-pipeline.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-22
+verified_at: 2026-08-31
 asked_by: self
 ---
 
@@ -96,6 +101,16 @@ core 是「主干」而非单一 capability family，但同样按 seam 纪律拆
 - `session.cancel`只同步abort Agent后立即返回accepted，不await`whenIdle()`。未启动body形成`ABORTED_BEFORE_DISPATCH`；已启动body必须合作观察signal并drain，成功才改为`ABORTED`。这不是physical effect已静止的ack，也不列出in-flight calls。
 - Crash load对assistant call但无`tool/call`补`TOOL_NOT_STARTED`；对已有`tool/call`无result补`TOOL_OUTCOME_UNKNOWN`，明确要求side-effect调用先核验外部状态。它防止误判“没执行”，但不替physical owner保存receipt或去重。
 - **认知状态**：verified_inference（固定tag ToolRuntime/AgentLoop/Session repair与Persistence contract/e2e tests；未执行native effect）。
+
+## 2026-08-31 · rc.2 ToolDefinition replacement与borrow缺口
+
+- **没有统一definition-generation handle**：`ToolExecutionToken`只做process-local call/parent correlation；`ToolExecution`不含definition、schema、registration或generation，`register()`只返回同步`()=>void` disposer。root虽暴露`TOOL_RUNTIME_SCHEDULER`类型，但明确标`@internal`、非plugin extension point，且prepared result也无definition handle。
+- **各阶段读取definition的时点不同**：model assembly克隆current schema；`createExecution()`只快照当时definition的`finalizeContent`；`executionMode()`和body dispatch都按name重查current registry。body成功首次规范化用dispatch时局部`tool`的output contract；wrapper-authored success与post value replacement又按name重查current definition；content-only replacement不重查。
+- **一方tests把replacement可见性钉成行为**：exclusive barrier替换工具后pending calls重新分类并执行replacement；Code binding枚举后注销工具，dispatch得到`UNKNOWN_TOOL`；post value replacement或wrapper success期间owner消失也得到`UNKNOWN_TOOL`。相反，execution开始时快照的finalizer即使工具已注销仍会执行。
+- **局部引用不是owner lease**：body拿到局部definition对象后会用同一output schema/render投影该次返回值；finalizer也是JS函数引用。但ToolRuntime不保留registration refcount、不阻止global/HMR disposer关闭外部资源，也不在durable`tool/result`记录generation。
+- **cancel/drain只覆盖execution**：AgentLoop停止补位、等待started dispatch settle并按model顺序commit；Agent owner dispose先`cancel→whenIdle→scope.dispose`，可保护该Agent scope的普通顺序。它不使任意global tool registration或外部Client自动延迟dispose。
+- **未来架构条件**：中心ToolRuntime、opaque token、per-execution WeakMap、Agent in-flight drain、request/header与tool call/result日志、checkpoint pre-dispatch flush，均可承载未来borrow机制；未发现结构性不可能。但现合同仍缺registration/generation owner、schema+dispatch同handle绑定、retire/refcount/release与durable generation observation。
+- **认知状态**：verified_inference（固定rc.2正式root `.d.ts`、ToolRuntime/AgentLoop控制流与replacement一方tests；未构造外部carrier竞态）。
 
 ## 去哪深入（文件路由）
 

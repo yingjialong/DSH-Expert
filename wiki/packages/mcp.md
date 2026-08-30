@@ -13,7 +13,7 @@ anchors:
   - packages/mcp/mcp-client/src/transport.ts
   - packages/README.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-30
+verified_at: 2026-08-31
 asked_by: agent
 ---
 
@@ -98,6 +98,15 @@ asked_by: agent
 - MCP秘密不走`CredentialProvider`：stdio显式`env`进child environment，HTTP `headers`进request。根未公开transport/fetch/carrier factory，不能用正式seam实现每operation trusted secret resolution。
 - 根`Config`可在不apply时校验descriptor shape；但真实capability/tool验证必须`apply`，会stdio spawn或HTTP connect、initialize/分页`tools/list`并注册工具。CLI config dump不启动server，也不验证live descriptor。无import/export/逐项compatibility或无连接tool-catalog dry-run。
 - **认知状态**：verified_inference（固定tag根Config、transport/connection/tools实现、正式tarball exports与一方tests；未连接外部server）。
+
+## 2026-08-31 · MCP Client closure与ToolRuntime generation边界
+
+- `syncTools(client,...)`确实为一次catalog生成整组definitions；每个definition的executor/output/finalizer closure捕获当代SDK `Client`和execution-local projection `WeakMap`。**已经在body dispatch时选中该definition**的调用因此generation-local。
+- 这不覆盖model request assembly或parallel batch：schema只带public name/shape；pending calls按current ToolRuntime重新classify/dispatch。relist可在model request在途或batch内swap，未启动call可用新definition，已选body可持有旧closure。
+- connection dispose等待connect attempt与private syncChain，不追踪ToolRuntime in-flight calls；ToolRuntime drain等待executor promise，但不能保证MCP owner延迟close Client。断线期间last-good definition甚至会继续注册而closure指向closed Client。
+- durable call/result、cancel与MCP结果都不携带Client/generation identity。`PreparedProjection`按`ToolExecution`隔离图片投影，只防串call，不是server generation handle。
+- 条件性竞态：ToolRuntime较早快照old finalizer、较晚dispatch到new definition时，两代projection map不共享；finalizer会fail-soft回落。该结果来自控制流推论，未找到专门MCP竞态test。
+- **认知状态**：verified_inference（固定tagMCP closure/swap/dispose与ToolRuntime分阶段解析交叉核对；未连真实server）。
 
 ## 去哪深入（文件路由）
 

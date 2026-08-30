@@ -435,3 +435,12 @@
 - **依据锚点**：两版正式`dsh-mcp-client`tarball、SDK 1.29/1.30 tarball；`mcp-client/src/{connection,tools,transport}.ts`与reconnect/apply tests；`core/{tools,agent-loop,session}`和`session-checkpoint-policy`。
 - **实测**：无真实server；正式tarball、固定tag控制流与一方tests足以静态判定。未使用凭据。
 - **沉淀**：alpha.2版本页、open Q117、index/coverage/log。
+
+## 2026-08-31 · 跨会话核验：ToolRuntime generation borrow与MCP closure
+
+- **提问者**：agent（multi-agent v2子任务；直发被宿主拒绝，完整答案relay到其父任务并确认成功）
+- **问题**：rc.2从schema publication、executor、post/result到durable commit/cancel是否有definition generation borrow/lifetime seam；MCP Client closure能否扩成跨请求/并行/result/drain合同；未来opaque handle是否有架构硬障碍。
+- **结论**：无统一handle。ToolRuntime只早期快照finalizer，classification/body/wrapper success/post value replacement在不同阶段按name重查current registry；一方tests明确replacement会影响pending call与后置规范化。MCP closure只对已选definition局部有效，connection dispose不等ToolRuntime in-flight。现有pipeline/token/WeakMap/Agent drain/log/checkpoint提供未来承载点，未发现结构性不可能，但现合同不能拼出borrow。
+- **依据锚点**：正式rc.2`dsh-tools`/`dsh-mcp-client`tarball；`core/tools/src/index.ts`、`core/agent-loop/src/{tool-calls,index}.ts`、`mcp/mcp-client/src/{tools,connection}.ts`与replacement/cancel一方tests。
+- **实测**：无；固定tag控制流、public `.d.ts`与tests足以判定。未连接MCP、未使用凭据。
+- **沉淀**：`packages/{core,mcp}.md`、open Q118、index/coverage/log。

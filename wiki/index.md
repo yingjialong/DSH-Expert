@@ -73,7 +73,7 @@
 | [code-runtime](packages/code-runtime.md) [stale] | Code Mode 的执行底座：ctx.codeRuntime seam 加 worker-thread provider；isolation 只是标签不是安全声明，run 只返错不抛错。 | Product | 3 | 13 |
 | [compaction](packages/compaction.md) [stale] | 会话压缩能力族：CompactionEngine seam、token 压力摘要 provider、无模型 tool-result 剪枝伴生、人类 /compact 命令。 | Product | 4 | 13 |
 | [context](packages/context.md) [stale] | 请求上下文扩展组：工作区 AGENTS.md 指令加载、@file 引用 seam 与本地 provider、跨会话快照、时间与 tmux 位置上下文。 | Product | 6 | 12 |
-| [core](packages/core.md) [stale] | 产品API主干；含Tool call/token身份、cancel非quiescence与crash `TOOL_OUTCOME_UNKNOWN`边界。 | Product | 8 | 20 |
+| [core](packages/core.md) [stale] | 产品API主干；含Tool identity/cancel/crash，以及definition replacement阶段矩阵与generation-borrow缺口。 | Product | 8 | 23 |
 | [credentials](packages/credentials.md) [stale] | 凭据seam；含provider replacement、UI可替换但raw `credentials.set` wire仍存在的分层边界。 | Product | 3 | 15 |
 | [e2b](packages/e2b.md) [stale] | E2B 远程运行时 POC：sandbox 生命周期所有者加 fs/subprocess 两个 adapter，让 bash、PTY、LSP 消费者无需分叉即可搬进沙箱。 | POC | 3 | 10 |
 | [examples](packages/examples.md) [stale] | alpha.2 tag下只余agent-spine-demo package manifest；非产品API，历史demo结论待专项复验。 | Support | 1 | 11 |
