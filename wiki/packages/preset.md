@@ -91,3 +91,11 @@ asked_by: agent
 - 缺定义不是统一的 fallback 契约：roster 仍装配但 exact id 缺失时，真实 Agent resume 不回退 default，且 publication 失败；只读 transcript / cold skill catalog 会退到 global presenter/scope；若整个 `agentPresets` 服务都未装配，rc.2 ApiProxy 会采用 rosterless Host composition。最后一条缺少专门一方测试，按实现证据仅标 `verified_inference`。
 - 已运行 Session 的 standing mount 可在文件删除后继续；进程重启后仍依赖磁盘定义。相同 id 的内容可漂移，DSH 不验证 id 是否等于内容摘要。
 - `dsh-v0.1.2-alpha.1` tag 把当前 id fold 改为 Session projection、增加 Typert remote 与 shipped root，但仍是文件系统 roster，无任意 definition 注册/持久化 seam；截至本次查询，preset 包无 alpha.1 npm 版本。
+
+## 2026-08-30 · rc.2 create / blank select / prompt 时序
+
+- `session.create` 在 Session 构造前先把请求 id/default 解析为当前 roster 的 preset id；Agent factory 随后以 Session/Agent 均未发布的 setup mount standing composition，setup/commit 成功后才依次发布 Session、Agent、`agent/session-start` 并返回。此时没有 `turn/start`，所以仍为 blank。
+- `agentPreset.select` 只在 live Session 仍 blank 时生效：同 Session 的多个 select 在专用 queue 串行并在队内重检 blank；`recompose()` 确保新 standing mount 后只重绑原 Agent scope，不销毁/重建 Agent或 Session；提交成功后才追加 `agent-preset/selected`。header 保留创建事实，最后一条 selection event 是 resume/list 的 current id。
+- 首个 `session.prompt` 通过普通 Agent inbox 启动第一个 turn；此后再 select 得到 `agent-preset-locked`。但 prompt admission 不进入 preset-select queue，且没有独立 finalize/lock event；固定 tag 未给“并发 select 与首 prompt”的原子相对顺序保证。因此 blank whole-preset switch 不能当成任意 Skill/MCP draft 在首 prompt 边界原子固化的公共契约。
+- resume 在持久日志 load 后、Agent publication 前按 `resolveSessionPreset(header, events)` 的 id向当前 roster resolve/mount；ordinary Session fork也按 source log current id重新 resolve当前 roster，而不是继承 source live standing generation。只有 subagent `composeFrom()` 明确绑定父 Agent 已运行的同一 standing generation。
+- **认知状态**：verified_inference（`dsh-agent` public setup/publication契约、Host ApiProxy实现与 agent-preset一方测试交叉核对；未实测并发 prompt/select交错）。

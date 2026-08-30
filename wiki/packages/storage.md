@@ -10,10 +10,13 @@ anchors:
   - packages/storage/storage/src/backend.ts
   - packages/storage/storage-domain/README.md
   - packages/storage/storage-domain/src/index.ts
+  - packages/storage/storage-sqlite/src/index.ts
+  - packages/session/session-persistence-sqlite/src/store.ts
+  - packages/session/session-persistence/src/coordinator.ts
   - docs/subsystems/storage.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-22
-asked_by: self
+verified_at: 2026-08-30
+asked_by: agent
 ---
 
 ## 一句话定位
@@ -65,6 +68,14 @@ asked_by: self
 - domain 写路径的顺序是「持久化 → 内存 → 事件」，因此**读到的内存态永远是已落盘的**；但也意味着后端一次慢写会挡住该域后续所有写（每域单链串行）。
 - SQLite 后端拒绝旧 schema version 而不迁移，升级 DSH 后老库文件会**直接打不开**，不是「自动升级」。
 - 多后端可以同时挂着（`json` + `sqlite`），所以"我配了 sqlite"不代表某个域走 sqlite——要看 domain 的 `routes`。
+
+## 2026-08-30 · SQLite `:memory:` 生命周期
+
+- `dsh-session-persistence-sqlite` 与 `dsh-storage-sqlite` 都公开接受 `path: ':memory:'`，但每个 provider/backend 实例各自拥有一个 `DatabaseSync` connection。同一实例存活期间，切换 current Session/Workspace 不改变介质，数据仍可读。
+- Cordis teardown 对 session provider 会经 `PersistenceCoordinator` 先 drain 再 `backend.close()`；storage backend disposer 也先 unregister、再关闭 units 与 DB。之后即使仍在同一 OS 进程中重建同样的 `:memory:` 配置，也会得到新空数据库。App/Host 进程重启更无文件可恢复。
+- 本地 Node 22.22.3 最小实测：同一 connection 读回 `kept-while-open`；close 后在同进程新建 `DatabaseSync(':memory:')` 查询同表得到 `no such table`，确认新 connection 是 fresh empty DB。
+- Workspace 通过 `storage-domain` 使用 `storage-sqlite`；Session log 通过独立 `session-persistence-sqlite`。两者不是同一个自动共享的 `:memory:` medium，也不能把“进程内”泛化成“跨 Host generation”。
+- **认知状态**：verified_inference（公共 config、teardown 实现、一方测试源码与本地无凭据最小实测交叉核对）。
 
 ## 去哪深入
 

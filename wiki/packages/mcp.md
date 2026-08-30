@@ -6,14 +6,15 @@ freshness: stale
 anchors:
   - packages/mcp/README.md
   - packages/mcp/mcp-client/README.md
+  - packages/mcp/mcp-client/package.json
   - packages/mcp/mcp-client/src/index.ts
   - packages/mcp/mcp-client/src/connection.ts
   - packages/mcp/mcp-client/src/tools.ts
   - packages/mcp/mcp-client/src/transport.ts
   - packages/README.md
-commit: 141eb6fef83422698aef7a981029e843e8161534
-verified_at: 2026-08-20
-asked_by: self
+commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
+verified_at: 2026-08-30
+asked_by: agent
 ---
 
 ## 一句话定位
@@ -77,10 +78,18 @@ asked_by: self
 ## 2026-08-22 agent 审核增量（transport 注入面现状）
 
 - **rc.8 → rc.2 transport 相关源码逐字未变**（transport.ts / tools.ts / connection.ts 的相关段落 diff 为空）：两版都没有 transport 注入 seam。宿主要代理 egress（credential/双向字节收归宿主）时，"上游缺公共 Transport factory" 的判定在 rc.2 同样成立。
-- **`package.json` exports 含 `./src/*` 源码直通子路径**：宿主技术上可 import `src/transport.ts` 的 `createTransport`——但它只收 Config、仍返回内建 SDK transport，**此路径不构成注入 seam**（也不要当作公共契约使用）。
+- **正式 npm 闭包不能 import `./src/*`**：`package.json` 虽声明该 pattern，但 `files` 不含 `src`，`@deepseek-ai/dsh-mcp-client@0.1.1-rc.2` tarball 也没有任何 `package/src/` 成员；该 export target 运行时不存在。正式可消费面只有根、`./invariant`、`./package.json`。根只导出 `Config/apply/inject/name` 与 `McpResult` / reconnect 类型，内部 `createTransport` / `startConnection` / `syncTools` / generation disposer 不导出。
 - **底层 MCP SDK（@modelcontextprotocol/sdk 1.29.0）的 `StreamableHTTPClientTransportOptions` 有 `fetch?: FetchLike` 公共注入点**（streamableHttp.d.ts 约 L78-81，"Custom fetch implementation used for all network requests"，覆盖含 SSE GET 流在内的全部请求）——**若未来上游把它透出为 DSH 配置**，streamable-http 的 egress 代理可不换 transport 实现；但 sessionId/resumption/reconnect 状态仍在 host 内，且 **stdio 无对应物**。
 - **reconnect 配置对未知键 fail-loud**（connection.ts 约 L65-70 `resolveReconnectPolicy` 抛错）：可用旋钮仅 `enabled` / `initialDelayMs` / `maxDelayMs` / `maxAttempts` 四个，全部与 transport 选择无关——进一步佐证"无 transport 配置面"。
 - **仓库内存在第二个 MCP 面**：`subagent-claude-code` 直接依赖 `@modelcontextprotocol/sdk ^1.29.0`（claude-agent-sdk 路径），并在 run.ts 约 L346-348 对 'MCP elicitation' 交互输入给出拒绝文案——做 MCP egress/审计范围划定时应把它与 `dsh-mcp-client` 一并纳入盘点。
+
+## 2026-08-30 · rc.2 正式发布闭包与 generation identity 边界
+
+- **协议版本取决于依赖闭包**：DSH tarball 声明 `@modelcontextprotocol/sdk: ^1.12.0`；官方 tag lock 解析为 `1.29.0`，该 SDK 以 `2025-11-25` 发起 initialize，并接受 `2025-11-25`、`2025-06-18`、`2025-03-26`、`2024-11-05`、`2024-10-07`。因此这组 revision 只对 tag lock 成立，单独安装 DSH tarball而不锁 SDK 时不能宣称固定协议版本。
+- **内部 generation-safe，不等于公开 generation contract**：包内每次连接创建新 SDK `Client`，用 current-generation guard 串行 `tools/list` 全量 swap，监听 `tools/list_changed` 并在 definition executor 闭包中捕获当代 client。但公共 `serverName` 只是命名 namespace；没有 server instance ID、tool generation ID、server→tools snapshot/diff、generation-bound call/result 或公开 reconnect 状态。
+- **物理 carrier 不可注入**：根 Config 只有 `stdio {command,args,env,cwd}` 与 `streamable-http {url,headers}`；实现固定构造 SDK transport，没有 `Transport` / factory / fetch / CredentialProvider / duplex carrier 参数。`ctx.tools.register()` 等公共 primitives 足以让外部插件另写一座桥，但那会把 MCP initialize、carrier、pagination、reconnect、generation 与 result mapping 的 owner 移给该插件，不是组合出等价的 DSH-owned MCP contract。
+- **`TOOL_OUTCOME_UNKNOWN` 只属于通用 Session crash repair**：MCP bridge没有单独的 OUTCOME_UNKNOWN / exactly-once 协议。若已持久 `tool/call` 在硬崩前没有 durable result，SessionPersistence 可在恢复时补通用 `TOOL_OUTCOME_UNKNOWN`；这不提供 MCP server-side operation identity 或查询/去重保证。
+- **认知状态**：verified_inference（tag 源码、正式 DSH/SDK tarball JS/.d.ts 与一方测试源码交叉核对；未连外部 MCP server）。
 
 ## 去哪深入（文件路由）
 

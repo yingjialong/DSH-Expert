@@ -85,7 +85,7 @@
 | [jobs](packages/jobs.md) [stale] | 后台作业 capability family：ctx.jobs 契约、jobs-local 进程内实现、tool-jobs 三工具与完成通知；owner 隔离与唤醒预算是理解重点。 | Product | 3 | 10 |
 | [llm](packages/llm.md) [stale] | LLM seam 与 twin adapters；含 pi-ai 三种 wire protocol、route/model owner、动态更新、Session 选择及 exact-model reasoning effort/default 边界。 | Product | 5 | 33 |
 | [lsp](packages/lsp.md) [stale] | LSP 能力 seam：恰好四个语义操作、无 JSON-RPC 逃生口；lsp-stdio 通用 stdio 后端与模型侧 lsp 工具（一基 UTF-16 光标坐标）。 | Product | 3 | 14 |
-| [mcp](packages/mcp.md) [stale] | MCP 客户端桥：把外部 server 的 tool 以 mcp__<serverName>__<rawName> 注册到 ctx.tools；注意 packages/README 组表格漏列了该组。 | README 未列出 | 1 | 7 |
+| [mcp](packages/mcp.md) [stale] | MCP 客户端桥：内建 stdio/Streamable HTTP 与 generation-safe tool swap；正式根未公开 carrier factory、server/generation identity 或 snapshot/diff。 | README 未列出 | 1 | 8 |
 | [plan](packages/plan.md) [stale] | plan mode 是 log-only 的 per-agent 协作状态而非 capability seam；/plan 命令进入，exit_plan_mode 经用户审批退出。 | Product | 1 | 7 |
 | [preset](packages/preset.md) [stale] | 每会话 agent 组合；含 rc.2 文件系统 roster、Session 只耐久 preset id、动态目录发现、冷恢复与定义缺失的分支边界。 | Product | 2 | 12 |
 | [runtime-diagnostics](packages/runtime-diagnostics.md) [stale] | 包自有运行期不变式注册表 ctx.invariants：每个包发布 ./invariant companion，检查自己拥有的事件关系与可变数据关系。 | README 未列出 | 1 | 10 |
@@ -96,9 +96,9 @@
 | [session-query](packages/session-query.md) [stale] | Session 检索能力族：逻辑语料、有界读取、血缘追踪、事件关系、语义过滤与 SQLite FTS5 全文搜索，独立于 compaction。 | Product | 4 | 16 |
 | [settings](packages/settings.md) [stale] | 用户配置 namespace seam；含 `load`/`publish` provider 生命周期、update/replace/mutate 热提交、revision 与 composition base 不可由 user layer 删除的边界。 | Product | 2 | 9 |
 | [shell](packages/shell.md) [stale] | bash/pwsh 执行器 seam 与本地、沙箱两类 provider，加模型侧 bash/pwsh 工具及两个走 ctx.terminals 的常驻版 | Product | 10 | 13 |
-| [skill](packages/skill.md) [stale] | skill provider 注册表、本地发现与模型侧工具；含 rc.2 不具备 per-Session selected-skill 持久语义、AgentPreset 仅能间接编码 composition 的边界。 | Product | 4 | 7 |
+| [skill](packages/skill.md) [stale] | skill provider 注册表、本地发现与模型侧工具；含精确 frontmatter、正式 tarball入口及无 per-Session exact revision selection 的边界。 | Product | 4 | 9 |
 | [spill](packages/spill.md) [stale] | 超大工具输出落盘并换成有界预览加 locator；查 SpillStore seam、本地文件布局与 post-execute 策略 | Product | 3 | 9 |
-| [storage](packages/storage.md) [stale] | session 日志以外数据的存储枢纽：命名后端 json/sqlite 加 domain 数据形态；查后端注册与域路由 | Product | 4 | 10 |
+| [storage](packages/storage.md) [stale] | session 日志以外数据枢纽；含 json/sqlite/domain 路由及 `:memory:` 仅随单一 live connection 存活的生命周期。 | Product | 4 | 10 |
 | [subagent](packages/subagent.md) [stale] | 子 agent 委派能力族 11 包：多 provider 注册表、continuable 子代编排、父子双向三类模型侧工具 | Product | 11 | 12 |
 | [subprocess](packages/subprocess.md) [stale] | 进程基座 seam 加本地 provider：可执行查找、托管进程树、PTY 原语；shell/lsp/terminal/acp 都建在它上面 | Product | 2 | 10 |
 | [terminal](packages/terminal.md) [stale] | 持久 PTY 会话能力族：ctx.terminals seam、bash/pwsh backend、六个 terminal_* 工具；会话进程本地，不跨重启 | Product | 3 | 9 |

@@ -288,3 +288,13 @@
 - **上游基线**：固定 tag `dsh-v0.1.1-rc.2` / `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`；查询时远端 HEAD 为 `cd5ef8148158c3a752a658978873241fdf8e2bbc`，未用于反推 rc.2。
 - **实测**：本轮未重跑一方测试、未访问真实 endpoint、未使用真实凭据；以 tag 源码、正式 tarball JS/d.ts 与一方测试源码交叉核验。
 - **沉淀**：`packages/{llm,credentials}.md`、`errors.md` E015、`index.md`；掌握度均保持 L2，因 alpha.1 大改继续标 stale。
+
+## 2026-08-30 · 跨会话问答：per-Session Skill/MCP exact composition 与 rc.2 公共闭包
+
+- **提问者**：agent（3 个重叠跨会话咨询）
+- **问题**：rc.2 是否具有任意 0..N Skill/MCP revision 的 Session active-set、immutable definition/digest store、blank draft/finalize/lock、ref-aware GC；AgentPreset create/select/resume/fork 与 MCP carrier/generation 的实际公开边界；SQLite `:memory:` 能否支撑 history-off 生命周期。
+- **结论**：Session 只耐久 preset id（header + blank switch event），resume/ordinary fork 按当前文件 roster重新解析，不校验 content digest；Skill catalog只记录模型当时看到的 name/description，不是 active-set或 definition pin。blank preset select 会重绑同一 Agent并提交事件，但没有 Skill/MCP draft/finalize 状态，且 prompt不与 preset-switch queue共享原子 barrier。MCP正式根内建两种 transport，未公开 carrier factory或 server/generation snapshot/diff。`:memory:` 仅随同一 live connection存活，Host generation teardown即使同进程也会关闭并丢失。
+- **正式发布物**：`dsh-skill` `f7fe94a978097483f13214789cdcb8cce78c9669`；`dsh-skill-filesystem` `66f3ea10a553fbf33e523d174182e2ced16bf401`；`dsh-tool-skill` `5038f5764495485178b9190f76536701dddd9a33`；`dsh-agent-presets` `4d5c0440022f36412f72dabf1e8347f68ccfee78`；`dsh-mcp-client` `78973daedcec4fd17c18760e9aef539588cab5e2`；`dsh-session-persistence-sqlite` `3acee68a7344245f964d4b44e86fe8fab9620a83`；`dsh-storage-sqlite` `e62a940229e4af24bbf28d13ac6b1b2e0dc71529`。
+- **依据锚点**：rc.2 `packages/{skill,preset,mcp}`、`packages/host/apiproxy/src/api-proxy.ts`、`packages/core/{agent,agent-loop,session}`、`packages/session/{session-persistence,session-persistence-sqlite}`、`packages/storage/storage-sqlite`；正式 npm JS/.d.ts/package exports 与一方测试。
+- **实测**：仅运行 Node `DatabaseSync(':memory:')` 无凭据最小生命周期探针：同 connection可读，close 后同进程新 connection为空；未运行上游测试、未连外部 MCP、未使用凭据。
+- **沉淀**：`packages/{mcp,skill,storage}.md`、`errors.md` E016、`index.md`；领域掌握度不变（mcp L2、skill/preset/storage L1），因 alpha.1 大改继续标 stale。

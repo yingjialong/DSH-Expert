@@ -6,13 +6,15 @@ freshness: stale
 anchors:
   - packages/skill/README.md
   - packages/skill/skill/README.md
+  - packages/skill/skill/package.json
   - packages/skill/skill/src/index.ts
   - packages/skill/skill-filesystem/README.md
+  - packages/skill/skill-filesystem/src/index.ts
   - packages/skill/tool-skill/README.md
   - docs/subsystems/skills.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-22
-asked_by: self
+verified_at: 2026-08-30
+asked_by: agent
 ---
 
 ## 一句话定位
@@ -91,3 +93,10 @@ asked_by: self
 - `dsh-tool-skill` 的 durable `skill-catalog` 消息记录模型当时看到的目录，并在 provider 变化时追加 replacement；它不是 selection truth，也不会在冷恢复时重建已经消失的 provider/definition。
 - 因此“无需宿主另存或重施加、仍能恢复任意 0..N immutable Skill 选择”缺少的最小闭环，是 DSH-owned 的 durable composition/selection snapshot（或等价的官方持久 definition store）以及 cold-resume 前按该 identity 解析、校验并 mount 的公开契约。仅增加一个宿主提供的 resolver 仍会把定义真源留给宿主，不能满足该限定。
 - `dsh-v0.1.2-alpha.1` tag 增加 Session-addressed cold skill list，但未增加 selected-skill 集合语义；相关 skill 包截至本次查询没有 alpha.1 npm 版本。
+
+## 2026-08-30 · rc.2 正式 frontmatter 与发布入口
+
+- 正式包为 `dsh-skill`（Service Definition）、`dsh-skill-filesystem`（Provider）、`dsh-tool-skill`（Consumer）与 `dsh-skill-badge`（bundled Provider）；有效入口均为根、`./invariant`、`./package.json`。manifest 的 `./src/*` 在 tarball 中无对应 `src` 文件，不能作为 out-of-tree import。
+- filesystem frontmatter 必填 `name` / `description`；可选键精确为 camelCase `whenToUse`、`metadata`、`disable-model-invocation`、`user-invocable`。`when-to-use` 不会成为 `whenToUse`；`modelInvocable` / `userInvocable` 是解析后的公共 policy 字段，不是接受的 frontmatter，旧 camelCase invocation 键会让整条 Skill 发现失败。
+- `skill-catalog` durable message 只记录当时发布给模型的 `{name, description}` 全量目录；内部 digest 也只覆盖这些条目且不持久化。它不证明 body revision、provider locator、active selection 或恢复时可重建 definition；空 replacement 只退役模型旧目录，不是 ref-aware definition tombstone/GC。
+- **认知状态**：verified_inference（正式 tarball、tag parser、公开 `.d.ts` 与 filesystem/tool-skill 一方测试交叉核对）。

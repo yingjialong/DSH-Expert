@@ -198,4 +198,15 @@
 
 ---
 
+### E016 — `package.json` 声明 `./src/*`，不等于正式 npm tarball 真含源码入口
+
+- **类型**：发布闭包陷阱 / public seam 误判
+- **错误内容**：看到 rc.2 多个包的 exports 写了 `"./src/*": "./src/*"`，就断言 out-of-tree 宿主可正式 import `@deepseek-ai/.../src/...`。
+- **正解**：Skill/Preset/MCP 等已核 tarball 的 `files` 不含 `src`，正式产物也没有 `package/src/`；export target 实际不存在。公共面必须取 package exports 与 tarball成员的交集，再核根/子路径 `.d.ts` 和 JS exports。以 `dsh-mcp-client` 为例，内部虽 bundle 了 transport/connection/tools helpers，根最终只导出 `Config/apply/inject/name`，没有 carrier factory 或 generation API。
+- **根因**：把 monorepo 源码开发映射当成 npm 发布闭包；上游一方测试直接 import `src/*` 也只证明仓内测试面。
+- **发现于**：2026-08-30 · DSH `b150a551`（`0.1.1-rc.2`）正式 npm tarball复核
+- **牵连条目**：[packages/mcp.md](packages/mcp.md)、[packages/skill.md](packages/skill.md) 已修正。
+
+---
+
 > 更多**按包组分布**的文档与源码冲突（共 78 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。
