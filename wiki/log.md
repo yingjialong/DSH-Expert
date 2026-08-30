@@ -325,3 +325,13 @@
 - **依据锚点**：`apps/cli/{README.md,reference/README.md,src/{profile-boot,process-shutdown}.ts,tests/built-bin.e2e.ts}`、`packages/boot/app-boot`、`packages/bundle/{base,web-app}`、`packages/client/{modules,connection,runtime}`、`packages/host/apiproxy`、`packages/api/remotes`与core capability roots。
 - **实测**：未启动真实Web Host/WKWebView；静态tag、正式tarball JS/.d.ts、npm integrity与一方tests闭环。无模型调用、无真实凭据。
 - **沉淀**：`integration/rc2-full-web-native-shell.md`、`errors.md` E019、index/coverage/log。
+
+## 2026-08-30 · 跨会话复验：AgentPreset base + exact Skill/MCP overlay 缺口
+
+- **提问者**：agent（跨会话；完整答案先回传成功）
+- **问题**：rc.2能否在现有AgentPreset上叠加per-Session exact Skill/MCP revision refs，并靠公开required event与统一pre-publication hook精确恢复。
+- **结论**：ordinary fork只fold recorded preset id并按fork时current roster重新mount，不继承source live generation/definition bytes；required外部event无runtime vocabulary注册；AgentRegistry public setup与cold-resume resolver只是可组合零件，standard create/resume/fork没有统一hook。Skill catalog不是selected-set，MCP generation不公开，故固定版缺exact overlay闭环。
+- **正式发布物**：重新核对agent-presets、Session/Persistence、Skill三包与MCP rc.2 npm integrity；另`npm pack`检查7个tarball的root exports、`.d.ts`和无`src`成员。
+- **依据锚点**：`packages/{preset/agent-presets,core/agent,core/session,session/session-persistence,skill/skill,skill/skill-filesystem,skill/tool-skill,mcp/mcp-client}`、`packages/host/apiproxy/src/api-proxy.ts`及一方tests。
+- **实测**：无；未连外部MCP、未用凭据。固定tag实现、正式tarball和一方测试足以静态闭环。
+- **沉淀**：既有`packages/{preset,session,skill,mcp}.md`结论复验成立，仅追加本日志。
