@@ -99,3 +99,11 @@ asked_by: agent
 - 首个 `session.prompt` 通过普通 Agent inbox 启动第一个 turn；此后再 select 得到 `agent-preset-locked`。但 prompt admission 不进入 preset-select queue，且没有独立 finalize/lock event；固定 tag 未给“并发 select 与首 prompt”的原子相对顺序保证。因此 blank whole-preset switch 不能当成任意 Skill/MCP draft 在首 prompt 边界原子固化的公共契约。
 - resume 在持久日志 load 后、Agent publication 前按 `resolveSessionPreset(header, events)` 的 id向当前 roster resolve/mount；ordinary Session fork也按 source log current id重新 resolve当前 roster，而不是继承 source live standing generation。只有 subagent `composeFrom()` 明确绑定父 Agent 已运行的同一 standing generation。
 - **认知状态**：verified_inference（`dsh-agent` public setup/publication契约、Host ApiProxy实现与 agent-preset一方测试交叉核对；未实测并发 prompt/select交错）。
+
+## 2026-08-30 · rc.2 无preset legacy Session
+
+- `resolveSessionPreset()`在header与events都无ID时返回`undefined`。新建Session：有roster且请求省略ID会把当时default写入新header；无roster则保持preset-less Host composition。
+- 既有preset-less Session若`session.create`显式命名任意preset，ApiProxy返回`agent-preset-conflict`；省略则允许adopt。冷resume在roster存在时把`undefined`交给`composeAgent()`，于是按**恢复时current default**mount，但不回写旧header；无roster则Host composition。
+- history/presenter只读路径对无ID Session尝试default standing scope，失败后退global并继续服务；它不是Agent resume成功保证。rc.2 `skills.list`要求Session已attached。
+- ordinary fork对无ID source：roster存在时按fork时default创建child并把该ID写child header；无roster时child仍无ID。这是current fallback，不是legacy digest/ref migration。
+- **认知状态**：verified_inference（ApiProxy实现与preset-less adoption一方测试；resume/fork无ID分支由源码控制流交叉核对，未找到独立专项测试）。

@@ -298,3 +298,20 @@
 - **依据锚点**：rc.2 `packages/{skill,preset,mcp}`、`packages/host/apiproxy/src/api-proxy.ts`、`packages/core/{agent,agent-loop,session}`、`packages/session/{session-persistence,session-persistence-sqlite}`、`packages/storage/storage-sqlite`；正式 npm JS/.d.ts/package exports 与一方测试。
 - **实测**：仅运行 Node `DatabaseSync(':memory:')` 无凭据最小生命周期探针：同 connection可读，close 后同进程新 connection为空；未运行上游测试、未连外部 MCP、未使用凭据。
 - **沉淀**：`packages/{mcp,skill,storage}.md`、`errors.md` E016、`index.md`；领域掌握度不变（mcp L2、skill/preset/storage L1），因 alpha.1 大改继续标 stale。
+
+## 2026-08-30 · 跨会话问答：alpha.1完整Host、Remote控制面与安全边界
+
+- **提问者**：agent（跨会话）
+- **问题**：alpha.1如何保留完整产品图、哪些控制通道是完整/子集、各Harness领域owner与profile activation、out-of-tree原生capability、capability-off占位、启动关闭/升级/安全保证。
+- **发布结论**：GitHub prerelease/tag是`cd5ef814`且无assets；npm根包与tag内239个非private DSH package name逐一查询均无alpha.1，PyPI也停`0.1.1rc1`。Tag source/manifest不是正式package closure。
+- **集成结论**：source-built CLI/profile与Node app-boot可装完整图；Web Remote/controllers + React-free TS Client/Store + `ClientTransportHooks`是完整一方控制面。SDK保持3请求+4通知，ACP虽扩展仍是automation子集。非TS没有完整versioned Remote协议或Electron实现保证。
+- **owner/安全结论**：Service/Provider/Consumer、Agent scope、ToolRuntime与approval seams支持out-of-tree物理provider；但out-of-repo required SessionEvent不在持久化白名单。installed/mounted/published三层必须分开。Developer preview会breaking、无general migration/安全审计；sandbox/approval/permission不保证isolation。
+- **实测/查询**：无模型/凭据调用；只读GitHub release、npm/PyPI registry、tag源码/manifest/README/一方tests。登记`conflicts.md` C079（telemetry README与composition冲突）。
+- **沉淀**：`integration/alpha1-full-host-embedding.md`、alpha版本页、`errors.md` E017/E018、open Q115/Q116、index/coverage。
+
+## 2026-08-30 · 跨会话问答：rc.2 legacy preset、下游event与Skill路径
+
+- **提问者**：agent（跨会话）
+- **结论**：legacy无preset Session显式adopt到named preset会conflict；省略时resume/fork按current default产生条件性fallback，read路径fail-soft且不写回旧header。Out-of-tree event仅能以`ignorable:true`越过rc.2 persistence白名单，不足以表达required exact composition；generic ApiProxy无pre-publication resolver注册。Skill filesystem一层发现，Node fallback跟随直属symlink，`ctx.fs`模式交给provider，watch-follow不是sandbox。
+- **依据锚点**：rc.2 `packages/{preset/agent-presets,core/session,session/session-persistence,session/session-projection,host/apiproxy,skill/skill-filesystem}`及正式tarball/一方tests。
+- **沉淀**：`packages/{preset,session,skill}.md`、`errors.md` E018。

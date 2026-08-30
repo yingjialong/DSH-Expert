@@ -209,4 +209,26 @@
 
 ---
 
-> 更多**按包组分布**的文档与源码冲突（共 78 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。
+### E017 — GitHub prerelease tag 不等于 npm/PyPI package 已发布
+
+- **类型**：发布渠道混淆
+- **错误内容**：看到官方`dsh-v0.1.2-alpha.1` release/tag，就把tag内`package.json` exports称为“正式npm发布物”，或建议第三方直接安装alpha.1包。
+- **正解**：GitHub prerelease存在且只有source archive；npm根包与239个tag内非private DSH package name均无`0.1.2-alpha.1`版本，PyPI两个官方dist也停在`0.1.1rc1`。Tag manifest只能证明源码意图，不能证明最终tarball成员、JS/.d.ts或companion closure。
+- **根因**：混淆GitHub release、npm package publication与PyPI runtime publication三个独立渠道。
+- **发现于**：2026-08-30 · `cd5ef814` / GitHub release + npm/PyPI exhaustive query
+- **牵连条目**：[版本变更页](topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md)、[alpha.1 Host嵌入](integration/alpha1-full-host-embedding.md)。
+
+---
+
+### E018 — `SessionEventMap` declaration merge 不等于下游event进入持久化白名单
+
+- **类型**：类型扩展与runtime vocabulary混淆
+- **错误内容**：看到`SessionEventMap` merge-extensible和`Session.append()`公开，就断言out-of-tree plugin可定义required event并在任何正式PersistenceBackend上exact resume。
+- **正解**：known event set由DSH build扫描仓内declaration生成，源码明确把out-of-repo registration列为deferred。rc.2仅允许unknown envelope显式`ignorable:true`；alpha.1连该例外也移除。projection public seam只解决fold/view，不把event加入persistence vocabulary，也不提供Host create/resume/fork pre-publication resolver。
+- **根因**：把编译期TypeScript key扩展、live append和持久read compatibility当成同一契约。
+- **发现于**：2026-08-30 · rc.2 `b150a551` / alpha.1 `cd5ef814`
+- **牵连条目**：[packages/session.md](packages/session.md)、[packages/preset.md](packages/preset.md)。
+
+---
+
+> 更多**按包组分布**的文档与源码冲突（共 79 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

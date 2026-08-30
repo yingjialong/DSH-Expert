@@ -132,6 +132,14 @@ asked_by: agent
 - **输出 token cap 不与字符数线性换算**：官方字段是 `maxOutputTokens`；命中 `max-tokens` 会使 provider 结果失败，不会接受一个截断标题。扩大 code-point 展示上限不构成机械调整 token cap 的依据。`targetCjkCharacters` 只是 prompt 目标，不是校验。既有 `session/title` 事件不会因配置变更被重写或补长。
 - **版本内文档冲突**：`client/runtime` 与 `host/apiproxy` README 仍把 cold title 笼统写成必须等 open/resume；同 commit 的 API 类型、实现和测试已支持 cold `session.list` projection cache。源码结论优先，README 只描述“无 cache plugin/row”的降级组合（见 `conflicts.md` C077）。
 
+## 2026-08-30 · out-of-tree SessionEvent 持久化边界
+
+- rc.2 package root/`./types`允许TypeScript declaration merge `SessionEventMap`，`Session.append()`与projection registry也都是公开seam；但`KNOWN_SESSION_EVENT_TYPES`是DSH构建时生成的仓内白名单，源码明确说out-of-repo event registration deferred。
+- rc.2 persistence只允许unknown event在envelope带`ignorable:true`时读取。外部plugin可在“同一plugin始终存在”时保留并fold这类事件，但语义上它允许不认识的reader跳过，不能承载exact restore必须理解的composition事实。
+- alpha.1进一步移除unknown-event的ignorable例外，一律拒绝不在build白名单的事件。第三方required durable domain需上游登记/注册契约，不能只靠类型合并。
+- AgentRegistry direct create/resume有公开unpublished`setup`；rc.2 Web ApiProxy的generic create/resume/fork没有out-of-tree setup resolver注册点。`agent/created`/`agent/session-start`均已越过publication边界。
+- **认知状态**：verified_inference（两tag `known-event-types.ts`、persistence coordinator、Agent setup与ApiProxy控制流交叉核对）。
+
 ## 去哪深入（文件路由）
 
 | 问题 | 去这里 |

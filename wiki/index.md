@@ -39,6 +39,7 @@
 | [protocol-jsonrpc.md](integration/protocol-jsonrpc.md) [stale] | SDK JSON-RPC 线协议源码级契约：分帧规则、握手/readiness 边界、3 请求 + 4 通知的完整清单、会话并发模型、错误码偏差、任意语言宿主的最小实现清单 | L2 | 17 |
 | [protocol-acp-http.md](integration/protocol-acp-http.md) [stale] | ACP（automation-only stdio JSON-RPC）与 HTTP API gateway（/api + Typert Remote）两条进程外集成路线的能力边界、鉴权、会话映射与选型对比 | L2 | 28 |
 | [electron-embedding.md](integration/electron-embedding.md) [stale] | Electron/嵌入运行时集成约束：carrier、Workspace 本地 anchor、Assistant Markdown、pi-ai 动态 routes、exact-model reasoning effort 与 Approval owner 边界 | L2 | 57 |
+| [alpha1-full-host-embedding.md](integration/alpha1-full-host-embedding.md) | alpha.1 GitHub/npm分叉、完整Host形态、Web Remote/controller/carrier、owner矩阵、插件/capability-off/lifecycle/compat/security边界 | L2 | 20 |
 
 ## 主题（topics/）
 
@@ -55,7 +56,7 @@
 | [core-chain.md](topics/core-chain.md) [stale] | agent loop 函数级调用链、agent-loop 可替换性的三道机制保证、session 三层 derive 与持久化/projection seam、会话并发隔离 12 条「条件→结论」、preset standing mount 与 scope 父链、LlmAdapter 接入点、system-prompt/context 注入时机 | L2 | 27 |
 | [config-and-tools.md](topics/config-and-tools.md) [stale] | 配置与工具目录 — 非机密值六层覆盖梯子 + 凭据四层梯子 + 四种运行模式的真实定义（Creator mode 的目录 id 是 cordis）+ dsh --profile/bundle 补丁层 + tool-catalog 路由 + permission preset/approval。排错类问题的第一入口。 | L2 | 26 |
 
-## 包组（packages/）—— 50 组 / 226 包
+## 包组（packages/）—— 51 组 / 247 包
 
 | 包组 | 一行摘要 | 稳定性 | 包数 | 锚点 |
 |---|---|---|---|---|
@@ -108,4 +109,5 @@
 | [util](packages/util.md) [stale] | 零依赖共享原语：Branded 类型、DSH home 路径、timeout 分类、输出保留、原子写、原生命令、启动环境快照 | Support | 7 | 11 |
 | [web](packages/web.md) [stale] | web 能力族：ctx.web 单 seam 同时承载 search 与 fetch，四个 provider 加 tool-web；HTTP fetch 无 SSRF 防护 | Product | 6 | 12 |
 | [workflow](packages/workflow.md) [stale] | 模型自写编排脚本能力族：ctx.workflowEngine seam、worker-thread 引擎、workflow 与 ralph 两个工具消费者 | Product | 4 | 10 |
+| [webhook](packages/webhook.md) | 已认证外部事件的可信规则运行时：fire-and-forget 创建普通 Workspace Session，GitHub adapter 负责签名与有界 JSON intake | Product | 2 | 10 |
 | [workspace](packages/workspace.md) [stale] | workspace 实体单包：ctx.workspaceRegistry 管理目录、标题与有序会话归属；realpath 为身份权威，模型不可见 | Product | 1 | 8 |

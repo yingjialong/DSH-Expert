@@ -100,3 +100,11 @@ asked_by: agent
 - filesystem frontmatter 必填 `name` / `description`；可选键精确为 camelCase `whenToUse`、`metadata`、`disable-model-invocation`、`user-invocable`。`when-to-use` 不会成为 `whenToUse`；`modelInvocable` / `userInvocable` 是解析后的公共 policy 字段，不是接受的 frontmatter，旧 camelCase invocation 键会让整条 Skill 发现失败。
 - `skill-catalog` durable message 只记录当时发布给模型的 `{name, description}` 全量目录；内部 digest 也只覆盖这些条目且不持久化。它不证明 body revision、provider locator、active selection 或恢复时可重建 definition；空 replacement 只退役模型旧目录，不是 ref-aware definition tombstone/GC。
 - **认知状态**：verified_inference（正式 tarball、tag parser、公开 `.d.ts` 与 filesystem/tool-skill 一方测试交叉核对）。
+
+## 2026-08-30 · rc.2 路径与symlink边界
+
+- 发现深度固定一层：`<root>/<name>/SKILL.md`或`<root>/<name>.md`；nested tree与manifest不扫描。project root取nearest `.git` ancestor，否则cwd；rank为project-dsh 100、project-agents 200、custom 300、user-dsh 400、user-agents 500。
+- `get()`每次重读当前文件；definition的`resourceBase`是directory bundle自身目录或flat file所在root。正文里的resources只获得路径提示，不做存在性、containment、digest或权限验证。
+- 有`ctx.fs`时，list/resolve/stat/readText与symlink可见性归该FileSystem provider；无`ctx.fs`时Node fallback对root直属symlink用`stat()`跟随，一方测试覆盖指向root外的directory/flat file。断链和special file忽略。
+- `watchFollowSymlinks`只控制Chokidar watcher（默认true），不是读取sandbox。watch只因直属目录、flat Markdown、直接`SKILL.md`变化失效；references/scripts/assets内容变化不刷新catalog。
+- **认知状态**：verified_inference（rc.2 README、provider实现与symlink/watcher一方测试）。

@@ -6,7 +6,7 @@
 
 > `/dsh-sync` 时对 `retry_on_sync: true` 的条目重新查证。
 
-> 冷启动填充于 2026-08-20 · 上游 `141eb6f` · 原 114 条；2026-08-22 同步 0.1.1-rc.2 时重试：**5 条已解答删除**（Q014 credentials/updated 事件签名→事件已拆分见 errors.md E008；Q034 apiproxy config 校验→zod 源码确认；Q042 supportedProtocols→三协议源码确认；Q106 ACP 图片失败→AcpContentError 分类源码确认；Q114 credentials writable 语义→describe() 源码确认），**1 条更新进展**（Q043 catalog 清单需 pi-ai 运行时）；2026-08-27 联网复验 npm registry 后删除 Q095（SDK 包已公开发布，当前同版产物位于 `next`）。现存 108 条。多数仍需实测或等上游补文档。
+> 冷启动填充于 2026-08-20 · 上游 `141eb6f` · 原 114 条；2026-08-22 同步 0.1.1-rc.2 时重试：**5 条已解答删除**（Q014 credentials/updated 事件签名→事件已拆分见 errors.md E008；Q034 apiproxy config 校验→zod 源码确认；Q042 supportedProtocols→三协议源码确认；Q106 ACP 图片失败→AcpContentError 分类源码确认；Q114 credentials writable 语义→describe() 源码确认），**1 条更新进展**（Q043 catalog 清单需 pi-ai 运行时）；2026-08-27 联网复验 npm registry 后删除 Q095（SDK 包已公开发布，当前同版产物位于 `next`）；2026-08-30新增alpha.1发布/完整client两项未知。现存 110 条。多数仍需实测或等上游补文档。
 
 
 | # | 来源单元 | 问题 |
@@ -119,3 +119,5 @@
 | Q111 | `配置、工具目录与运行模式` | DSH_TOOLS_MODE（host `tools` 行）与 per-agent agent-tool-presentation 同时设置时的最终优先级只从 config 声明与注释推断，未实测运行（L2 封顶，无实测）。 |
 | Q112 | `配置、工具目录与运行模式` | headless profile 是否真的完全没有 agent preset 机制（即 `dsh --profile headless` 无法选运行模式）只从 packages/bundle/headless/cordis.patch.yml 缺 agent-presets 行推断，未实测。 |
 | Q113 | `配置、工具目录与运行模式` | $DSH_HOME/settings.yaml 的 `llm-pi-ai` namespace 已在 2026-08-27 逐字段核对（见 `packages/llm.md`）；permission / agent-loop / agent-default-model / agent-presets / shell / llm-deepseek / web-search-deepseek 的完整 schema 仍未逐一核对。 |
+| Q115 | `alpha.1完整Host嵌入` | GitHub prerelease已存在但npm/PyPI没有alpha.1；何时发布、最终tarball是否保持tag manifest exports/files与239包集合，官方没有承诺。 |
+| Q116 | `alpha.1完整Host嵌入` | 是否会提供完整语言无关Remote协议、正式Electron IPC carrier实现或第三方desktop embedding兼容保证，tag文档只给React-free TS ClientTransportHooks与“Electron用IPC”一句，未来计划未知。 |
