@@ -335,3 +335,12 @@
 - **依据锚点**：`packages/{preset/agent-presets,core/agent,core/session,session/session-persistence,skill/skill,skill/skill-filesystem,skill/tool-skill,mcp/mcp-client}`、`packages/host/apiproxy/src/api-proxy.ts`及一方tests。
 - **实测**：无；未连外部MCP、未用凭据。固定tag实现、正式tarball和一方测试足以静态闭环。
 - **沉淀**：既有`packages/{preset,session,skill,mcp}.md`结论复验成立，仅追加本日志。
+
+## 2026-08-30 · 跨会话复验：blank preset切换、compatibility vocabulary与Approval续跑
+
+- **提问者**：agent（跨会话；完整答案先回传成功）
+- **问题**：rc.2 blank select是否跨scope/log原子、是否与首prompt统一linearize；first-party required events在feature-off时如何解码；legacy no-id与Approval same-call continuation边界。
+- **结论**：recompose先ensure/rebind，ApiProxy后append，两者无统一事务；select queue不含prompt，prompt accepted到driver append turn/start存在窗口。仓内known event vocabulary不依赖Service activation；legacy no-id在有roster时取resume/fork时current default。Approval成功outcome由Service配对asked/decided，并在同一ToolRuntime execute中继续。
+- **依据锚点**：`packages/preset/agent-presets/src/index.ts`、`packages/core/{scope,agent,session,tools}`、`packages/host/apiproxy/src/{api-proxy,session-export}.ts`、`packages/interaction/user-approval/src/index.ts`及一方tests。
+- **实测**：无；正式tarballintegrity、固定tag控制流与测试足以判定。append失败竞态未人为构造，按源码标verified_inference。
+- **沉淀**：`packages/preset.md`精化；`errors.md` E020；index/log同步。

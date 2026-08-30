@@ -9,6 +9,10 @@ anchors:
   - packages/preset/agent-presets/src/index.ts
   - packages/preset/agent-presets/src/session.ts
   - packages/preset/persona/README.md
+  - packages/core/scope/src/index.ts
+  - packages/core/session/src/index.ts
+  - packages/core/agent-loop/src/agent.ts
+  - packages/host/apiproxy/src/api-proxy.ts
   - apps/cli/config/agent-presets/
   - .agents/notes/implemented/architecture/2026-08-03-per-session-agent-presets.md
   - .agents/notes/implemented/architecture/2026-08-08-per-preset-standing-mounts.md
@@ -95,10 +99,11 @@ asked_by: agent
 ## 2026-08-30 · rc.2 create / blank select / prompt 时序
 
 - `session.create` 在 Session 构造前先把请求 id/default 解析为当前 roster 的 preset id；Agent factory 随后以 Session/Agent 均未发布的 setup mount standing composition，setup/commit 成功后才依次发布 Session、Agent、`agent/session-start` 并返回。此时没有 `turn/start`，所以仍为 blank。
-- `agentPreset.select` 只在 live Session 仍 blank 时生效：同 Session 的多个 select 在专用 queue 串行并在队内重检 blank；`recompose()` 确保新 standing mount 后只重绑原 Agent scope，不销毁/重建 Agent或 Session；提交成功后才追加 `agent-preset/selected`。header 保留创建事实，最后一条 selection event 是 resume/list 的 current id。
-- 首个 `session.prompt` 通过普通 Agent inbox 启动第一个 turn；此后再 select 得到 `agent-preset-locked`。但 prompt admission 不进入 preset-select queue，且没有独立 finalize/lock event；固定 tag 未给“并发 select 与首 prompt”的原子相对顺序保证。因此 blank whole-preset switch 不能当成任意 Skill/MCP draft 在首 prompt 边界原子固化的公共契约。
+- `agentPreset.select` 只在 live Session 仍 blank 时生效：同 Session 的多个 select 在专用 queue 串行并在队内重检 blank；`recompose()` 先 ensure 新 standing generation，再同步 bind/rebind 原 Agent 的 scope parent，不销毁/重建 Agent或 Session；它返回后 ApiProxy 才追加 `agent-preset/selected`。header 保留创建事实，最后一条 selection event 是 resume/list 的 current id。
+- `recompose()` 与 durable append **不是统一事务**：unknown/broken standing 与 cycle-check失败都发生在 parent link 写入前，旧 composition 保持；但 append 的JSON/reentry/invariant检查发生在 scope 已重绑之后，ApiProxy没有 append 失败时反向 rebind 的rollback。正常成功路径才同时拥有新 live composition与新 durable selection；不得把“event在提交后追加”扩成“任一步失败都恢复旧composition”。
+- 首个 `session.prompt` 通过普通 Agent inbox 启动第一个 turn；prompt不进入 preset-select queue，也不执行同一 blank recheck，RPC accepted 后 `turn/start`由driver稍后追加。固定 tag未给并发select与首prompt的统一linearization/finalize契约。因此blank whole-preset switch不能当成任意Skill/MCP draft在首prompt边界原子固化的公共契约。
 - resume 在持久日志 load 后、Agent publication 前按 `resolveSessionPreset(header, events)` 的 id向当前 roster resolve/mount；ordinary Session fork也按 source log current id重新 resolve当前 roster，而不是继承 source live standing generation。只有 subagent `composeFrom()` 明确绑定父 Agent 已运行的同一 standing generation。
-- **认知状态**：verified_inference（`dsh-agent` public setup/publication契约、Host ApiProxy实现与 agent-preset一方测试交叉核对；未实测并发 prompt/select交错）。
+- **认知状态**：verified_inference（`dsh-agent` public setup/publication、`dsh-scope` rebind、Session append与Host ApiProxy控制流交叉核对；未实测故意制造append失败或并发prompt/select交错）。
 
 ## 2026-08-30 · rc.2 无preset legacy Session
 

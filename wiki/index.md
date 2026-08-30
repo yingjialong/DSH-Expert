@@ -89,7 +89,7 @@
 | [lsp](packages/lsp.md) [stale] | LSP 能力 seam：恰好四个语义操作、无 JSON-RPC 逃生口；lsp-stdio 通用 stdio 后端与模型侧 lsp 工具（一基 UTF-16 光标坐标）。 | Product | 3 | 14 |
 | [mcp](packages/mcp.md) [stale] | MCP 客户端桥：内建 stdio/Streamable HTTP 与 generation-safe tool swap；正式根未公开 carrier factory、server/generation identity 或 snapshot/diff。 | README 未列出 | 1 | 8 |
 | [plan](packages/plan.md) [stale] | plan mode 是 log-only 的 per-agent 协作状态而非 capability seam；/plan 命令进入，exit_plan_mode 经用户审批退出。 | Product | 1 | 7 |
-| [preset](packages/preset.md) [stale] | 每会话 agent 组合；含 rc.2 文件系统 roster、Session 只耐久 preset id、动态目录发现、冷恢复与定义缺失的分支边界。 | Product | 2 | 12 |
+| [preset](packages/preset.md) [stale] | 每会话 agent 组合；含 rc.2 文件系统 roster、Session 只耐久 preset id、冷恢复、blank recompose/durable append非事务及首prompt缺统一linearization。 | Product | 2 | 12 |
 | [runtime-diagnostics](packages/runtime-diagnostics.md) [stale] | 包自有运行期不变式注册表 ctx.invariants：每个包发布 ./invariant companion，检查自己拥有的事件关系与可变数据关系。 | README 未列出 | 1 | 10 |
 | [sandbox](packages/sandbox.md) [stale] | 进程限制能力族：ctx.sandbox.confine(argv, policy) 返回替代原 argv 的包装 argv，无可用后端就抛错；只管同世界子进程。 | Product | 4 | 14 |
 | [schedule](packages/schedule.md) [stale] | Session 本地定时提醒：持久状态只存在原 Session 事件日志，到期项通过 Agent 普通 follow-up 队列回到同一段对话，无外部通知。 | Product | 1 | 13 |
