@@ -416,3 +416,12 @@
 - **依据锚点**：`packages/llm/{llm,llm-retry}`、`packages/core/{agent-loop,tools,session}`、`packages/interaction/user-approval`、`packages/guard/repeat-tool-reminder`、`packages/session/session-checkpoint-policy`及一方tests。
 - **实测**：无；未调用模型、未执行native effect，固定tag静态证据足以收口。
 - **沉淀**：`packages/{llm,interaction,guard}.md`、errors E028、conflicts C080、index/coverage/log。
+
+## 2026-08-31 · 跨会话核验：alpha.2 Skill/Preset/MCP contract与安装解析
+
+- **提问者**：agent（跨会话；完整答案先回传并确认成功）
+- **问题**：正式npm alpha.2是否补齐Skill catalog identity/immutable resolver/Session共同提交、blank prompt barrier/recompose rollback，以及MCP modern protocol/carrier/inspector/generation contracts；package family是否齐备。
+- **结论**：题列owner-grade contracts均未补齐。Skill仍是`{skills,complete}`+borrowed string definition；Preset仍先rebind后append且select/prompt无共同barrier；MCP仍固定transport、SDK latest 2025-11-25、无raw inspector或public generation identity。245个nonprivate tag ids均有tarball。
+- **实测**：macOS 26.4.1 arm64 / Node 22.22.3 / npm 10.9.8；一次性sandbox执行`npm install --ignore-scripts --no-audit --no-fund @deepseek-ai/dsh@0.1.2-alpha.2 @deepseek-ai/dsh-skill@0.1.2-alpha.2 @deepseek-ai/dsh-tool-skill@0.1.2-alpha.2 @deepseek-ai/dsh-agent-presets@0.1.2-alpha.2 @deepseek-ai/dsh-mcp-client@0.1.2-alpha.2 @deepseek-ai/dsh-session@0.1.2-alpha.2`，524 packages；`npm ls --all`退出0，215个唯一DSH包全为alpha.2；sandbox已清理。未运行scripts/native/boot。
+- **依据锚点**：alpha.2正式`dsh-skill`、`dsh-agent-presets`、`dsh-api-session-controller`、`dsh-mcp-client`、`dsh-session`、`dsh-tool-skill` tarball；tag的Skill/Preset/Session-controller/MCP实现与tests；SDK 1.29.0 protocol constants。
+- **沉淀**：alpha.2版本页、open Q115、index/coverage/log。

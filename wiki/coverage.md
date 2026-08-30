@@ -44,7 +44,7 @@
 | 插件开发全路径（dsh-plugin） | **L2** | 35 | [topics/plugin-development.md](topics/plugin-development.md) | 8 条关键发现 |
 | 核心链 core / session / preset / llm（源码级 L2） | **L2** | 27 | [topics/core-chain.md](topics/core-chain.md) | 10 条关键发现 |
 | 配置、工具目录与运行模式 | **L2** | 26 | [topics/config-and-tools.md](topics/config-and-tools.md) | 8 条关键发现 |
-| alpha.1→alpha.2版本变更 | **L1** | 16 | [topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md](topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md) | 发布渠道、ignorable、Skill/Session correlation、MCP public seam与依赖owner重组 |
+| alpha.1→alpha.2版本变更 | **L1** | 19 | [topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md](topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md) | 发布渠道、Skill/Preset/MCP contract、npm dependency resolution与依赖owner重组 |
 
 ## 三、包组（51 组 / 251 包）
 
@@ -127,7 +127,7 @@
 |---|---|
 | 已建立页面 | 75 页（69 内容页 + 6 治理页） |
 | 掌握度分布 | L2 **35** · L1 **34** · L3/L4 **0** |
-| 锚点总数 | 898（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
+| 锚点总数 | 901（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
 | 已记录陷阱 | 572 条（分布在各页「陷阱」一节） |
 | 文档与源码冲突 | 80 条（见 conflicts.md） |
 | 悬而未决 | 110 条（见 open-questions.md） |
