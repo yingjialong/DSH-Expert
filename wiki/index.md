@@ -39,6 +39,7 @@
 | [protocol-jsonrpc.md](integration/protocol-jsonrpc.md) [stale] | SDK JSON-RPC 线协议源码级契约：分帧规则、握手/readiness 边界、3 请求 + 4 通知的完整清单、会话并发模型、错误码偏差、任意语言宿主的最小实现清单 | L2 | 17 |
 | [protocol-acp-http.md](integration/protocol-acp-http.md) [stale] | ACP（automation-only stdio JSON-RPC）与 HTTP API gateway（/api + Typert Remote）两条进程外集成路线的能力边界、鉴权、会话映射与选型对比 | L2 | 28 |
 | [electron-embedding.md](integration/electron-embedding.md) [stale] | Electron/嵌入运行时集成约束：carrier、Workspace 本地 anchor、Assistant Markdown、pi-ai 动态 routes、exact-model reasoning effort 与 Approval owner 边界 | L2 | 57 |
+| [rc2-full-web-native-shell.md](integration/rc2-full-web-native-shell.md) | rc.2正式CLI custom Web Profile、dual-face Client plugin、transport/native capability owner、tarball闭包及alpha拓扑断点 | L2 | 28 |
 | [alpha1-full-host-embedding.md](integration/alpha1-full-host-embedding.md) | alpha.1 GitHub/npm分叉、完整Host形态、Web Remote/controller/carrier、owner矩阵、插件/capability-off/lifecycle/compat/security边界 | L2 | 20 |
 
 ## 主题（topics/）

@@ -231,4 +231,15 @@
 
 ---
 
+### E019 — 精确锁CLI版本不等于精确锁完整npm闭包
+
+- **类型**：发布闭包 / 可复现性陷阱
+- **错误内容**：看到`@deepseek-ai/dsh@0.1.1-rc.2`就断言其全部DSH companion、Cordis/Loader与native helper也被tarball精确钉在同一发布快照。
+- **正解**：CLI tarball自身可由integrity精确识别，但其DSH dependencies为`^0.1.1-rc.2`，Cordis/Loader/Include/HMR等也是ranges，Koffi/Sharp也用caret；tag lock才给出当次解析结果。根版本、package tarball与递归install closure是三件事，完整可复现性必须同时保留lockfile/integrity并审计native companions。
+- **根因**：把monorepo共享release version误当成npm依赖的exact-equality约束。
+- **发现于**：2026-08-30 · 正式`@deepseek-ai/dsh@0.1.1-rc.2` tarball + tag `b150a551` lockfile复核
+- **牵连条目**：[rc.2完整Web Profile与原生壳](integration/rc2-full-web-native-shell.md)。
+
+---
+
 > 更多**按包组分布**的文档与源码冲突（共 79 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

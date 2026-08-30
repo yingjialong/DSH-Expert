@@ -29,6 +29,7 @@
 | SDK JSON-RPC 线协议（stdio） | **L2** | 17 | [integration/protocol-jsonrpc.md](integration/protocol-jsonrpc.md) | 8 条关键发现 |
 | ACP 与 HTTP API gateway（进程外集成的两条协议路线） | **L2** | 28 | [integration/protocol-acp-http.md](integration/protocol-acp-http.md) | 8 条关键发现 |
 | Electron 与嵌入运行时集成约束 | **L2** | 57 | [integration/electron-embedding.md](integration/electron-embedding.md) | 2026-08-27：carrier / Workspace / Markdown / pi-ai / reasoning effort / Approval owner 边界 |
+| rc.2完整Web Profile与原生壳插件边界 | **L2** | 28 | [integration/rc2-full-web-native-shell.md](integration/rc2-full-web-native-shell.md) | 正式tarball、custom Profile、dual-face Client、platform capability owner与alpha断点 |
 | alpha.1完整Host与嵌入控制面 | **L2** | 20 | [integration/alpha1-full-host-embedding.md](integration/alpha1-full-host-embedding.md) | GitHub/npm分叉、Remote/controllers、owner矩阵、public plugin与安全边界 |
 
 ## 二、主题与内核

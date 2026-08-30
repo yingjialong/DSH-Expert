@@ -315,3 +315,13 @@
 - **结论**：legacy无preset Session显式adopt到named preset会conflict；省略时resume/fork按current default产生条件性fallback，read路径fail-soft且不写回旧header。Out-of-tree event仅能以`ignorable:true`越过rc.2 persistence白名单，不足以表达required exact composition；generic ApiProxy无pre-publication resolver注册。Skill filesystem一层发现，Node fallback跟随直属symlink，`ctx.fs`模式交给provider，watch-follow不是sandbox。
 - **依据锚点**：rc.2 `packages/{preset/agent-presets,core/session,session/session-persistence,session/session-projection,host/apiproxy,skill/skill-filesystem}`及正式tarball/一方tests。
 - **沉淀**：`packages/{preset,session,skill}.md`、`errors.md` E018。
+
+## 2026-08-30 · 跨会话问答：rc.2完整Web Profile与原生壳插件
+
+- **提问者**：agent（跨会话；先成功回传，后执行本条沉淀）
+- **问题**：正式rc.2能否用custom Profile保留完整Web图，dual-face Client/public carrier能否承载原生壳，以及平台capability、Session trigger、发布闭包与alpha升级断点的边界。
+- **结论**：base+web-app加无破坏性外部层可保留shipped Web图；正式`dsh.client`+`./client`支持out-of-tree双face，Connection公开`createApiClient/fetch/loadBundle`但无WebKit成品或通用Host→Client push。平台物理能力可进Service/Provider/Consumer与ToolRuntime，具体macOS domain未知。根CLI精确版本不等于递归闭包精确锁定。
+- **正式发布物**：直接`npm pack`核验CLI/app-boot/base/web-app/client-modules/connection/runtime/api-remotes/apiproxy/tools/agent/approval/questions/credentials/llm等22个rc.2包；CLI integrity `sha512-UP1UIh6q3Gme...`，shasum `1a5112369f1c46b13a6e6f21de8af5e6afd45074`。
+- **依据锚点**：`apps/cli/{README.md,reference/README.md,src/{profile-boot,process-shutdown}.ts,tests/built-bin.e2e.ts}`、`packages/boot/app-boot`、`packages/bundle/{base,web-app}`、`packages/client/{modules,connection,runtime}`、`packages/host/apiproxy`、`packages/api/remotes`与core capability roots。
+- **实测**：未启动真实Web Host/WKWebView；静态tag、正式tarball JS/.d.ts、npm integrity与一方tests闭环。无模型调用、无真实凭据。
+- **沉淀**：`integration/rc2-full-web-native-shell.md`、`errors.md` E019、index/coverage/log。
