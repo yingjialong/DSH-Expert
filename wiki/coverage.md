@@ -59,8 +59,8 @@
 | [code-runtime](packages/code-runtime.md) | L1 | Product | 3 | 13 | 12 | 10 | 2 |
 | [compaction](packages/compaction.md) | L1 | Product | 4 | 13 | 9 | 8 | 2 |
 | [context](packages/context.md) | L1 | Product | 6 | 12 | 7 | 8 | 2 |
-| [core](packages/core.md) | L1 | Product | 8 | 18 | 12 | 10 | 2 |
-| [credentials](packages/credentials.md) | L2 | Product | 3 | 12 | 6 | 8 | 1 |
+| [core](packages/core.md) | L1 | Product | 8 | 20 | 12 | 10 | 2 |
+| [credentials](packages/credentials.md) | L2 | Product | 3 | 15 | 6 | 8 | 1 |
 | [e2b](packages/e2b.md) | L1 | POC | 3 | 10 | 6 | 9 | 2 |
 | [examples](packages/examples.md) | L1 | Support | 1 | 11 | 6 | 8 | 1 |
 | [experimental](packages/experimental.md) | L1 | Unreleased | 8 | 13 | 6 | 10 | 2 |
@@ -70,15 +70,15 @@
 | [goal](packages/goal.md) | L1 | Product | 4 | 13 | 8 | 10 | 2 |
 | [guard](packages/guard.md) | L1 | Product | 2 | 9 | 8 | 10 | 2 |
 | [hooks](packages/hooks.md) | L1 | Product | 3 | 13 | 17 | 13 | 3 |
-| [host](packages/host.md) | L2 | Product | 7 | 25 | 16 | 15 | 3 |
+| [host](packages/host.md) | L2 | Product | 7 | 29 | 16 | 15 | 3 |
 | [identity](packages/identity.md) | L1 | Product | 1 | 5 | 4 | 4 | 2 |
 | [interaction](packages/interaction.md) | L2 | Product | 5 | 18 | 9 | 10 | 2 |
 | [jobs](packages/jobs.md) | L1 | Product | 3 | 10 | 7 | 10 | 2 |
-| [llm](packages/llm.md) | L2 | Product | 7 | 33 | 10 | 14 | 3 |
+| [llm](packages/llm.md) | L2 | Product | 7 | 35 | 10 | 14 | 3 |
 | [lsp](packages/lsp.md) | L1 | Product | 3 | 14 | 6 | 12 | 2 |
 | [mcp](packages/mcp.md) | L1 | README 未列出 | 1 | 7 | 7 | 10 | 3 |
 | [plan](packages/plan.md) | L1 | Product | 1 | 7 | 7 | 11 | 2 |
-| [preset](packages/preset.md) | L1 | Product | 2 | 12 | 11 | 8 | 1 |
+| [preset](packages/preset.md) | L1 | Product | 2 | 14 | 11 | 8 | 1 |
 | [runtime-diagnostics](packages/runtime-diagnostics.md) | L1 | README 未列出 | 1 | 10 | 10 | 9 | 1 |
 | [sandbox](packages/sandbox.md) | L1 | Product | 4 | 14 | 24 | 10 | 1 |
 | [schedule](packages/schedule.md) | L1 | Product | 1 | 13 | 11 | 10 | 0 |
@@ -127,7 +127,7 @@
 |---|---|
 | 已建立页面 | 75 页（69 内容页 + 6 治理页） |
 | 掌握度分布 | L2 **35** · L1 **34** · L3/L4 **0** |
-| 锚点总数 | 866（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
+| 锚点总数 | 880（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
 | 已记录陷阱 | 572 条（分布在各页「陷阱」一节） |
 | 文档与源码冲突 | 79 条（见 conflicts.md） |
 | 悬而未决 | 110 条（见 open-questions.md） |

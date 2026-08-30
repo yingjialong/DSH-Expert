@@ -7,12 +7,16 @@ anchors:
   - packages/host/README.md
   - packages/host/apiproxy/README.md
   - packages/host/apiproxy/src/api-proxy.ts
+  - packages/host/apiproxy/src/api/sessions.ts
   - packages/host/apiproxy/src/api/events.ts#EventsApi.mux
   - packages/host/apiproxy/src/api/approvals.ts#ApprovalResponsePayload
   - packages/host/apiproxy/tests/api-proxy-approval.spec.ts
   - packages/host/webserver/README.md
   - packages/host/webserver/src/index.ts
   - packages/host/frontend-static/README.md
+  - packages/host/frontend-static/src/index.ts
+  - packages/client/connection/src/index.ts
+  - packages/client/connection/src/api-request-trust.ts
   - packages/host/directory-picker/README.md
   - packages/host/directory-picker/src/index.ts
   - packages/host/directory-picker-auto/README.md
@@ -118,6 +122,14 @@ dsh Web GUI 的 host 侧：所有 client 形态共用的 API gateway（`ctx.apiP
 - **`session.create` 的 payload 允许 caller 自带 `sessionId`，且该 id 会成为持久身份**：`packages/host/apiproxy/src/sessions/schema.ts`（约 L102-110）`sessionId` 为 optional；`api-proxy.ts` 的 create 实现里 caller id 优先（约 L2080/L2095），`checkPersistedIdentity = sessionId !== undefined`；`ensureSession`（约 L1558-1648）按 client-chosen identity 语义 **adopt / resume** 既有会话（同 cwd 通过、跨 workspace 被 `SessionCwdConflict` 拒绝），无该 id 时才由 host 铸造新 SessionId。官方留此口子的动机是**调用方重试去重**（上游注释 "deduplicated across concurrent retries"）。
 - **对不受信 client 侧宿主的含义**：若宿主把 `session.create` 直通给不受信的 UI/进程，等于允许它自选或 adopt 任意同 workspace SessionId 作为上下文。围栏做法是在宿主代理层**剥离 payload.sessionId**（只透传 `{workspaceId}`）——官方 client runtime 的 `connectWorkspace` 路径本来就不带 sessionId（`packages/client/runtime/src/client/workspaces/service.ts` 约 L112），剥离不影响官方路径。
 - **closely related**：`SessionCreateError` 携带 `requestedSessionId`，preallocated id 失败时可凭它对账（见 [integration/electron-embedding.md](../integration/electron-embedding.md) §6）。
+
+## 2026-08-30 · rc.2 create/prompt admission与Web trust边界
+
+- caller预分配`sessionId`是create的正式幂等键：同id/cwd可single-flight/adopt/resume，不同cwd冲突。成功响应在Agent setup/publication与可选Workspace attach后；attach失败时Session已发布并在error details返回id。React-free`SessionRuntime.create`成功前已让list/binding同步可寻址。
+- prompt的`accepted:true`在附件/时区准入、UserMessage构造与`followup/steer`持久Inbox splice后返回；Host可在HTTP响应丢失后继续turn。prompt `rpcId`耐久写进MessageSource，但`AbstractApiClient`每次自行mint，Host不按它去重、没有status/query seam；重发会重复prompt。raw history扫描只能事后证明存在，不提供与在途调用的linearization。
+- `dsh-client-connection`对`/api`prefix和`/api/events.mux`、`/api/events.host`两条WebSocket upgrade复用Host/Origin/Fetch-Metadata trust predicate，并有一方tests；该predicate明确不是authentication。
+- 初始HTML由`frontend-static`fallback直接服务，不经过上述fence；predicate也未从正式package root导出。WebServer公开route/upgrade/fallback原语，但没有全server middleware。因此rc.2没有统一覆盖HTML+API+两WS的公共admission seam。
+- **认知状态**：verified_inference（固定tagApiProxy/Runtime/Connection/WebServer/Frontend控制流与一方tests；未启动真实Web Host）。
 
 ## 去哪深入（文件路由）
 

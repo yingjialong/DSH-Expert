@@ -91,6 +91,14 @@ asked_by: agent
 - **`TOOL_OUTCOME_UNKNOWN` 只属于通用 Session crash repair**：MCP bridge没有单独的 OUTCOME_UNKNOWN / exactly-once 协议。若已持久 `tool/call` 在硬崩前没有 durable result，SessionPersistence 可在恢复时补通用 `TOOL_OUTCOME_UNKNOWN`；这不提供 MCP server-side operation identity 或查询/去重保证。
 - **认知状态**：verified_inference（tag 源码、正式 DSH/SDK tarball JS/.d.ts 与一方测试源码交叉核对；未连外部 MCP server）。
 
+## 2026-08-30 · rc.2 descriptor迁移、trust与dry-run边界
+
+- 公共Config只表达一server一row：共通`transport/serverName/toolCallTimeoutMs/failOnStartupError/reconnect.*`；stdio再带`command/args/env/cwd`，HTTP再带`url/headers`。server整体启停归Cordis row mount/`disabled`；没有MCP-specific server/tool allowlist、descriptor provenance或declared-capability输入。
+- 一般`ctx.tools.restrict({allow/deny})`可在工具已注册后按`mcp__<server>__<raw>`限制某Agent的可见性，但拒绝未知名，且官方声明是visibility composition而非authority。MCP bridge本身不发approval ask；若外部policy用`tools/pre-execute`接ApprovalService，审计仍只有DSH tool identity/callId/reason/outcome，不继承旧runner trust或provenance。
+- MCP秘密不走`CredentialProvider`：stdio显式`env`进child environment，HTTP `headers`进request。根未公开transport/fetch/carrier factory，不能用正式seam实现每operation trusted secret resolution。
+- 根`Config`可在不apply时校验descriptor shape；但真实capability/tool验证必须`apply`，会stdio spawn或HTTP connect、initialize/分页`tools/list`并注册工具。CLI config dump不启动server，也不验证live descriptor。无import/export/逐项compatibility或无连接tool-catalog dry-run。
+- **认知状态**：verified_inference（固定tag根Config、transport/connection/tools实现、正式tarball exports与一方tests；未连接外部server）。
+
 ## 去哪深入（文件路由）
 
 | 想知道什么 | 去读 |

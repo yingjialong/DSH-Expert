@@ -7,12 +7,14 @@ anchors:
   - packages/preset/README.md
   - packages/preset/agent-presets/README.md
   - packages/preset/agent-presets/src/index.ts
+  - packages/preset/agent-presets/src/authoring.ts
   - packages/preset/agent-presets/src/session.ts
   - packages/preset/persona/README.md
   - packages/core/scope/src/index.ts
   - packages/core/session/src/index.ts
   - packages/core/agent-loop/src/agent.ts
   - packages/host/apiproxy/src/api-proxy.ts
+  - packages/host/apiproxy/src/api/agent-presets.ts
   - apps/cli/config/agent-presets/
   - .agents/notes/implemented/architecture/2026-08-03-per-session-agent-presets.md
   - .agents/notes/implemented/architecture/2026-08-08-per-preset-standing-mounts.md
@@ -113,3 +115,11 @@ asked_by: agent
 - history/presenter只读路径对无ID Session尝试default standing scope，失败后退global并继续服务；它不是Agent resume成功保证。rc.2 `skills.list`要求Session已attached。
 - ordinary fork对无ID source：roster存在时按fork时default创建child并把该ID写child header；无roster时child仍无ID。这是current fallback，不是legacy digest/ref migration。
 - **认知状态**：verified_inference（ApiProxy实现与preset-less adoption一方测试；resume/fork无ID分支由源码控制流交叉核对，未找到独立专项测试）。
+
+## 2026-08-30 · rc.2 Session引用枚举、remove与version coexistence
+
+- 公共`session.list`只枚举effective`agentPreset` id；header/event可回放同一选择。Session不保存plugin rows/package versions/definition digest，亦无Session→plugin引用表。
+- `AgentPresets.remove(id)`不做Session ref check：删除user definition并清current standing pointer；已live Agent仍靠旧standing跑到进程结束。重启后recorded id在current roster缺失，真实resume失败。
+- `agentPreset.read/copy/remove`只面对current roster；`session.export`只导出raw Session artifact，不含preset definition。无historical generation handle、ref-aware retention/tombstone、clear-reference、删前影响枚举或historical export。
+- 同进程同id改文件时已join Session可留旧private standing、新Session用新generation；该generation不可公开寻址且不跨重启。只有不同且长期保留的immutable preset ids及其模块同时在current closure时，preset-scoped旧/新composition才可条件并存；DSH不自动管理plugin version coexistence，Host-plane全局plugin也不因此版本化。
+- **认知状态**：verified_inference（固定tagPreset authoring/standing、ApiProxy与Persistence语义交叉核对；未安装第三方多版本plugin）。

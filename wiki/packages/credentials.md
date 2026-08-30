@@ -14,6 +14,10 @@ anchors:
   - packages/llm/llm-pi-ai/src/index.ts
   - packages/llm/llm-pi-ai/tests/adapter.spec.ts
   - packages/llm/llm-pi-ai/tests/dynamic-config.spec.ts
+  - packages/host/apiproxy/tests/api-proxy-config.spec.ts
+  - packages/client/ui-settings-models/package.json
+  - packages/client/ui-settings-models/src/client/index.ts
+  - packages/client/ui-settings/src/client/index.ts
   - docs/subsystems/credentials.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
 verified_at: 2026-08-30
@@ -85,6 +89,13 @@ asked_by: agent
 - 公共签名是 `resolve(ref): Promise<ResolvedCredential | undefined>`，成功值为 `{ value, source }`，不是裸字符串。`CredentialInfo.configured` 的契约含义是“当前 `resolve()` 会返回值”；同一时刻 `describe().configured === true` 而 `resolve() === undefined` 违反 provider 语义，但两次独立调用之间没有原子快照保证，外部事实可以变化。
 - `llm-pi-ai` 注册 route、adapter catalog 与 model metadata 时不调用 `describe()` / `resolve()`；命名 ref 只在 model discovery 或真实 stream operation 解析。因此凭据实际缺失不妨碍 route/catalog 发布，首次 provider operation 才以 `MISSING_CREDENTIAL` 失败。不能据此把一个自相矛盾的 provider 实现称为契约允许，也不能把“catalog 已发布”解释为凭据 ready。
 - **认知状态**：verified_inference（`packages/credentials/credentials/src/index.ts`、`packages/llm/llm-pi-ai/src/index.ts`、`tests/adapter.spec.ts` 与正式 `.d.ts`/JS 交叉核对；未重新执行测试）。
+
+## 2026-08-30 · rc.2 provider替换与Web raw-input边界
+
+- 根公开abstract`CredentialProvider`覆盖refs与records完整合同；custom provider可在composition中替换`credentials-local`。ApiProxy一方tests以`MemoryCredentials extends CredentialProvider`验证generic describe/set/unset，故Host provider replacement是正式且一方验证的seam。
+- shipped raw API-key输入归独立`dsh-client-ui-settings-models` dual-face row；profile可不mount/disable它，公共Client slots也可由另一plugin提供settings section。这只替换presentation。
+- `/api/credentials.set`仍接受raw value，`dsh-client-connection`只有loopback/same-origin pin、无method-disable config；禁UI不会移除wire。Custom provider可让`set()`拒绝，但secret仍已穿过request与Client envelope observation面。因此“替换provider”“替换UI”“禁止raw credential over wire”是三个不同边界，rc.2没有一个统一开关。
+- **认知状态**：verified_inference（固定tagCredentialProvider、ApiProxy tests、client plugin manifest/slot实现；未提交真实secret）。
 
 ## 去哪深入（文件路由）
 

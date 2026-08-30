@@ -73,8 +73,8 @@
 | [code-runtime](packages/code-runtime.md) [stale] | Code Mode 的执行底座：ctx.codeRuntime seam 加 worker-thread provider；isolation 只是标签不是安全声明，run 只返错不抛错。 | Product | 3 | 13 |
 | [compaction](packages/compaction.md) [stale] | 会话压缩能力族：CompactionEngine seam、token 压力摘要 provider、无模型 tool-result 剪枝伴生、人类 /compact 命令。 | Product | 4 | 13 |
 | [context](packages/context.md) [stale] | 请求上下文扩展组：工作区 AGENTS.md 指令加载、@file 引用 seam 与本地 provider、跨会话快照、时间与 tmux 位置上下文。 | Product | 6 | 12 |
-| [core](packages/core.md) [stale] | 产品 API 主干：session 日志、system-prompt 组装、tools 注册与执行流水线、Agent seam 与注册表、默认模型、唯一那份具体 loop。 | Product | 8 | 18 |
-| [credentials](packages/credentials.md) [stale] | 凭据两个 key space：CredentialRef 每 operation 解析静态 key，CredentialKey record 归 owner 的 API-key/grant；含 pi-ai request-time 解析、缺失/非法凭据错误边界与 catalog 非 readiness 语义。 | Product | 3 | 13 |
+| [core](packages/core.md) [stale] | 产品API主干；含Tool call/token身份、cancel非quiescence与crash `TOOL_OUTCOME_UNKNOWN`边界。 | Product | 8 | 20 |
+| [credentials](packages/credentials.md) [stale] | 凭据seam；含provider replacement、UI可替换但raw `credentials.set` wire仍存在的分层边界。 | Product | 3 | 15 |
 | [e2b](packages/e2b.md) [stale] | E2B 远程运行时 POC：sandbox 生命周期所有者加 fs/subprocess 两个 adapter，让 bash、PTY、LSP 消费者无需分叉即可搬进沙箱。 | POC | 3 | 10 |
 | [examples](packages/examples.md) [stale] | alpha.2 tag下只余agent-spine-demo package manifest；非产品API，历史demo结论待专项复验。 | Support | 1 | 11 |
 | [experimental](packages/experimental.md) [stale] | 8个private实验package，含Agent Teams、inspector与webworker；无稳定性承诺。 | Unreleased | 8 | 13 |
@@ -84,15 +84,15 @@
 | [goal](packages/goal.md) [stale] | 同会话持久化目标：状态 event-sourced 进 session log，续跑权限 activation 从不持久化，state 与 scheduling 严格分家。 | Product | 4 | 13 |
 | [guard](packages/guard.md) [stale] | loop 卫生守卫：重复工具调用的劝告式提醒 + tools/execute 上的协作式 per-call deadline；不是能力，是纯消费者。 | Product | 2 | 9 |
 | [hooks](packages/hooks.md) [stale] | Claude Code / Codex hook 桥接：把外部 shell-hook 协议翻译到 harness 自己的类型化拦截点，外加共享线协议库。 | Product | 3 | 13 |
-| [host](packages/host.md) [stale] | Web GUI的Host半；alpha.2 tag下7个package manifest，旧ApiProxy描述不再适用。 | Product | 7 | 25 |
+| [host](packages/host.md) [stale] | Web Host/API；含create/prompt admission、rpcId非幂等、API+WS trust fence不覆盖HTML的rc.2边界。 | Product | 7 | 29 |
 | [identity](packages/identity.md) | 共享匿名关联 id（UUID v4）；它不是 Cordis plugin 而是普通共享库，telemetry、feedback 回执与 DeepSeek 请求头三处共用同一值。 | Product | 1 | 5 |
 | [interaction](packages/interaction.md) [stale] | 人机协作平面：user-questions / user-approval seam、permission-presets / commands 产品面；含 Approval owner signal、disconnect replay 与 presentation 可见性边界。 | Product | 5 | 18 |
 | [jobs](packages/jobs.md) [stale] | 后台作业 capability family：ctx.jobs 契约、jobs-local 进程内实现、tool-jobs 三工具与完成通知；owner 隔离与唤醒预算是理解重点。 | Product | 3 | 10 |
-| [llm](packages/llm.md) [stale] | LLM seam与adapters；含pi-ai协议、route/model owner及exact-model reasoning边界。 | Product | 7 | 33 |
+| [llm](packages/llm.md) [stale] | LLM seam与adapters；含pi-ai、reasoning及adapter拿不到跨retry/crash request identity的边界。 | Product | 7 | 35 |
 | [lsp](packages/lsp.md) [stale] | LSP 能力 seam：恰好四个语义操作、无 JSON-RPC 逃生口；lsp-stdio 通用 stdio 后端与模型侧 lsp 工具（一基 UTF-16 光标坐标）。 | Product | 3 | 14 |
-| [mcp](packages/mcp.md) [stale] | MCP 客户端桥：内建 stdio/Streamable HTTP 与 generation-safe tool swap；正式根未公开 carrier factory、server/generation identity 或 snapshot/diff。 | README 未列出 | 1 | 8 |
+| [mcp](packages/mcp.md) [stale] | MCP桥；内建transport/generation-safe swap，但无carrier/credential resolver、descriptor trust迁移或无连接dry-run。 | README 未列出 | 1 | 8 |
 | [plan](packages/plan.md) [stale] | plan mode 是 log-only 的 per-agent 协作状态而非 capability seam；/plan 命令进入，exit_plan_mode 经用户审批退出。 | Product | 1 | 7 |
-| [preset](packages/preset.md) [stale] | 每会话 agent 组合；含 rc.2 文件系统 roster、Session 只耐久 preset id、冷恢复、blank recompose/durable append非事务及首prompt缺统一linearization。 | Product | 2 | 12 |
+| [preset](packages/preset.md) [stale] | 每会话组合；Session只存preset id，remove无ref check，historical generation无handle/retention/export。 | Product | 2 | 14 |
 | [runtime-diagnostics](packages/runtime-diagnostics.md) [stale] | 包自有运行期不变式注册表 ctx.invariants：每个包发布 ./invariant companion，检查自己拥有的事件关系与可变数据关系。 | README 未列出 | 1 | 10 |
 | [sandbox](packages/sandbox.md) [stale] | 进程限制能力族：ctx.sandbox.confine(argv, policy) 返回替代原 argv 的包装 argv，无可用后端就抛错；只管同世界子进程。 | Product | 4 | 14 |
 | [schedule](packages/schedule.md) [stale] | Session 本地定时提醒：持久状态只存在原 Session 事件日志，到期项通过 Agent 普通 follow-up 队列回到同一段对话，无外部通知。 | Product | 1 | 13 |
@@ -101,7 +101,7 @@
 | [session-query](packages/session-query.md) [stale] | Session 检索能力族：逻辑语料、有界读取、血缘追踪、事件关系、语义过滤与 SQLite FTS5 全文搜索，独立于 compaction。 | Product | 4 | 16 |
 | [settings](packages/settings.md) [stale] | 用户配置 namespace seam；含 `load`/`publish` provider 生命周期、update/replace/mutate 热提交、revision 与 composition base 不可由 user layer 删除的边界。 | Product | 2 | 9 |
 | [shell](packages/shell.md) [stale] | bash/pwsh 执行器 seam 与本地、沙箱两类 provider，加模型侧 bash/pwsh 工具及两个走 ctx.terminals 的常驻版 | Product | 10 | 13 |
-| [skill](packages/skill.md) [stale] | skill provider注册表、本地发现与模型侧工具；含snapshot完整性、无公开generation/事务、winner-only scope merge及invocation policy边界。 | Product | 4 | 9 |
+| [skill](packages/skill.md) [stale] | Skill Registry/filesystem；含root顺序、winner-first非first-enabled、无override/pin/allowed-tools及dry-run边界。 | Product | 4 | 9 |
 | [spill](packages/spill.md) [stale] | 超大工具输出落盘并换成有界预览加 locator；查 SpillStore seam、本地文件布局与 post-execute 策略 | Product | 3 | 9 |
 | [storage](packages/storage.md) [stale] | session 日志以外数据枢纽；含 json/sqlite/domain 路由及 `:memory:` 仅随单一 live connection 存活的生命周期。 | Product | 4 | 10 |
 | [subagent](packages/subagent.md) [stale] | 子 agent 委派能力族 11 包：多 provider 注册表、continuable 子代编排、父子双向三类模型侧工具 | Product | 11 | 12 |

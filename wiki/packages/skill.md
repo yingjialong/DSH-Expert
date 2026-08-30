@@ -120,3 +120,11 @@ asked_by: agent
 - invocation policy是Consumer责任：官方模型`skill`工具先检查summary的`modelInvocable`，再`get()`并复查definition；用户`/<name>` gesture则先`get()`，再检查`userInvocable`。因此双false不会经这两条官方路径注入模型，但gesture可能已触发provider/body读取；`ctx.skills.get()`本身policy-neutral，其他公开Consumer仍可读取双false定义。一方测试直接验证`trusted-only`可被`get()`加载。
 - 固定rc.2没有把Skill catalog observation与Session durable event append绑定到同一原子或线性化屏障的公共契约。
 - **认知状态**：verified_inference（固定tag源码、正式npm根声明与一方tests交叉核对；未运行上游测试）。
+
+## 2026-08-30 · rc.2 filesystem配置迁移与dry-run边界
+
+- `customSkillDirs`按数组顺序扫描，全部custom candidate使用rank 300；同provider同rank时先出现的root/entry获胜。默认层级固定为project-dsh 100→project-agents 200→custom 300→user-dsh 400→user-agents 500→bundled 600。`includeDefaultRoots:false`能做isolated provider；多个唯一`providerName`的Cordis rows可用row `disabled`整体启停source，但没有filesystem内per-root enable表。
+- 没有canonical-name on/off/rename override。winner先由Registry选定，Consumer再应用invocation policy；高优先级`modelInvocable:false`不会让低优先级同名definition接管，因此不等价于first-enabled-wins。
+- 正式frontmatter不解释`allowed-tools`：顶层未知键忽略，`metadata`虽可携带任意对象，官方Consumer也不执行权限。Skill包只读完整`SKILL.md`并返回body+`resourceBase`指导，不枚举/读取/执行references/assets/scripts；但也不提供文件扩展名、containment或scripts禁止边界，后续可达性归Agent另挂的fs/shell/sandbox。
+- 包根Schemastery `Config`可无mount校验plugin config；CLI `--dump-config`可boot-free组合patch。两者都不是migration API。`snapshot/list`发现frontmatter时会读取完整Markdown bytes且只返回winner；无header-only parser、shadow/disabled诊断、旧格式import/export或逐项compatibility report。
+- **认知状态**：verified_inference（固定tagConfig/parser/winner控制流与一方tests；未读取任何外部Skill正文）。

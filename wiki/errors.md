@@ -286,4 +286,48 @@
 
 ---
 
+### E024 — prompt `rpcId`是相关标记，不是幂等键
+
+- **类型**：admission identity过推
+- **错误内容**：看到ApiProxy把prompt `rpcId`写进durable UserMessage，就断言丢响应后可用同id安全重试或线性化查询acceptance。
+- **正解**：AbstractApiClient每次mint新id，SessionFace不接caller id；即使低层重用同rpcId，Host也不去重，会追加第二条prompt。History可事后扫描source.rpcId证明已存在，但无status endpoint或与在途call共享的barrier。真正的入口幂等面只有caller预分配`sessionId`的create。
+- **根因**：混淆wire correlation、durable provenance与idempotency key。
+- **发现于**：2026-08-30 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/host.md](packages/host.md)。
+
+---
+
+### E025 — cancel accepted不是effect quiescence，`TOOL_OUTCOME_UNKNOWN`也不是exactly-once
+
+- **类型**：lifecycle/outcome过推
+- **错误内容**：把`session.cancel → {accepted:true}`解释为返回后不会再启动/完成physical effect，或把crash repair的unknown result当作自动去重保证。
+- **正解**：cancel只同步abort后立即应答，不await Agent idle；started body必须合作drain。Crash时已有`tool/call`无result会补`TOOL_OUTCOME_UNKNOWN`并要求核验外部状态，它不保存provider receipt、不查询effect，也不证明没执行。physical owner仍须自持idempotency/receipt/reconciliation。
+- **根因**：把取消请求接收、协作式drain、durable transcript repair与外部提交协议混成同一ack。
+- **发现于**：2026-08-30 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/core.md](packages/core.md)、[packages/mcp.md](packages/mcp.md)。
+
+---
+
+### E026 — `/api` trust fence不是auth，也不覆盖初始HTML
+
+- **类型**：安全覆盖面过推
+- **错误内容**：看到`dsh-client-connection`统一校验API和两条WebSocket，就宣称整个Web surface已由同一Host/Origin admission或authentication保护。
+- **正解**：同一predicate只包`/api` prefix与mux/host upgrades；`frontend-static` fallback直接服务initial HTML。predicate源码也明说不是authentication，且未从正式root导出。WebServer有raw route/fallback/upgrade primitives，但无全server middleware。
+- **根因**：把一个route owner的prefix fence泛化为server-wide security policy。
+- **发现于**：2026-08-30 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/host.md](packages/host.md)。
+
+---
+
+### E027 — 禁用credential UI不等于禁用raw-secret wire，MCP也不消费CredentialProvider
+
+- **类型**：secret owner/seam混淆
+- **错误内容**：替换`CredentialProvider`或移除Models UI后，便断言浏览器不能再发送raw credential；或把通用credentials seam当成MCP config会自动消费的能力。
+- **正解**：custom CredentialProvider是正式Host seam，Models UI也是可独立disable的client row，但`credentials.set` RPC仍在且收raw value；provider拒绝发生在secret过线之后。rc.2 MCP只接stdio env/HTTP headers，没有CredentialProvider resolver或carrier factory。三条边界必须分别判断。
+- **根因**：把storage owner、presentation与transport admission当作同一层。
+- **发现于**：2026-08-30 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/credentials.md](packages/credentials.md)、[packages/mcp.md](packages/mcp.md)。
+
+---
+
 > 更多**按包组分布**的文档与源码冲突（共 79 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

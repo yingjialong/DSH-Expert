@@ -17,6 +17,8 @@ anchors:
   - packages/core/agent-loop/src/agent.ts
   - packages/core/tools/src/index.ts
   - packages/core/session/src/surface.ts
+  - packages/core/session/src/repair.ts
+  - packages/session/session-persistence/tests/contract.ts
   - docs/subsystems/core.md
   - docs/subsystems/tools.md
   - docs/tool-execution-pipeline.md
@@ -86,6 +88,14 @@ core 是「主干」而非单一 capability family，但同样按 seam 纪律拆
 - **config agent 默认每次启动都是新会话**：省略 `sessionId` 会每次生成 `${label}-session-<uuid>`；要「有则续、无则建」必须给稳定的 `sessionId`，`resumeSessionId` 则要求已有持久化历史且与 `sessionId` 互斥。
 - **`SessionStartSource` 预留了 `'clear'` / `'compact'` 但至今没有发射方**（`dsh-agent` README 标 `TODO(compaction)`），尽管 compaction 组已是 product 级——别按这两个值写消费逻辑。
 - **`renderPrompt` 是严格模式**：未知变量、注册了但没值的变量、畸形的 `{{…}}` 组、`{{{model}}}` 这种都直接抛。
+
+## 2026-08-30 · rc.2 Tool identity、cancel ack与crash repair
+
+- `ToolRunContext`把`callId/rootCallId`、Agent、frozen arguments与signal交给provider；Registry另mint process-local symbol `token`。`callId`来自模型block/直接caller，不是Host全局operation id，公共契约未保证跨Session/history唯一；`tool/call`event seq虽在该Session内耐久唯一，却不传给provider。
+- AgentLoop在prepare/body前先追加`tool/call`，settle后才追加`tool/result`。同live`ToolExecution`可穿过around-dispatch wrapper，但没有跨Host restart的receipt/query或exactly-once seam。
+- `session.cancel`只同步abort Agent后立即返回accepted，不await`whenIdle()`。未启动body形成`ABORTED_BEFORE_DISPATCH`；已启动body必须合作观察signal并drain，成功才改为`ABORTED`。这不是physical effect已静止的ack，也不列出in-flight calls。
+- Crash load对assistant call但无`tool/call`补`TOOL_NOT_STARTED`；对已有`tool/call`无result补`TOOL_OUTCOME_UNKNOWN`，明确要求side-effect调用先核验外部状态。它防止误判“没执行”，但不替physical owner保存receipt或去重。
+- **认知状态**：verified_inference（固定tag ToolRuntime/AgentLoop/Session repair与Persistence contract/e2e tests；未执行native effect）。
 
 ## 去哪深入（文件路由）
 

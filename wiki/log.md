@@ -380,3 +380,21 @@
 - **上游基线**：固定`dsh-v0.1.1-rc.2` / `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`；远端HEAD已另同步至alpha.2，不用于反推。
 - **实测**：未运行；固定tag实现、公开类型、一方测试和正式npm声明已静态闭环。
 - **沉淀**：`packages/skill.md`、`errors.md` E022/E023、index/log；掌握度保持L1，因alpha.2变更仍标stale。
+
+## 2026-08-30 · 跨会话核验：旧Skill/MCP配置到rc.2公共面的兼容边界
+
+- **提问者**：agent（source为multi-agent v2子代理；直发被宿主拒绝后，完整答案relay到其父任务并确认成功）
+- **问题**：filesystem sources顺序/启停/override/pin/resource policy与MCP descriptor/provenance/trust/allowlist能否原生迁移，是否有无副作用import/validate/export dry-run。
+- **结论**：custom roots有顺序和winner，但无per-name override/version pin/allowed-tools；winner-first+Consumer filter不等价first-enabled fallback。Skill只主动读Markdown并给resourceBase，不持有旧受限reader。MCP Config覆盖transport字段和row启停，不覆盖provenance/trust/allowlist/CredentialProvider。包根Config与CLI dump只做shape/composition预检；真实Skill发现会读完整Markdown，真实MCP apply会spawn/connect，无逐项migration seam。
+- **依据锚点**：`packages/skill/{skill,skill-filesystem,tool-skill}`、`packages/mcp/mcp-client`、`packages/core/tools`、`packages/interaction/user-approval`、`apps/cli/src/dump-config.ts`及一方tests/正式npm exports。
+- **实测**：无；未读取外部Skill正文、未连接MCP、未使用凭据。
+- **沉淀**：`packages/{skill,mcp}.md`、`errors.md` E027相关边界、index/log；等级不变。
+
+## 2026-08-30 · 跨会话核验：admission、request/effect identity、Preset引用与Web security seams
+
+- **提问者**：agent（跨会话；完整答案直接回传父任务并确认成功）
+- **问题**：create/prompt丢响应、LLM/tool幂等identity、cancel/crash effect、old Session plugin generation与Web/credential/MCP安全seam。
+- **结论**：预分配SessionId是create幂等键；prompt rpcId只相关不去重。LlmAdapter无跨retry/crash request id。Tool callId耐久但非Host全局operation id；cancel ack不等待quiescence，crash repair用TOOL_OUTCOME_UNKNOWN显式保留不确定性。Session只存preset id，remove不查引用，historical generation不公开。API+两WS共用非auth trust fence但HTML不在内；CredentialProvider可替换而raw credential RPC仍在；MCP无trusted secret resolver/carrier。
+- **依据锚点**：`packages/host/apiproxy`、`packages/client/{runtime,connection}`、`packages/llm/{llm,llm-retry}`、`packages/core/{tools,agent-loop,session}`、`packages/session/session-persistence`、`packages/preset/agent-presets`、`packages/credentials`、`packages/mcp/mcp-client`及一方tests。
+- **实测**：无；未调用模型、未执行native effect、未提交secret。
+- **沉淀**：`packages/{host,llm,core,preset,credentials,mcp}.md`、`errors.md` E024–E027、index/coverage/log；等级不变。

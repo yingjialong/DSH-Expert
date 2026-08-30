@@ -32,6 +32,8 @@ anchors:
   - packages/client/ui-model-selection/src/client/ModelSelect.tsx
   - packages/client/ui-model-selection/tests/model-select.client.spec.tsx
   - packages/llm/llm-retry/README.md
+  - packages/llm/llm-retry/src/index.ts
+  - packages/llm/llm-retry/src/types.ts
   - packages/llm/token-meter/README.md
   - docs/subsystems/llm-streaming.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
@@ -118,6 +120,14 @@ LLM seam 及其 provider 适配器。组 README 的原话很关键：**`llm` 包
 - **合法 reasoning 不跨域改码**：exact model 已发布 `medium` 且 route 默认也为 `medium` 时，reasoning 只负责能力校验与 wire 物化，本身没有 `AUTH` / `TRANSPORT` 分支；前者属于凭据/认证文本，后者属于传输或命中文本分类。无效显式/default effort 会在 credential 与 provider I/O 前失败。
 - **Session 投影保留最终 failure code**：Llm runtime 把 `LlmError.failure.code` 放进 terminal finish；AgentLoop 可按 recovery listener 重试，最终未恢复失败原样写入 durable `turn/end.reason.error`；conversation projection 再复制到 `TurnErrorNode.code`。因此 UI 看到的是最终 attempt 的 code，不保证是首个失败，也不携带是否出网的阶段证据。[T1: `packages/llm/llm/src/adapter-failure.ts`、`packages/core/agent-loop/src/agent.ts`、`packages/core/session/src/types.ts`、`packages/client/ui-conversation/src/client/conversation-nodes/turn-error.ts`]
 - **认知状态**：verified_inference（固定 tag、正式 npm JS/d.ts 与一方测试源码交叉核对；未重跑测试，未调用真实 endpoint）。
+
+## 2026-08-30 · rc.2 model-request retry identity边界
+
+- 公共`GenerateOptions`有可选`sessionId`，但没有turn/step/attempt/retryId/requestId/idempotency key。`LlmFailure.requestId`是provider失败后回报的事实，不是DSH预先下发的identity。
+- AgentLoop在同一turn/step内循环重建request并拥有retry；`dsh-llm-retry`在首个失败后mint并耐久记录`RetryId`，同open step/policy chain后续复用，但它不进入`GenerateOptions`或`LlmAdapter.stream()`参数。
+- Persistence在Host crash后关闭open turn为`interrupted`，不续跑同一物理model request。固定版公共参数因此不足以让adapter安全派生跨transport retry、Host crash与Session resume稳定的provider idempotency key；`sessionId+messages hash`不是官方identity。
+- 一方tests覆盖同turn/step retry、failed-attempt chunk丢弃与durable retry budget/event；没有测试或类型承诺adapter拿到跨attempt稳定id或provider exactly-once。
+- **认知状态**：verified_inference（固定tag LLM/AgentLoop/llm-retry类型、控制流与一方tests；未调用provider）。
 
 ## 去哪深入（文件路由）
 
