@@ -55,7 +55,7 @@
 | [postmortems.md](topics/postmortems.md) [stale] | 0001 export default 吞掉 inject / 0002 !!js 位置错致 fs 工具永久禁用 / 0003 Web agent 验证替身服务器 / 0004 Landlock 提示被误判——现象·根因·修复·可泛化教训 | L2 | 13 |
 | [版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md](topics/版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md) [stale] | 当前发布状态（无稳定版、最新预发布 rc.2、HEAD 与 tag 相同、CLI/SDK/PyPI 渠道差异）+ 版本升级影响：5 组破坏性变更、新增能力表、八维坐标与升级建议。 | L2 | 27 |
 | [版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md](topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md) [stale] | Host API controllers / Client Store 拓扑重组、`host-apiproxy` / `client-runtime` 删除、Remote generation stream 与 npm 仍停 rc.2 的升级边界。 | L2 | 18 |
-| [版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md](topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md) | alpha.2发布、Skill/Preset/MCP contract、MCP断线/relist与schema-generation barrier缺口、npm resolution实测。 | L1 | 23 |
+| [版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md](topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md) | alpha.2发布、Skill/Preset/MCP contract、MCP与ToolRuntime generation-borrow缺口、npm resolution实测。 | L1 | 28 |
 | [plugin-development.md](topics/plugin-development.md) [stale] | 插件开发全路径：从零写 dsh-plugin 的步骤路由、四种插件形态骨架、依赖纪律（Service Definition 而非 Provider）、Config/schema、事件与扩展点选择、skill provider registry、bundle/profile 发布与八条陷阱 | L2 | 35 |
 | [core-chain.md](topics/core-chain.md) [stale] | agent loop 函数级调用链、agent-loop 可替换性的三道机制保证、session 三层 derive 与持久化/projection seam、会话并发隔离 12 条「条件→结论」、preset standing mount 与 scope 父链、LlmAdapter 接入点、system-prompt/context 注入时机 | L2 | 27 |
 | [config-and-tools.md](topics/config-and-tools.md) [stale] | 配置与工具目录 — 非机密值六层覆盖梯子 + 凭据四层梯子 + 四种运行模式的真实定义（Creator mode 的目录 id 是 cordis）+ dsh --profile/bundle 补丁层 + tool-catalog 路由 + permission preset/approval。排错类问题的第一入口。 | L2 | 26 |

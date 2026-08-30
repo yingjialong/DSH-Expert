@@ -444,3 +444,12 @@
 - **依据锚点**：正式rc.2`dsh-tools`/`dsh-mcp-client`tarball；`core/tools/src/index.ts`、`core/agent-loop/src/{tool-calls,index}.ts`、`mcp/mcp-client/src/{tools,connection}.ts`与replacement/cancel一方tests。
 - **实测**：无；固定tag控制流、public `.d.ts`与tests足以判定。未连接MCP、未使用凭据。
 - **沉淀**：`packages/{core,mcp}.md`、open Q118、index/coverage/log。
+
+## 2026-08-31 · 跨会话复验：rc.2/alpha.2 ToolRuntime generation borrow仍缺
+
+- **提问者**：agent（跨会话；完整答案先回传并确认成功）
+- **问题**：正式rc.2或alpha.2是否已有execution-scoped definition/catalog generation borrow、retire/ref-count/drain，能把schema G到retry、0..N calls/results及G2换代后的资源寿命绑定到同一opaque handle。
+- **结论**：两版正式`dsh-tools`根均无generation lease；schema assembly只耐久schema数据，ToolRuntime在classification/body/wrapper normalization/post value replacement分阶段按name解析current registry，只早期快照finalizer。MCP内部Client/disposer generation只负责relist/swap，definition closure只局部保护已选body，connection dispose不等待ToolRuntime in-flight。题述全链保证仍缺上游public contract。
+- **版本证据**：rc.2 `b150a551`与alpha.2 `0a53fb55`；两版正式`dsh-tools`/`dsh-mcp-client`tarball integrity、root exports/`.d.ts`、tag控制流与replacement/re-sync一方tests。
+- **实测**：无真实MCP server；未使用凭据。正式发布物、固定tag源码与测试足以静态判定；专门的schema-G→G2竞态e2e未找到，跨阶段后果标verified_inference。
+- **沉淀**：alpha.2版本页、open Q118、index/coverage/log；既有rc.2 core/mcp结论不改。
