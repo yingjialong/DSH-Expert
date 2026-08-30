@@ -68,11 +68,11 @@
 | [feedback](packages/feedback.md) | L1 | Product | 2 | 9 | 7 | 9 | 2 |
 | [fs](packages/fs.md) | L1 | Product | 7 | 19 | 12 | 11 | 2 |
 | [goal](packages/goal.md) | L1 | Product | 4 | 13 | 8 | 10 | 2 |
-| [guard](packages/guard.md) | L1 | Product | 2 | 9 | 8 | 10 | 2 |
+| [guard](packages/guard.md) | L2 | Product | 2 | 14 | 8 | 10 | 2 |
 | [hooks](packages/hooks.md) | L1 | Product | 3 | 13 | 17 | 13 | 3 |
 | [host](packages/host.md) | L2 | Product | 7 | 29 | 16 | 15 | 3 |
 | [identity](packages/identity.md) | L1 | Product | 1 | 5 | 4 | 4 | 2 |
-| [interaction](packages/interaction.md) | L2 | Product | 5 | 18 | 9 | 10 | 2 |
+| [interaction](packages/interaction.md) | L2 | Product | 5 | 15 | 9 | 10 | 2 |
 | [jobs](packages/jobs.md) | L1 | Product | 3 | 10 | 7 | 10 | 2 |
 | [llm](packages/llm.md) | L2 | Product | 7 | 35 | 10 | 14 | 3 |
 | [lsp](packages/lsp.md) | L1 | Product | 3 | 14 | 6 | 12 | 2 |
@@ -127,9 +127,9 @@
 |---|---|
 | 已建立页面 | 75 页（69 内容页 + 6 治理页） |
 | 掌握度分布 | L2 **35** · L1 **34** · L3/L4 **0** |
-| 锚点总数 | 887（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
+| 锚点总数 | 898（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
 | 已记录陷阱 | 572 条（分布在各页「陷阱」一节） |
-| 文档与源码冲突 | 79 条（见 conflicts.md） |
+| 文档与源码冲突 | 80 条（见 conflicts.md） |
 | 悬而未决 | 110 条（见 open-questions.md） |
 | 认知状态 | 全部 `verified_inference`（无 `fact`，因无 L3） |
 | 新鲜度 | `stale` 65页 · `fresh` 4页（identity、webhook、固定rc.2 Host页、alpha.2版本页）；固定版本问题回目标tag核验 |

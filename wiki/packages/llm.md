@@ -34,10 +34,13 @@ anchors:
   - packages/llm/llm-retry/README.md
   - packages/llm/llm-retry/src/index.ts
   - packages/llm/llm-retry/src/types.ts
+  - packages/llm/llm/src/retry-policy.ts
+  - packages/llm/llm/tests/retry-policy.spec.ts
+  - packages/compaction/compaction-basic/src/index.ts
   - packages/llm/token-meter/README.md
   - docs/subsystems/llm-streaming.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-30
+verified_at: 2026-08-31
 asked_by: agent
 ---
 
@@ -128,6 +131,14 @@ LLM seam 及其 provider 适配器。组 README 的原话很关键：**`llm` 包
 - Persistence在Host crash后关闭open turn为`interrupted`，不续跑同一物理model request。固定版公共参数因此不足以让adapter安全派生跨transport retry、Host crash与Session resume稳定的provider idempotency key；`sessionId+messages hash`不是官方identity。
 - 一方tests覆盖同turn/step retry、failed-attempt chunk丢弃与durable retry budget/event；没有测试或类型承诺adapter拿到跨attempt稳定id或provider exactly-once。
 - **认知状态**：verified_inference（固定tag LLM/AgentLoop/llm-retry类型、控制流与一方tests；未调用provider）。
+
+## 2026-08-31 · rc.2 zero-retry与request-error组合边界
+
+- `RetryPolicyConfig`是正式根导出，normal `maxRetries`允许`0`；provider profile可逐route配置，自定义`LlmAdapter`可覆写`providerRetryPolicy(provider)`。省略则是5次normal retry，不是零重试。
+- `@deepseek-ai/dsh-llm-retry`只是可选的`agent/request-error` consumer，自身不接policy配置。`maxRetries:0`使它在首个失败上直接delegate、不写`llm/retry`，但**不是全局never-retry flag**：compaction或其他listener仍可返回`{kind:'retry'}`，AgentLoop就会再次进入adapter。要做同step at-most-one，必须同时审计完整listener composition与adapter/middleware自己的调用行为。
+- pi-ai明确把SDK `maxRetries`钉为`0`，所以一次DSH adapter invocation不会被SDK暗中倍增；direct `ctx.llm.stream()`也不消费AgentLoop retry plugin。
+- T1 `AgentLoop.step()`在同一`turn/step`的`while`内retry，一方test也只观察到一条`step/start`。同tag `llm-retry/README.md`声称fresh numbered turn，与实现/测试冲突，见`conflicts.md` C080。
+- **认知状态**：verified_inference（固定tag root types、executor/compaction控制流与一方tests；没有另跑`maxRetries:0`最小实测）。
 
 ## 去哪深入（文件路由）
 

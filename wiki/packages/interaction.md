@@ -13,11 +13,14 @@ anchors:
   - packages/interaction/user-questions/src/index.ts
   - packages/interaction/user-approval/src/index.ts
   - packages/core/tools/src/index.ts#ToolRuntime.serviceAsk
+  - packages/core/agent-loop/src/tool-calls.ts
+  - packages/core/tools/tests/tools.spec.ts
+  - packages/interaction/user-approval/tests/approval.spec.ts
   - packages/host/apiproxy/src/api-proxy.ts#pendingApprovals
   - packages/host/apiproxy/tests/api-proxy-approval.spec.ts
   - packages/client/ui-conversation/src/client/skeleton/ApprovalPanel.tsx#ApprovalPanel
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-27
+verified_at: 2026-08-31
 asked_by: agent
 ---
 
@@ -113,6 +116,13 @@ asked_by: agent
 - **第一方 ApprovalPanel 不拥有 blur/hide 取消**：只提交 `allowed-once` / `rejected`，面板移除由 Host 的 `approval/resolved` 帧驱动；没有 `blur` / `hide` / `visibilitychange` / unmount cleanup。官方 conversation 甚至让 pending composer takeover 在切换其他 conversation view 后保持 mounted。
 - **集成结论**：只改变可见性、不改变 request/Agent/channel owner 的短暂遮挡不是 DSH cancellation point。宿主可以制定更严的 UX policy，但不能把它写成 rc.2 规范要求。`user dismisses the prompt` 可映射 `cancelled`，但上游没有把 OS occlusion 或普通失焦定义为 dismissal。
 - **timeout 边界**：官方 `tool-call-timeout-policy` 位于 approval 之后的 `tools/execute` around-dispatch 阶段，不为 pending approval 自动提供 deadline；额外 approval timeout 属宿主 owner policy。
+
+## 2026-08-31 · Approval控制流绑定与授权票据边界
+
+- `ApprovalRequest`与audit都**不含arguments**：answerer只见live `Agent`、`toolName`、可选`callId/reason/signal`；`approval/asked`/`decided`因append在`agent.session`而归属精确Session，但payload没有`SessionId`、`tool/call` seq或arguments digest。
+- 标准ToolRuntime仍保证合规pipeline内的参数一致性：它在policy前lossless snapshot并deep-freeze arguments；pre decision没有rewrite分支；`serviceAsk()`从同一`ToolExecution`取agent/name/callId/signal；`allowed-once`后同一execution进入guard和body，body读同一`exec.arguments`。公开`tools/execute` wrapper只允许替换signal。
+- 这是一条**same-process control-flow guarantee**，不是可交给远端effect provider独立验签的grant。tool body拿不到`ApprovalRequestId`或decision receipt；`callId`也不是跨Session/Host全局operation id。物理effect必须只从ToolRuntime body可达才能依赖该顺序，绕过body的旁路不在ApprovalService保护范围内。
+- **认知状态**：verified_inference（固定tag public types、ToolRuntime/AgentLoop控制流与Approval/Tools一方tests；未执行native effect）。
 
 ## 去哪深入（文件路由）
 

@@ -18,7 +18,7 @@
 | 文件 | 用途 | 何时读 |
 |---|---|---|
 | [errors.md](errors.md) | 错误本：答错的、死路、命名/版本陷阱 | **每次回答前必读** |
-| [conflicts.md](conflicts.md) | 文档与源码不符登记册（78 条） | 引用上游文档作结论前 |
+| [conflicts.md](conflicts.md) | 文档与源码不符登记册（80 条） | 引用上游文档作结论前 |
 | [open-questions.md](open-questions.md) | 悬而未决 | 查不到答案时先看是否已知 |
 | [coverage.md](coverage.md) | 覆盖度地图（掌握等级） | 判断自己有多懂、该学什么 |
 | [log.md](log.md) | 问答/学习/实测时间线 | 追溯历史结论 |
@@ -82,13 +82,13 @@
 | [feedback](packages/feedback.md) [stale] | 人类反馈的两条互不相通契约：session log 里不可变的 feedback/record 事件，与挂在单条 assistant message 上可编辑的本地 sidecar。 | Product | 2 | 9 |
 | [fs](packages/fs.md) [stale] | 文件系统 capability family：ctx.fs 的 12 个 primitive + 本地/沙箱/E2B 实现 + 纯事件策略门 + 模型工具，四层可独立替换。 | Product | 7 | 19 |
 | [goal](packages/goal.md) [stale] | 同会话持久化目标：状态 event-sourced 进 session log，续跑权限 activation 从不持久化，state 与 scheduling 严格分家。 | Product | 4 | 13 |
-| [guard](packages/guard.md) [stale] | loop 卫生守卫：重复工具调用的劝告式提醒 + tools/execute 上的协作式 per-call deadline；不是能力，是纯消费者。 | Product | 2 | 9 |
+| [guard](packages/guard.md) [stale] | loop卫生守卫与public policy hooks；含hard deny、Session-log条件性重建及run/rate-limit耐久缺口。 | Product | 2 | 14 |
 | [hooks](packages/hooks.md) [stale] | Claude Code / Codex hook 桥接：把外部 shell-hook 协议翻译到 harness 自己的类型化拦截点，外加共享线协议库。 | Product | 3 | 13 |
 | [host](packages/host.md) [stale] | Web Host/API；含create/prompt admission、rpcId非幂等、API+WS trust fence不覆盖HTML的rc.2边界。 | Product | 7 | 29 |
 | [identity](packages/identity.md) | 共享匿名关联 id（UUID v4）；它不是 Cordis plugin 而是普通共享库，telemetry、feedback 回执与 DeepSeek 请求头三处共用同一值。 | Product | 1 | 5 |
-| [interaction](packages/interaction.md) [stale] | 人机协作平面：user-questions / user-approval seam、permission-presets / commands 产品面；含 Approval owner signal、disconnect replay 与 presentation 可见性边界。 | Product | 5 | 18 |
+| [interaction](packages/interaction.md) [stale] | 人机协作平面；含Approval owner signal、同一frozen ToolExecution控制流绑定、无独立grant票据与presentation边界。 | Product | 5 | 15 |
 | [jobs](packages/jobs.md) [stale] | 后台作业 capability family：ctx.jobs 契约、jobs-local 进程内实现、tool-jobs 三工具与完成通知；owner 隔离与唤醒预算是理解重点。 | Product | 3 | 10 |
-| [llm](packages/llm.md) [stale] | LLM seam与adapters；含pi-ai、reasoning及adapter拿不到跨retry/crash request identity的边界。 | Product | 7 | 35 |
+| [llm](packages/llm.md) [stale] | LLM seam与adapters；含pi-ai/reasoning、retry identity，以及`maxRetries:0`非全局never-retry边界。 | Product | 7 | 35 |
 | [lsp](packages/lsp.md) [stale] | LSP 能力 seam：恰好四个语义操作、无 JSON-RPC 逃生口；lsp-stdio 通用 stdio 后端与模型侧 lsp 工具（一基 UTF-16 光标坐标）。 | Product | 3 | 14 |
 | [mcp](packages/mcp.md) [stale] | MCP桥；内建transport/generation-safe swap，但无carrier/credential resolver、descriptor trust迁移或无连接dry-run。 | README 未列出 | 1 | 8 |
 | [plan](packages/plan.md) [stale] | plan mode 是 log-only 的 per-agent 协作状态而非 capability seam；/plan 命令进入，exit_plan_mode 经用户审批退出。 | Product | 1 | 7 |

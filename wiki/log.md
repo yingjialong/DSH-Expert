@@ -406,3 +406,13 @@
 - **结论**：245个非private tag package标识现均有alpha.2 tarball，但未做真实install/native boot。Session skill API只有catalog读取；required event vocabulary无Skill/MCP active-set。Skill snapshot仍只有`complete`，无public generation/lease。prompt新增`requestId`关联但Host不去重且无commit-status query。MCP固定构造stdio/HTTP transport，SDK 1.29.0 latest protocol为2025-11-25，根无carrier或generation identity。
 - **依据锚点**：alpha.2正式`dsh-skill`、`dsh-mcp-client`、`dsh-api-session-controller`、`dsh-session` tarball JS/.d.ts；tag的`packages/{core/session,skill/skill,api/session-controller,mcp/mcp-client,acp/acp}`源码与一方tests；SDK 1.29.0正式tarball protocol constants。
 - **沉淀**：alpha.2版本页、CLAUDE/README、index/coverage、errors E016/E017、open Q115与本日志。
+
+## 2026-08-31 · 跨会话核验：zero-retry、Approval参数绑定与tool-policy恢复
+
+- **提问者**：agent（跨会话；完整答案先回传并确认成功）
+- **问题**：rc.2能否逐route保证同step adapter at-most-once；Approval是否把Session/call/arguments做成不可替换授权对象；tools hooks能否耐久实施run/turn/per-tool/duplicate/rate-limit预算。
+- **结论**：normal `maxRetries:0`合法但只关闭`dsh-llm-retry`executor，其他request-error recovery仍可重入同一turn/step。Approval payload不含arguments或grant token，但标准ToolRuntime先freeze同一execution再ask/guard/body。Public guards可做live hard deny，标准log可条件性fold root/Code Mode attempts；无通用run marker、rate-limit taxonomy、stop action或全ToolRuntime持久恢复合同。
+- **冲突**：rc.2 `llm-retry/README`称fresh retry turn，T1 loop与test明确同turn/step，登记C080/E028。
+- **依据锚点**：`packages/llm/{llm,llm-retry}`、`packages/core/{agent-loop,tools,session}`、`packages/interaction/user-approval`、`packages/guard/repeat-tool-reminder`、`packages/session/session-checkpoint-policy`及一方tests。
+- **实测**：无；未调用模型、未执行native effect，固定tag静态证据足以收口。
+- **沉淀**：`packages/{llm,interaction,guard}.md`、errors E028、conflicts C080、index/coverage/log。

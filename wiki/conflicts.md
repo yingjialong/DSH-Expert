@@ -4,7 +4,7 @@
 
 > 引用上游文档作为结论前，先查这里有没有该文档的已知偏差。
 
-> 建于 2026-08-20 · 当前复验上游 `b150a55` · 共 78 条
+> 建于 2026-08-20 · 当前复验上游 `b150a55` · 共 80 条
 
 
 | # | 来源单元 | 冲突内容 |
@@ -88,3 +88,4 @@
 | C077 | `session` | `packages/client/runtime/README.md:65-67` 与 `packages/host/apiproxy/README.md:33` 仍称 cold persisted Session 必须等 open/resume 才能得到 log-backed title、title 不进入 `session.list`；同 commit 的 `host/apiproxy/src/api/{sessions.ts}`、`src/api-proxy.ts`、`tests/api-proxy-projections.spec.ts` 与 `client/runtime/src/client/sessions/manager.ts` 已明确让 cold list row 携带 projection-cache baseline，并有零日志读取和无需 open 显示标题的测试。以源码/API 类型/测试为准；README 只适用于无 cache plugin/row 的降级组合。 |
 | C078 | `host/apiproxy` | `packages/host/apiproxy/README.md:78` 声称 pending table “only covers questions; there are no approval entries”，但同 commit 的 `src/api-proxy.ts` 已有 `pendingApprovals` registry，明写跨 client disconnect 保留并在 mux reopen 重放；`tests/api-proxy-approval.spec.ts` 覆盖断线重连、signal withdraw 与 gateway teardown。以 T1 源码/测试为准，README 该 Known Limitation 已过时。 |
 | C079 | `bundle/base` | alpha.1 `packages/bundle/base/README.md:50` 称 telemetry “stays off unless you opt in”，但同tag `cordis.patch.yml:168-203`实际mount `session-telemetry-otel`并默认`mode: FEEDBACK_ONLY`；只有`DSH_TELEMETRY_DISABLED`非空时launcher追加disabled patch。以composition与profile-boot源码为准。 |
+| C080 | `llm-retry` | rc.2 `packages/llm/llm-retry/README.md:5,11`称每次retry会打开fresh numbered turn、关闭failed turn再开retry turn；同tag `packages/core/agent-loop/src/agent.ts:339-389`实际在同一`turn/step`的`while`中continue，一方`packages/llm/llm-retry/tests/retry.spec.ts:207-217`也断言两次adapter request只有一条`step/start`。以实现与测试为准。 |

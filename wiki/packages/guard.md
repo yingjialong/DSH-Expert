@@ -10,11 +10,16 @@ anchors:
   - packages/guard/timeout-policy/README.md
   - packages/guard/timeout-policy/src/index.ts
   - packages/guard/timeout-policy/package.json
+  - packages/core/tools/src/index.ts
+  - packages/core/agent-loop/src/tool-calls.ts
+  - packages/core/tools/src/code-mode.ts
+  - packages/core/session/src/types.ts
+  - packages/session/session-checkpoint-policy/src/index.ts
   - docs/subsystems/tools.md
   - .agents/notes/implemented/architecture/2026-07-06-timeout-deadline-library.md
   - .agents/notes/archived/feature/2026-07-08-repeat-tool-guard.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-22
+verified_at: 2026-08-31
 asked_by: self
 ---
 
@@ -91,3 +96,13 @@ asked_by: self
 | repeat guard 的决策记录（已归档，勿当现行权威） | `.agents/notes/archived/feature/2026-07-08-repeat-tool-guard.md` |
 
 > 本组**没有** `docs/subsystems/guard.md`，别去找。
+
+## 2026-08-31 · hard policy可组合面与冷恢复边界
+
+- 公开seam足以写live policy consumer：`tools/pre-execute`异步allow/deny/ask，`ctx.tools.guard()`同步单调deny，`tools/execute`只包dispatch，`tools/post-execute`变换当前结果，`tools/result`只观察final outcome。Session/per-turn/per-tool计数与canonical-args deny可在pre/guard完成；rate-limit类结果可在post/result观察后让**后续**调用deny。
+- rc.2没有内建的run总预算、per-turn/per-tool hard cap、持久duplicate ledger或通用rate-limit-stop policy。官方`repeat-tool-reminder`只对连续相同调用给劝告，canonicalizer私有、chain为`WeakMap<Agent,...>`，resume必然从零开始。
+- 标准日志能做条件性纯fold：root `tool/call`记录`turn/step/callId/name/raw arguments`；Code Mode的`tool/code-dispatch-start`/settle记录normalized arguments。它们可重算已记录attempt计数，但不能证明body执行或effect完成，direct `ctx.tools.execute()`也不自动写Session event。
+- shipped base的checkpoint policy会在top-level body前flush已记录`tool/call`；自定义composition可合法省略，nested Code Mode dispatch也只复用outer checkpoint。故cold log不是任意ToolRuntime调用或physical effect的exact ledger。
+- generic pre/guard只有deny，没有stop-turn/run action；tool-owned successful body可`concludeTurn()`，但generic policy不能通过`PreToolDecision`/`PostToolDecision`伪造该marker。并行body已启动后，迟到的rate-limit观察也不能撤回它们。
+- “run”若指整个Session，可按Session fold；若指某次Host/Agent activation，rc.2没有通用durable run id/start marker。core也没有统一tool `RATE_LIMIT` taxonomy；只有具体tool把稳定code/meta写进标准result时，恢复方才有可折叠证据。
+- **认知状态**：verified_inference（固定tag ToolRuntime/AgentLoop/Code Mode/Session事件/checkpoint源码与官方repeat reminder；未做crash实测）。

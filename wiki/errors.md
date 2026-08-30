@@ -330,4 +330,15 @@
 
 ---
 
-> 更多**按包组分布**的文档与源码冲突（共 79 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。
+### E028 — `maxRetries:0`只关闭一个executor，不是全局never-retry
+
+- **类型**：组合边界过推 / 同版本文档冲突
+- **错误内容**：看到provider route支持`retryPolicy.maxRetries:0`，便断言同一logical step绝不可能再次进入adapter；或照`llm-retry/README.md`把每次retry说成新turn。
+- **正解**：`0`只让可选`dsh-llm-retry` listener在首个失败上delegate；任何其他`agent/request-error` listener仍可返回retry。T1 loop会在同一`turn/step`的`while`中再次调用adapter，一方test只有一条`step/start`；README的fresh-turn表述错误。真正的at-most-one需要同时约束完整recovery composition与adapter/middleware自身。
+- **根因**：把provider-owned policy、一个policy executor、公共waterfall的最终组合结果混成同一封闭开关，又未用控制流/测试复核README。
+- **发现于**：2026-08-31 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/llm.md](packages/llm.md)、[conflicts.md](conflicts.md) C080。
+
+---
+
+> 更多**按包组分布**的文档与源码冲突（共 80 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。
