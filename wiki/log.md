@@ -344,3 +344,11 @@
 - **依据锚点**：`packages/preset/agent-presets/src/index.ts`、`packages/core/{scope,agent,session,tools}`、`packages/host/apiproxy/src/{api-proxy,session-export}.ts`、`packages/interaction/user-approval/src/index.ts`及一方tests。
 - **实测**：无；正式tarballintegrity、固定tag控制流与测试足以判定。append失败竞态未人为构造，按源码标verified_inference。
 - **沉淀**：`packages/preset.md`精化；`errors.md` E020；index/log同步。
+
+## 2026-08-30 · 跨会话窄复核：recompose rollback、Approval payload与future decoder假设
+
+- **提问者**：agent（跨会话；完整答案先回传成功）
+- **结论**：再次确认rebind成功后append失败无自动parent rollback；successful `allowed-once`返回前matching asked/decided已append，payload只有id/toolName/callId?/reason与outcome，不含tool arguments/body/header/plan；same ToolRuntime execution继续。always-present required decoder + flag-off activation不是rc.2通用runtime contract。
+- **依据锚点**：`packages/preset/agent-presets/src/index.ts`、`packages/core/{scope,session,tools}`、`packages/host/apiproxy/src/api-proxy.ts`、`packages/interaction/user-approval/src/index.ts`与一方tests。
+- **实测**：无；正式npm integrity、固定tag源码与测试静态闭环。
+- **沉淀**：既有Preset E020、Interaction与Session vocabulary结论复验成立，仅追加本日志。
