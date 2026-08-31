@@ -78,7 +78,7 @@
 | [lsp](packages/lsp.md) | L1 | Product | 3 | 14 | 6 | 12 | 2 |
 | [mcp](packages/mcp.md) | L1 | README 未列出 | 1 | 17 | 7 | 11 | 3 |
 | [plan](packages/plan.md) | L1 | Product | 1 | 7 | 7 | 11 | 2 |
-| [preset](packages/preset.md) | L1 | Product | 2 | 24 | 11 | 10 | 1 |
+| [preset](packages/preset.md) | L1 | Product | 2 | 29 | 11 | 11 | 1 |
 | [runtime-diagnostics](packages/runtime-diagnostics.md) | L1 | README 未列出 | 1 | 10 | 10 | 9 | 1 |
 | [sandbox](packages/sandbox.md) | L1 | Product | 4 | 14 | 24 | 10 | 1 |
 | [schedule](packages/schedule.md) | L1 | Product | 1 | 13 | 11 | 10 | 0 |
@@ -127,8 +127,8 @@
 |---|---|
 | 已建立页面 | 75 页（69 内容页 + 6 治理页） |
 | 掌握度分布 | L2 **35** · L1 **34** · L3/L4 **0** |
-| 锚点总数 | 959（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
-| 已记录陷阱 | 579 条（分布在各页「陷阱」一节） |
+| 锚点总数 | 964（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
+| 已记录陷阱 | 580 条（分布在各页「陷阱」一节） |
 | 文档与源码冲突 | 81 条（见 conflicts.md） |
 | 悬而未决 | 114 条（见 open-questions.md） |
 | 认知状态 | 全部 `verified_inference`（无 `fact`，因无 L3） |

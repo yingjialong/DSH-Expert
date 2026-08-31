@@ -385,4 +385,15 @@
 
 ---
 
+### E033 — Loader事件不能补成preset的pre-import inventory gate
+
+- **类型**：公共hook能力过推 / 安全时序误判
+- **错误内容**：发现Cordis公开`loader/entry-init`或`loader/patch-context`，便断言外部inventory可在cold standing mount加载任何未审核module之前按preset id/digest否决。
+- **正解**：`entry-init`在Entry的`options={}`时已发，尚无row identity/config；初始`patch-context`位于module dynamic import之后、plugin apply之前，throw最多阻断后半段，不能撤销top-level执行，也不携带preset id/digest/review receipt。`internal/plugin`同样只是fiber观察面。rc.2无AgentPresets专属pre-mount callback/event/provider。
+- **根因**：把通用Loader生命周期观察/上下文patch，误当成具备artifact identity且位于import前的安全admission合同。
+- **发现于**：2026-08-31 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/preset.md](packages/preset.md)。
+
+---
+
 > 更多**按包组分布**的文档与源码冲突（共 81 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

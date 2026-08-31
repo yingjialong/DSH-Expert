@@ -516,3 +516,12 @@
 - **版本证据**：rc.2 `b150a551`正式agent-presets/host-apiproxy tarball、public `.d.ts`、runtime JS、discovery/index/api-proxy控制流与authoring/mount/presenter一方tests。
 - **实测**：无跨进程rename e2e；未加载preset或创建Session。固定发布物与一方tests足以静态判定，外部文件系统原子性保持unknown。
 - **沉淀**：`packages/preset.md`、index/coverage/log；E032已有cold presenter陷阱，无新增error条目。
+
+## 2026-08-31 · 跨会话核验：cold mount的inventory与staging边界
+
+- **提问者**：agent（两项关联跨会话；第一项直达，第二项multi-agent v2直发被拒后完整relay到父任务，均确认成功）
+- **问题**：不可发现staging原子进入preset root后何时可见；cold history是否绕过外部inventory；normal create mount rollback；generic Loader hook能否在module import前veto。
+- **结论**：scanRoot只认configured root直接valid-id子目录，内容逐次重扫；DSH无staging/no-replace rename seam。cold history独立standing mount，不走Agent/publication inventory。normal create在unpublished setup内mount，失败不发布。Loader `entry-init`过早无options、`patch-context`晚于import，均不能形成preset/digest pre-import gate；失败dispose只回收受Cordis effect拥有的资源。
+- **版本证据**：rc.2 `b150a551`正式agent-presets/host-apiproxy/agent-loop tarball与public types；preset discovery/mount、ApiProxy presenter/create、AgentLoop setupAndPublish、vendor Loader Entry顺序及一方tests。
+- **实测**：无；未rename目录、未加载恶意module、未创建Session。固定控制流与tests足以静态判定；外部文件系统原子性保持unknown。
+- **沉淀**：`packages/preset.md`、errors E033、index/coverage/log。

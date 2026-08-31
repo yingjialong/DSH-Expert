@@ -19,12 +19,17 @@ anchors:
   - packages/core/scope/src/index.ts
   - packages/core/session/src/index.ts
   - packages/core/agent-loop/src/agent.ts
+  - packages/core/agent-loop/src/index.ts
+  - packages/core/agent-loop/tests/scope-lifecycle.spec.ts
   - packages/core/agent/src/index.ts
   - packages/host/apiproxy/src/api-proxy.ts
   - packages/host/apiproxy/src/api/agent-presets.ts
   - packages/host/apiproxy/src/api/sessions.ts
   - packages/host/apiproxy/tests/api-proxy-agent-preset.spec.ts
   - packages/client/runtime/src/client/sessions/manager.ts
+  - vendor/loader/src/index.ts
+  - vendor/loader/src/config/entry.ts
+  - vendor/cordis/src/events.ts
   - apps/cli/config/agent-presets/
   - .agents/notes/implemented/architecture/2026-08-03-per-session-agent-presets.md
   - .agents/notes/implemented/architecture/2026-08-08-per-preset-standing-mounts.md
@@ -86,6 +91,7 @@ asked_by: agent
 - **shipped preset 名单不在本组文档里**：以 `apps/cli/config/agent-presets/` 的目录清单为准（当前为 `standard` / `code` / `cordis` / `minimal`）；README 明确拒绝在文档里再列一份。
 - **cold transcript read 不是“不会激活preset”的纯数据读取**：`session.history`会先解析recorded effective preset，再调用`standingKeyFor()`；首读或stamp变化会真实Include/Loader activate该`agent.cordis.yml`。这条路径没有Agent，因此不会发`agent/created`；只在该事件检查composition identity既晚于正常Agent setup，也完全漏掉cold presenter mount。
 - **“旧Session保留旧generation”只适用于仍live/joined的Agent**：Session log只存preset id，不存generation/stamp/digest。Agent dispose、cold presenter或Host重启后都按current roster重新解析同id；same-id overwrite会改变旧持久Session下一次实际装配的composition。
+- **通用Loader event也不是pre-import inventory gate**：`loader/entry-init`在Entry options填入前发，无法按row/preset审核；`loader/patch-context`虽可throw阻断apply，但顺序在module import之后；`internal/plugin`只是fiber观察面。rc.2没有携带preset id/digest/receipt的pre-mount hook。
 
 ## 去哪深入（文件路由）
 
@@ -156,4 +162,5 @@ asked_by: agent
 - 因为cold路径不创建Agent，`agent/created` listener完全不运行。正常create/resume也先完成unpublished setup/preset mount，进入Session/Agent registry后才announce，因此该event只能观察或在同步throw时回滚publication，不能作为preset plugin activation之前的唯一准入门。
 - roster缺失直接用global presenter；unknown/deleted/broken/unusable preset由`presenterScopeFor()`吞掉standing failure并退global，history继续返回generic card。单个presenter/JSON parse失败也只省略view；只有persistence inspect/source失败才使整个history返回`internal`。
 - mount失败会dispose失败scope，收回遵守Cordis effect ownership的注册；DSH不承诺回滚plugin自行造成、未登记为effect的外部副作用。user preset的trust标签也不是代码sandbox。
+- AgentPresets/ApiProxy没有inventory callback、definition provider或`preset/pre-mount`事件。Loader先dynamic import row module，再patch context并运行plugin apply；所以只覆盖normal create/prompt/publication的外部门无法覆盖cold mount，也不能靠generic Loader事件证明module top-level从未执行。
 - **认知状态**：verified_inference（固定rc.2正式host-apiproxy/agent-presets runtime JS、Agent lifecycle类型与cold/presenter/mount一方tests；未加载恶意plugin）。
