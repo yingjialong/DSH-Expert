@@ -73,7 +73,7 @@
 | [code-runtime](packages/code-runtime.md) [stale] | Code Mode 的执行底座：ctx.codeRuntime seam 加 worker-thread provider；isolation 只是标签不是安全声明，run 只返错不抛错。 | Product | 3 | 13 |
 | [compaction](packages/compaction.md) [stale] | 会话压缩能力族：CompactionEngine seam、token 压力摘要 provider、无模型 tool-result 剪枝伴生、人类 /compact 命令。 | Product | 4 | 13 |
 | [context](packages/context.md) [stale] | 请求上下文扩展组：工作区 AGENTS.md 指令加载、@file 引用 seam 与本地 provider、跨会话快照、时间与 tmux 位置上下文。 | Product | 6 | 12 |
-| [core](packages/core.md) [stale] | 产品API主干；含static no-swap、async catalog check真实ordering及Host drain边界。 | Product | 8 | 25 |
+| [core](packages/core.md) [stale] | 产品API主干；含static no-swap、async check ordering及batch pending/started teardown矩阵。 | Product | 8 | 26 |
 | [credentials](packages/credentials.md) [stale] | 凭据seam；含provider replacement、UI可替换但raw `credentials.set` wire仍存在的分层边界。 | Product | 3 | 15 |
 | [e2b](packages/e2b.md) [stale] | E2B 远程运行时 POC：sandbox 生命周期所有者加 fs/subprocess 两个 adapter，让 bash、PTY、LSP 消费者无需分叉即可搬进沙箱。 | POC | 3 | 10 |
 | [examples](packages/examples.md) [stale] | alpha.2 tag下只余agent-spine-demo package manifest；非产品API，历史demo结论待专项复验。 | Support | 1 | 11 |
@@ -101,7 +101,7 @@
 | [session-query](packages/session-query.md) [stale] | Session 检索能力族：逻辑语料、有界读取、血缘追踪、事件关系、语义过滤与 SQLite FTS5 全文搜索，独立于 compaction。 | Product | 4 | 16 |
 | [settings](packages/settings.md) [stale] | 用户配置 namespace seam；含 `load`/`publish` provider 生命周期、update/replace/mutate 热提交、revision 与 composition base 不可由 user layer 删除的边界。 | Product | 2 | 9 |
 | [shell](packages/shell.md) [stale] | bash/pwsh 执行器 seam 与本地、沙箱两类 provider，加模型侧 bash/pwsh 工具及两个走 ctx.terminals 的常驻版 | Product | 10 | 13 |
-| [skill](packages/skill.md) [stale] | Skill Registry/filesystem；含selected immutable root配置、frontmatter精确键与static无CAS条件。 | Product | 4 | 13 |
+| [skill](packages/skill.md) [stale] | Skill Registry/filesystem；含selected root、三row Loader闭包、物理fs与frontmatter边界。 | Product | 4 | 18 |
 | [spill](packages/spill.md) [stale] | 超大工具输出落盘并换成有界预览加 locator；查 SpillStore seam、本地文件布局与 post-execute 策略 | Product | 3 | 9 |
 | [storage](packages/storage.md) [stale] | session 日志以外数据枢纽；含 json/sqlite/domain 路由及 `:memory:` 仅随单一 live connection 存活的生命周期。 | Product | 4 | 10 |
 | [subagent](packages/subagent.md) [stale] | 子 agent 委派能力族 11 包：多 provider 注册表、continuable 子代编排、父子双向三类模型侧工具 | Product | 11 | 12 |

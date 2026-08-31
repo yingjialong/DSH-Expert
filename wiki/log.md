@@ -471,3 +471,12 @@
 - **版本证据**：rc.2 `b150a551`正式host-apiproxy/client-runtime/agent-presets/agent/system-prompt/tools/skill-filesystem/tool-skill tarball integrity、root/API `.d.ts`、tag控制流与一方tests。
 - **实测**：无；未连接remote catalog、未写preset/Skill文件、未使用凭据。静态类型/实现/tests足以判定；跨进程atomic publish与完整Host shutdown e2e不存在。
 - **沉淀**：`packages/{core,mcp,preset,skill}.md`、errors E029、open Q119、index/coverage/log。
+
+## 2026-08-31 · 跨会话复核：Skill Loader闭包与batch teardown
+
+- **提问者**：agent（跨会话；完整答案先回传并确认成功）
+- **问题**：selected-only immutable Skill root的正式Config/三包Loader rows，以及注销ToolDefinition、关闭carrier与同batch pending/started calls的安全关系。
+- **结论**：Web shipped组合保留Host`dsh-skill`，把filesystem provider与tool-skill consumer移入preset；`includeDefaultRoots:false/customSkillDirs/watch:false`只隔离该provider，且custom root可能经scope-visible`ctx.fs`读取。仅等started不够，scheduler会补pending；先cancel Agent后，started drain、pending写`ABORTED_BEFORE_DISPATCH`，再注销/关carrier才闭环。正式d.ts把providerName默认错写`local`，runtime实际`filesystem`。
+- **版本证据**：rc.2 `b150a551`正式skill/skill-filesystem/tool-skill/tools/agent/system-prompt tarball integrity、runtime JS、package manifests、base/web/preset rows、AgentLoop/ToolRuntime与一方tests。
+- **实测**：无；未读取外部Skill root、未关闭真实carrier、未使用凭据。固定控制流与tests足以判定，Host-wide shutdown仍无一方e2e。
+- **沉淀**：`packages/{skill,core}.md`、conflicts C081、index/coverage/log。

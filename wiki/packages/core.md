@@ -20,6 +20,7 @@ anchors:
   - packages/core/agent-loop/src/tool-calls.ts
   - packages/core/agent-loop/src/index.ts
   - packages/core/agent-loop/tests/tool-calls.spec.ts
+  - packages/core/agent-loop/tests/cancel.spec.ts
   - packages/core/tools/src/index.ts
   - packages/core/tools/tests/tools.spec.ts
   - packages/core/tools/tests/code-mode.spec.ts
@@ -128,6 +129,14 @@ core 是「主干」而非单一 capability family，但同样按 seam 纪律拆
 - tool侧顺序是durable`tool/call`→async`tools/pre-execute`→可选Approval→同步guards→`tools/execute`wrappers→body。`guard()`不能async；pre-execute距离body中间可能隔着人类Approval。adapter若要求最后一次远端校验，应把它放在`ToolDefinition.execute`的第一步、物理effect之前；任意check后的外部TOCTOU仍需远端digest/version条件调用解决。
 - `AgentHandle.dispose()`公开语义包含cancel→whenIdle→agent-scope dispose，factory unload也drain其handles；Preset standing scope却归`AgentPresets.selfCtx`并只在whole-tree teardown回收。DSH没有Host-wide admission-close→all Agents drain→standing/plugin dispose协调器。Host可保留public handles/fibers顺序组合；无法证明该顺序或存在agentless calls时，plugin仍需自管in-flight drain。
 - **认知状态**：verified_inference（固定rc.2正式system-prompt/agent/tools types、AgentLoop/ToolRuntime控制流与一方tests；未连接远端catalog）。
+
+### 同一batch pending/started calls与注销顺序
+
+- Scheduler在started calls按model order commit后会继续`fillPool()`；只等待当前executor settle而不先cancel Agent，pending calls仍可补位。官方replacement test明确让pending calls在前一barrier换tool后重新classification并执行replacement。
+- unregister不取消已进入body的call；局部definition引用与Promise继续settle。尚未进入body的call会在`dispatchToolBody()`按name重查：无definition时`UNKNOWN_TOOL`且不调用旧executor，同名replacement存在时执行replacement。已进入async pre-execute/Approval但尚未body的call也属于后者。
+- Agent cancel先abort共享turn signal，阻止pool补充；已started dispatch全部drain，未启动calls被写成balanced synthetic`tool/call`+`tool/result`，错误`ABORTED_BEFORE_DISPATCH`。`AgentHandle.dispose()`随后await`whenIdle`再dispose Agent scope；ApiProxy`session.cancel`只回accepted，不是quiescence ack。
+- 因此公开可组合顺序是先关闭外部admission，再cancel/dispose所有相关Agents并await idle，补drain任何agentless/detached调用，最后unregister tool与close carrier。若全部调用确由这些Agents拥有，pending已被cancel收口；否则plugin仍需自己的accepting/in-flight计数。
+- **认知状态**：verified_inference（固定rc.2`executeToolCalls`/`ToolRuntime`控制流与tool-calls/cancel一方tests；未关闭真实carrier）。
 
 ## 去哪深入（文件路由）
 

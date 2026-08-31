@@ -14,8 +14,13 @@ anchors:
   - packages/skill/skill-filesystem/src/index.ts
   - packages/skill/skill-filesystem/tests/skill-filesystem.spec.ts
   - packages/skill/tool-skill/README.md
+  - packages/skill/tool-skill/package.json
   - packages/skill/tool-skill/src/index.ts
   - packages/skill/tool-skill/tests/tool-skill.spec.ts
+  - packages/bundle/base/cordis.patch.yml
+  - packages/bundle/web-app/cordis.patch.yml
+  - apps/cli/config/agent-presets/standard/agent.cordis.yml
+  - apps/cli/config/agent-presets/minimal/agent.cordis.yml
   - docs/subsystems/skills.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
 verified_at: 2026-08-31
@@ -142,3 +147,11 @@ asked_by: agent
 - 标准filesystem provider可直接承担selected immutable root：在preset scope配置唯一`providerName`、`includeDefaultRoots:false`、`customSkillDirs:[root]`、`watch:false`，它只扫描显式root且不建watcher；官方`dsh-tool-skill`仍按`exec.agent`scope消费。该隔离只覆盖本provider，不会排除Registry的global/ancestor contributions。
 - parser精确键为必填`name/description`与可选camelCase`whenToUse`、object`metadata`、`disable-model-invocation`、`user-invocable`。`disableModelInvocation/modelInvocable/userInvocable`会显式拒绝整条Skill；`when-to-use`和其他unknown keys只被忽略。若需digest/signature验证、mount-time frozen bytes、非文件opaque store、`allowed-tools`或layer exclusion，仍需第一方provider/parser。
 - **认知状态**：verified_inference（固定rc.2正式Skill provider/Consumer types、scope merge与tool-skill一方tests；未运行外部provider）。
+
+## 2026-08-31 · 正式Loader闭包与selected root物理读取
+
+- rc.2 shipped Web把`@deepseek-ai/dsh-skill` registry留在Host plane，禁用base的`skill-filesystem/tool-skill`，再由standard/code/cordis preset显式挂两row；minimal不挂Skill。`skill-filesystem`硬inject只有`skills`，`tool-skill`硬inject为`agents/tools/skills`。因此完整官方模型链需要可解析的三个正式包与active rows：Host registry + preset provider + Host或preset consumer；仅做Registry读取时consumer可缺席。
+- npm manifests把`dsh-skill`列为filesystem peer，把`dsh-agent/dsh-llm/dsh-skill/dsh-tools`列为tool-skill peers；Loader只按inject services决定激活。`ctx.fs`不是filesystem row的hard inject，缺席时Node fallback。是否把这些包列成宿主“direct dependency”不是DSH runtime合同；模块必须在安装闭包中可由preset bare specifier解析。
+- custom root不是`trustedHost`，当当前scope可见`ctx.fs`时list/get会优先用该FileSystem provider；无`ctx.fs`才用Node fs。若selectedRoot是Host-local而preset可见fs指向另一物理世界，standard provider没有force-Node开关，需由组合保证物理一致或换第一方provider。
+- 正式root`.d.ts`把`providerName`注释为默认`local`，但同tarball runtime JS的Config schema与constructor都用`filesystem`；实际行为以runtime为准，登记C081。
+- **认知状态**：verified_inference（固定rc.2正式tarball root/runtime JS、package manifests、shipped Loader rows与isolated-provider一方test）。
