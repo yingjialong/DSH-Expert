@@ -73,7 +73,7 @@
 | [code-runtime](packages/code-runtime.md) [stale] | Code Mode 的执行底座：ctx.codeRuntime seam 加 worker-thread provider；isolation 只是标签不是安全声明，run 只返错不抛错。 | Product | 3 | 13 |
 | [compaction](packages/compaction.md) [stale] | 会话压缩能力族：CompactionEngine seam、token 压力摘要 provider、无模型 tool-result 剪枝伴生、人类 /compact 命令。 | Product | 4 | 13 |
 | [context](packages/context.md) [stale] | 请求上下文扩展组：工作区 AGENTS.md 指令加载、@file 引用 seam 与本地 provider、跨会话快照、时间与 tmux 位置上下文。 | Product | 6 | 12 |
-| [core](packages/core.md) [stale] | 产品API主干；含async assembly、逐attempt `agent/request` fence、batch teardown及工具名/数量边界。 | Product | 8 | 33 |
+| [core](packages/core.md) [stale] | 产品API主干；含async assembly、逐attempt `agent/request` fence、batch取消/teardown、definition重解析及rc.2真实dispose顺序。 | Product | 8 | 33 |
 | [credentials](packages/credentials.md) [stale] | 凭据seam；含provider replacement、UI可替换但raw `credentials.set` wire仍存在的分层边界。 | Product | 3 | 15 |
 | [e2b](packages/e2b.md) [stale] | E2B 远程运行时 POC：sandbox 生命周期所有者加 fs/subprocess 两个 adapter，让 bash、PTY、LSP 消费者无需分叉即可搬进沙箱。 | POC | 3 | 10 |
 | [examples](packages/examples.md) [stale] | alpha.2 tag下只余agent-spine-demo package manifest；非产品API，历史demo结论待专项复验。 | Support | 1 | 11 |
@@ -84,9 +84,9 @@
 | [goal](packages/goal.md) [stale] | 同会话持久化目标：状态 event-sourced 进 session log，续跑权限 activation 从不持久化，state 与 scheduling 严格分家。 | Product | 4 | 13 |
 | [guard](packages/guard.md) [stale] | loop卫生守卫与public policy hooks；含hard deny、Session-log条件性重建及run/rate-limit耐久缺口。 | Product | 2 | 14 |
 | [hooks](packages/hooks.md) [stale] | Claude Code / Codex hook 桥接：把外部 shell-hook 协议翻译到 harness 自己的类型化拦截点，外加共享线协议库。 | Product | 3 | 13 |
-| [host](packages/host.md) [stale] | Web Host/API；含create/prompt admission、rpcId非幂等、API+WS trust fence不覆盖HTML的rc.2边界。 | Product | 7 | 29 |
+| [host](packages/host.md) [stale] | Web Host/API；含create identity/preset收敛、prompt admission、rpcId非幂等及API+WS trust fence。 | Product | 7 | 29 |
 | [identity](packages/identity.md) | 共享匿名关联 id（UUID v4）；它不是 Cordis plugin 而是普通共享库，telemetry、feedback 回执与 DeepSeek 请求头三处共用同一值。 | Product | 1 | 5 |
-| [interaction](packages/interaction.md) [stale] | 人机协作平面；含Approval owner signal、同一frozen ToolExecution控制流绑定、无独立grant票据与presentation边界。 | Product | 5 | 15 |
+| [interaction](packages/interaction.md) [stale] | 人机协作平面；含Approval pair/owner signal、frozen arguments与definition重解析边界、无独立grant票据。 | Product | 5 | 15 |
 | [jobs](packages/jobs.md) [stale] | 后台作业 capability family：ctx.jobs 契约、jobs-local 进程内实现、tool-jobs 三工具与完成通知；owner 隔离与唤醒预算是理解重点。 | Product | 3 | 10 |
 | [llm](packages/llm.md) [stale] | LLM seam与adapters；含pi-ai/reasoning、retry identity、工具名wire映射与无route tool-budget边界。 | Product | 7 | 40 |
 | [lsp](packages/lsp.md) [stale] | LSP 能力 seam：恰好四个语义操作、无 JSON-RPC 逃生口；lsp-stdio 通用 stdio 后端与模型侧 lsp 工具（一基 UTF-16 光标坐标）。 | Product | 3 | 14 |

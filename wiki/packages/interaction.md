@@ -120,7 +120,8 @@ asked_by: agent
 ## 2026-08-31 · Approval控制流绑定与授权票据边界
 
 - `ApprovalRequest`与audit都**不含arguments**：answerer只见live `Agent`、`toolName`、可选`callId/reason/signal`；`approval/asked`/`decided`因append在`agent.session`而归属精确Session，但payload没有`SessionId`、`tool/call` seq或arguments digest。
-- 标准ToolRuntime仍保证合规pipeline内的参数一致性：它在policy前lossless snapshot并deep-freeze arguments；pre decision没有rewrite分支；`serviceAsk()`从同一`ToolExecution`取agent/name/callId/signal；`allowed-once`后同一execution进入guard和body，body读同一`exec.arguments`。公开`tools/execute` wrapper只允许替换signal。
+- `ApprovalService.request()`正常返回时，先后append的`approval/asked`与`approval/decided`共享同一随机id；observer在commit后抛错不会打断配对。没有ApprovalService或没有Agent的ask在ToolRuntime内直接deny，不产生pair；任一authoritative append失败会reject，不能把底层持久化失败场景也说成“必定完整配对”。
+- 标准ToolRuntime保证合规pipeline内的**参数**一致性：它在policy前lossless snapshot并deep-freeze arguments；pre decision没有rewrite分支；`serviceAsk()`从同一`ToolExecution`取agent/name/callId/signal；`allowed-once`后同一execution进入guard，body读取同一`exec.arguments`。但body dispatch前会按name + Agent scope重新解析当前`ToolDefinition`，因此“同一execution”不等于“批准时definition/executor被pin”；只有静态no-swap前提下才条件性命中同一body。公开`tools/execute` wrapper只允许替换signal。
 - 这是一条**same-process control-flow guarantee**，不是可交给远端effect provider独立验签的grant。tool body拿不到`ApprovalRequestId`或decision receipt；`callId`也不是跨Session/Host全局operation id。物理effect必须只从ToolRuntime body可达才能依赖该顺序，绕过body的旁路不在ApprovalService保护范围内。
 - **认知状态**：verified_inference（固定tag public types、ToolRuntime/AgentLoop控制流与Approval/Tools一方tests；未执行native effect）。
 

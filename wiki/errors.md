@@ -396,4 +396,26 @@
 
 ---
 
+### E034 — Approval延续同一execution不等于pin住同一ToolDefinition
+
+- **类型**：工具identity/generation过推
+- **错误内容**：看到`allowed-once`后沿同一`ToolExecution`继续，便断言批准时看到的definition/executor也被锁定，等待审批期间的registry replacement不会改变body。
+- **正解**：rc.2在policy前快照并deep-freeze arguments，同一execution/callId/token确实延续；但`dispatchToolBody()`在批准与guards之后才按name + Agent scope重新`resolveExecution()`。静态no-swap时条件性命中同一body；允许unregister/shadow/replacement时没有definition generation pin。
+- **根因**：把execution-local参数快照与registry-owned definition lifetime合并成同一身份保证。
+- **发现于**：2026-08-31 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/interaction.md](packages/interaction.md)、[packages/core.md](packages/core.md)。
+
+---
+
+### E035 — AgentHandle teardown的公开注释顺序与rc.2 runtime不一致
+
+- **类型**：正式类型注释 / runtime冲突
+- **错误内容**：照`dsh-agent`根`.d.ts`的概括注释，把`AgentHandle.dispose()`后三步写成“detach Agent→detach Session→最后dispose Agent scope”。
+- **正解**：正式rc.2 runtime实际执行`cancel→whenIdle→scope.dispose→detachAgent→detachSession`；一方scope-lifecycle tests同样观察`scope-disposed→agent-disposed→session-disposed`。可依赖固定rc.2行为做事实核验，但不能把冲突注释当跨版本ordering保证。
+- **根因**：只读类型JSDoc，未交叉核对正式runtime JS与lifecycle tests。
+- **发现于**：2026-08-31 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/core.md](packages/core.md)。
+
+---
+
 > 更多**按包组分布**的文档与源码冲突（共 81 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

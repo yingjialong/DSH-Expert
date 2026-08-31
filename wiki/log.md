@@ -525,3 +525,23 @@
 - **版本证据**：rc.2 `b150a551`正式agent-presets/host-apiproxy/agent-loop tarball与public types；preset discovery/mount、ApiProxy presenter/create、AgentLoop setupAndPublish、vendor Loader Entry顺序及一方tests。
 - **实测**：无；未rename目录、未加载恶意module、未创建Session。固定控制流与tests足以静态判定；外部文件系统原子性保持unknown。
 - **沉淀**：`packages/preset.md`、errors E033、index/coverage/log。
+
+## 2026-08-31 · 跨会话核验：Session identity、Preset恢复与fork矩阵
+
+- **提问者**：agent（multi-agent来源与显式父任务均已先收到完整答案并确认成功）
+- **问题**：rc.2 caller-supplied SessionId的create收敛/冲突与丢响应对账；exact preset create/resume/history/fork；preset-less legacy/default与missing/broken矩阵。
+- **结论**：SessionId是create收敛键，rpcId不是；同cwd/same exact preset可single-flight/adopt/resume，省略preset沿用，explicit冲突或cwd冲突fail closed。正常create/resume在unpublished setup mount后才publish；cold history会尝试standing presenter并对其失败退global。ordinary fork继承recorded effective preset id并重新解析current roster，不继承live generation；legacy无id只在当前roster存在时采用current default，missing/broken recorded id不回退default。
+- **版本证据**：rc.2 `b150a551`正式agent-presets/agent/agent-loop/session/host-apiproxy/client-runtime tarball shasum、root/API/client `.d.ts`、runtime JS与ApiProxy/Preset/AgentLoop一方tests。
+- **实测**：无新runtime fixture；固定正式发布物、控制流与一方tests足以静态判定。preset-missing fork的exact wire错误外形缺少专项test，保持verified_inference。
+- **沉淀**：`packages/{host,preset}.md`、index/log；既有cold mount与definition-store结论不重复。
+- **覆盖度变化**：无。
+
+## 2026-08-31 · 跨会话核验：Approval continuation、batch cancel与Agent teardown
+
+- **提问者**：agent（multi-agent来源与显式父任务均已先收到完整答案并确认成功）
+- **问题**：ctx.tools.register/pre-execute ask/ApprovalService与ToolRuntime continuation；cap=1下started+pending cancel；whenIdle/AgentHandle.dispose/scoped-global registration与root teardown边界。
+- **结论**：正常Approval request的asked/decided同id配对，allowed-once延续同一frozen-arguments ToolExecution，但body前仍按name重解析definition。cancel停止pool补位、drain started、为pending补ABORTED_BEFORE_DISPATCH并以aborted turn收口；whenIdle等whole-agent quiescence，handle.dispose再dispose scope并detach Agent/Session。global tool与physical carrier不由单Agent自动drain；外部admission与carrier close仍属其owner策略。
+- **版本证据**：rc.2 `b150a551`正式tools/user-approval/agent/agent-loop/session tarball shasum、root `.d.ts`、runtime JS与tools/approval/tool-calls/cancel/scope-lifecycle一方tests。
+- **实测**：无新fixture；cap=1串行与cap=2 abort各有一方test，exact cap=1 cancel组合由相同scheduler控制流交叉推出。发现`AgentHandle`根`.d.ts`注释与runtime teardown顺序冲突。
+- **沉淀**：`packages/{core,interaction}.md`、errors E034/E035、index/log。
+- **覆盖度变化**：无。

@@ -150,7 +150,8 @@ core 是「主干」而非单一 capability family，但同样按 seam 纪律拆
 
 - Scheduler在started calls按model order commit后会继续`fillPool()`；只等待当前executor settle而不先cancel Agent，pending calls仍可补位。官方replacement test明确让pending calls在前一barrier换tool后重新classification并执行replacement。
 - unregister不取消已进入body的call；局部definition引用与Promise继续settle。尚未进入body的call会在`dispatchToolBody()`按name重查：无definition时`UNKNOWN_TOOL`且不调用旧executor，同名replacement存在时执行replacement。已进入async pre-execute/Approval但尚未body的call也属于后者。
-- Agent cancel先abort共享turn signal，阻止pool补充；已started dispatch全部drain，未启动calls被写成balanced synthetic`tool/call`+`tool/result`，错误`ABORTED_BEFORE_DISPATCH`。`AgentHandle.dispose()`随后await`whenIdle`再dispose Agent scope；ApiProxy`session.cancel`只回accepted，不是quiescence ack。
+- Agent cancel先abort共享turn signal，阻止pool补充；已started dispatch全部drain，未启动calls被写成balanced synthetic`tool/call`+`tool/result`，错误`ABORTED_BEFORE_DISPATCH`。`maxParallelToolCalls=1`时一方test先钉住第二个call在第一个settle前不启动，结合相同scheduler的abort test可确定“第一个started、第二个pending”场景会drain前者并跳过后者；固定tag没有完全同参数组合的独立test。
+- `AgentHandle.dispose()`固定rc.2 runtime的精确顺序是`cancel(disposed)→whenIdle→agent scope.dispose→detach Agent→detach Session`；scope-lifecycle tests也观察到`scope-disposed→agent-disposed→session-disposed`。但`dsh-agent`正式根`.d.ts`的概括注释把后三步写成“unregister Agent、remove Session、finally unwind scope”，与runtime/test不一致；只能把前述顺序作为rc.2实现事实，不能当跨版本稳定承诺。ApiProxy`session.cancel`仍只回accepted，不是quiescence ack。
 - 因此公开可组合顺序是先关闭外部admission，再cancel/dispose所有相关Agents并await idle，补drain任何agentless/detached调用，最后unregister tool与close carrier。若全部调用确由这些Agents拥有，pending已被cancel收口；否则plugin仍需自己的accepting/in-flight计数。
 - **认知状态**：verified_inference（固定rc.2`executeToolCalls`/`ToolRuntime`控制流与tool-calls/cancel一方tests；未关闭真实carrier）。
 
