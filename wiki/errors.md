@@ -363,4 +363,15 @@
 
 ---
 
+### E031 — DSH注册成功不等于provider接受该工具名
+
+- **类型**：owner边界过推 / provider兼容性误判
+- **错误内容**：看到`ctx.tools.register()`接受一个名称，或看到`dsh-llm-pi-ai`把`ToolSchema.name`原样映射成PiTool，就断言所有OpenAI/Anthropic兼容endpoint都接受该字符集和长度。
+- **正解**：rc.2 ToolRuntime只拥有string类型、同层唯一性、保留名`run_code`与最终execution非空 invariant；没有通用provider regex或最大长度。`schemas()`和`llm-pi-ai.toolsOf()`原样传name，但最终formatter/auth compat与endpoint仍可转换或拒绝。pi-ai 0.82.1的Anthropic OAuth路径就会canonicalize一组Claude Code已知名字；未指定exact provider/auth时，wire限制仍unknown。
+- **根因**：把DSH registry identity、adapter DTO映射和provider wire validation合并成一个owner。
+- **发现于**：2026-08-31 · DSH `b150a551`（`0.1.1-rc.2`）/ pi-ai `0.82.1`
+- **牵连条目**：[packages/core.md](packages/core.md)、[packages/llm.md](packages/llm.md)。
+
+---
+
 > 更多**按包组分布**的文档与源码冲突（共 81 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

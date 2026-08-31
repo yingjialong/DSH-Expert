@@ -489,3 +489,12 @@
 - **版本证据**：rc.2 `b150a551`正式skill/skill-filesystem/tool-skill/agent/system-prompt tarball、runtime JS、Agent dispatcher/loop与request-error/reconstruction/parser/consumer tests。
 - **实测**：无；未替换真实文件、未调用模型、未使用凭据。控制流足以判定；外部store不可变性未知。
 - **沉淀**：`packages/{core,skill}.md`、errors E030、open Q120、index/coverage/log。
+
+## 2026-08-31 · 跨会话核验：filesystem Config与provider工具名边界
+
+- **提问者**：agent（multi-agent v2子任务；直发被宿主拒绝，完整答案relay到其父任务并确认成功）
+- **问题**：rc.2 `dsh-skill-filesystem`根Config的精确字段与物理读取owner；ToolDefinition name经`dsh-tools`/`dsh-llm-pi-ai`是否原样进入provider、DSH是否限制字符或长度。
+- **结论**：题列`includeDefaultRoots/customSkillDirs/watch`均为正式Config；普通root优先scope-visible`ctx.fs`、缺席才Node fallback，bundled trustedHost与watcher走Node。ToolRuntime和pi-ai Context原样投影name，核心无通用regex/max-length，只管同层唯一、`run_code`保留与最终execution非空；最终provider/auth compat仍可转换或拒绝。
+- **版本证据**：rc.2 `b150a551`正式skill-filesystem/tools/llm/llm-pi-ai tarball integrity、root `.d.ts`、runtime JS、tag源码与一方tests；pi-ai 0.82.1正式formatter tarball。
+- **实测**：无模型/endpoint调用；未读取外部Skill目录、未使用凭据。固定发布物和控制流足以静态判定，exact provider name限制保持unknown。
+- **沉淀**：`packages/{core,llm}.md`、errors E031、index/coverage/log；Skill页已有Config/读取owner结论，无重复改写。

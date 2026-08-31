@@ -26,8 +26,11 @@ anchors:
   - packages/core/agent-loop/tests/request-error.spec.ts
   - packages/core/agent-loop/tests/request-reconstruction.spec.ts
   - packages/core/tools/src/index.ts
+  - packages/core/tools/src/invariant.ts
   - packages/core/tools/tests/tools.spec.ts
   - packages/core/tools/tests/code-mode.spec.ts
+  - packages/core/tools/tests/ts-types.spec.ts
+  - packages/core/tools/tests/py-types.spec.ts
   - packages/core/session/src/surface.ts
   - packages/core/session/src/repair.ts
   - packages/session/session-persistence/tests/contract.ts
@@ -95,6 +98,7 @@ core 是「主干」而非单一 capability family，但同样按 seam 纪律拆
 - **`tools/result`（live 事件）和 `tool/result`（durable session 事件）名字只差一个 `s`**，是两回事：前者是流水线末尾的只读观察点，后者是 loop 随后追加的会话事件。
 - **可选服务必须用 `ctx.get(name)`**，`ctx.<name>` 属性代理对拓扑敏感，只留给声明过 inject 的服务（`packages/CLAUDE.md` 明文规则，有 postmortem 背书）。`dsh-tools` 自己就用 `ctx.get('approval')` 机会性消费审批 seam。
 - **`code` 模式不只是展示**：注册表会把模型直呼其他工具的调用在 policy 之前解析成 `UNKNOWN_TOOL`，所以宣称面和可执行面才一致；`run_code` 这个名字**在任何模式下都被保留**，不可注册/影子/限制/移除。
+- **ToolRuntime 不是 provider tool-name compatibility validator**：`ToolSchema.name` 只有 `string` 类型，`register()` 只拥有同层唯一性和保留名 `run_code`，不会按 provider 的 regex 或最大长度预检；`schemas()` 又原样投影 name。companion invariant 会拒绝最终 execution 的空 name，而 Code Mode renderer 明确用 quoted/subscript access 支持 `my-mcp.tool` 这类 exotic name。注册成功只能证明 DSH registry 接受，不能证明目标 provider wire 接受。
 - **scope 是路由不是沙箱**：`restrict()` 是「实时可见性组合」，不是权限边界；`agent-scope` 的 Agent Note 明确把安全与授权列为非目标。
 - **`agent.status === 'running'` 不等于「某个 turn 还开着」**：它描述 driver 级的 drain 区间，可能横跨 turn 关闭、持久化 checkpoint 和连续排队的多个 turn。
 - **config agent 默认每次启动都是新会话**：省略 `sessionId` 会每次生成 `${label}-session-<uuid>`；要「有则续、无则建」必须给稳定的 `sessionId`，`resumeSessionId` 则要求已有持久化历史且与 `sessionId` 互斥。

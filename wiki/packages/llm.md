@@ -7,6 +7,7 @@ anchors:
   - packages/llm/README.md
   - packages/llm/llm/README.md
   - packages/llm/llm/src/index.ts
+  - packages/llm/llm/src/types.ts
   - packages/llm/llm/src/adapter-failure.ts
   - packages/llm/llm/tests/service.spec.ts
   - packages/llm/llm-deepseek/README.md
@@ -17,9 +18,11 @@ anchors:
   - packages/llm/llm-pi-ai/src/auth.ts
   - packages/llm/llm-pi-ai/src/index.ts
   - packages/llm/llm-pi-ai/src/adapter.ts
+  - packages/llm/llm-pi-ai/src/context.ts
   - packages/llm/llm-pi-ai/src/stream.ts
   - packages/llm/llm-pi-ai/tests/catalog.spec.ts
   - packages/llm/llm-pi-ai/tests/adapter.spec.ts
+  - packages/llm/llm-pi-ai/tests/convert.spec.ts
   - packages/llm/llm-pi-ai/tests/dynamic-config.spec.ts
   - packages/host/apiproxy/src/api/sessions.ts
   - packages/host/apiproxy/src/api-proxy.ts
@@ -104,6 +107,7 @@ LLM seam 及其 provider 适配器。组 README 的原话很关键：**`llm` 包
 12. **重试策略配在 adapter 上，不配在 `llm-retry` 上**：`llm-retry` 自己没有 policy config。多 provider 的 `llm-pi-ai` 把 `retryPolicy` 放进每个 provider profile 里。
 13. **text-only 模型的图片在 runtime 层被投影，不是被拒绝**：dispatch 前，若 exact model 的 `inputModalities` 已声明且不含 `'image'`、而 messages 含图片（含嵌套 tool-result 里的图片），`LlmRuntime` 会用 `projectImagesForTextModel()` 把图片替换成确定性占位文本（`textOnlyImageText`，带 attachment sha256 digest 前 8 位），只改本次 transient request、不动 durable session history。因此经 `ctx.llm.stream()` 给 text-only 模型发图不会触发 llm-deepseek adapter 自己的 `UNSUPPORTED_CONTENT` 图片门（投影发生在进 adapter 之前）；`inputModalities` 未声明（`undefined`）则不投影、交由 adapter 处理。
 14. **`off` 不是核心通用能力**：reasoning effort 是 exact route/model 的 adapter-owned opaque id。精确模型未公开 `reasoning` 时，显式传任何 effort（包括 `off`）都会在 provider I/O 前以 `UNSUPPORTED_REASONING_EFFORT` 被拒；`session.selectModel` 再把它映射为 `model-unavailable`。省略字段才表示把默认所有权交还 adapter/provider，而不是显式关闭推理。
+15. **DSH→pi-ai 原样传 name，不等于所有 provider 原样接受**：`ToolSchema.name` 经 ToolRuntime schema projection 与 `llm-pi-ai.toolsOf()` 都不 normalize/truncate；pi-ai 0.82.1 的 OpenAI Completions、Responses 和 Anthropic API-key formatter也直接写入 wire。Anthropic OAuth/Claude-Code compat 会对一组已知名字做 canonical casing；其他 provider/gateway 的字符和长度限制也不由 DSH core 预检。未指定 exact protocol/auth/provider 时，不得把 `ctx.tools.register()` 成功当成 wire compatibility 证据。
 
 ## 2026-08-27 审核增量：pi-ai 动态多 route 与 Session 选择
 
