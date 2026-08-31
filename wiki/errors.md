@@ -341,4 +341,15 @@
 
 ---
 
+### E029 — `agent/pre-step`不是schema assembly之前的异步闸
+
+- **类型**：生命周期ordering过推
+- **错误内容**：看到`agent/pre-step`可async reject，便断言它能在每次tool schema collection之前校验远端catalog；或把同步`SystemPrompt.tools()`provider当成可await的hook。
+- **正解**：AgentLoop先`systemPrompt.assemble()`再dispatch`agent/pre-step`；assemble又先同步调用tool providers并clone/order schemas，最后才await`system-prompt/assemble`waterfall。两条event都可在model adapter前fail closed，但schema已生成。tool侧`guard()`也只能同步；物理effect前最后一次async check应由`ToolDefinition.execute`第一步拥有。
+- **根因**：把“model request之前”与“schema assembly之前”混为一谈，又忽略了provider签名的同步返回类型。
+- **发现于**：2026-08-31 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/core.md](packages/core.md)、[packages/mcp.md](packages/mcp.md)。
+
+---
+
 > 更多**按包组分布**的文档与源码冲突（共 80 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

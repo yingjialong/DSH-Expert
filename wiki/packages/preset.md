@@ -18,6 +18,9 @@ anchors:
   - packages/core/agent-loop/src/agent.ts
   - packages/host/apiproxy/src/api-proxy.ts
   - packages/host/apiproxy/src/api/agent-presets.ts
+  - packages/host/apiproxy/src/api/sessions.ts
+  - packages/host/apiproxy/tests/api-proxy-agent-preset.spec.ts
+  - packages/client/runtime/src/client/sessions/manager.ts
   - apps/cli/config/agent-presets/
   - .agents/notes/implemented/architecture/2026-08-03-per-session-agent-presets.md
   - .agents/notes/implemented/architecture/2026-08-08-per-preset-standing-mounts.md
@@ -133,4 +136,6 @@ asked_by: agent
 - DSH不提供任意definition bytes写入口：`copy(from,id)`只能复制既有目录；外部owner必须自己负责canonical bytes/digest、原子目录发布、id-content一致性、依赖闭包、跨重启保留与ref-aware GC。DSH既不校验id等于内容摘要，也不把definition/plugin graph写进Session。
 - 标准ApiProxy没有按recorded id调用out-of-tree definition resolver的注册点。目录必须在create/resume进入roster解析前存在；自定义Agent入口可用公开`AgentRegistry` setup，但这不是标准ApiProxy上的setup chain。
 - standing mount是一preset generation一棵共享plugin subtree，不是每Session一份。多个Session复用同id会join同一实例；失效后新Session也不会自动重跑preflight。需要fresh instance时必须有新preset/file generation、Host重启，或让共享definition内部按`exec.agent`管理per-Session资源。
+- 正式Host`@deepseek-ai/dsh-host-apiproxy/api`的`SessionsApi.create`公开`sessionId?`与`agentPreset?`，并承诺resolved id写header；但高层`@deepseek-ai/dsh-client-runtime`的`SessionRuntime.create`只公开`workspaceId?/cwd?/sessionId?`，没有preset参数。调用方必须区分Host API seam与Client convenience层。
+- ordinary ApiProxy fork用`resolveSessionPreset(source)`取得source当前effective id并写入child header/setup，不取current default；但它重新按当前roster/standing解析同id，不持久克隆private live generation。只有source无任何recorded id的legacy/preset-less分支才会在有roster时采用fork时default。
 - **认知状态**：verified_inference（固定rc.2正式root exports/`.d.ts`、roster/discovery/mount、ApiProxy create/resume与一方tests交叉核对；未写外部definition store）。

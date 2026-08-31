@@ -10,7 +10,9 @@ anchors:
   - packages/skill/skill/src/index.ts
   - packages/skill/skill/tests/skill.spec.ts
   - packages/skill/skill-filesystem/README.md
+  - packages/skill/skill-filesystem/package.json
   - packages/skill/skill-filesystem/src/index.ts
+  - packages/skill/skill-filesystem/tests/skill-filesystem.spec.ts
   - packages/skill/tool-skill/README.md
   - packages/skill/tool-skill/src/index.ts
   - packages/skill/tool-skill/tests/tool-skill.spec.ts
@@ -137,4 +139,6 @@ asked_by: agent
 - 外部plugin可用正式`registerProvider()`在AgentPreset standing scope只贡献一组content-addressed Skill revisions；opaque `locator`可由provider解释成digest/ref。官方`dsh-tool-skill`按`exec.agent`scope调用同一Registry，并把目录/正文送入标准ToolRuntime与durable Session消息，不需要另建Skill runtime。
 - DSH只借用readonly candidate/definition并校验shape与name，不验证locator digest、body immutability或revision；不可变bytes/ref store仍归provider owner。不同名的global/base contributions仍会合并，scope shadow只能覆盖同名，不能声明“整个Agent只看到selected set”，除非组合本身保证没有其他可见来源。
 - 当provider注册后永不invalidate/replace、definition bytes不可变、且selection已由持久preset id表达时，没有G/G2或“observe后再append selection”的窗口，public catalog generation/CAS不是该静态语义的必要条件。只要允许其他provider变化、collision validation后另做durable mutation，或需要运行时证明catalog未变，rc.2缺少generation/lease/CAS的问题立即恢复。
+- 标准filesystem provider可直接承担selected immutable root：在preset scope配置唯一`providerName`、`includeDefaultRoots:false`、`customSkillDirs:[root]`、`watch:false`，它只扫描显式root且不建watcher；官方`dsh-tool-skill`仍按`exec.agent`scope消费。该隔离只覆盖本provider，不会排除Registry的global/ancestor contributions。
+- parser精确键为必填`name/description`与可选camelCase`whenToUse`、object`metadata`、`disable-model-invocation`、`user-invocable`。`disableModelInvocation/modelInvocable/userInvocable`会显式拒绝整条Skill；`when-to-use`和其他unknown keys只被忽略。若需digest/signature验证、mount-time frozen bytes、非文件opaque store、`allowed-tools`或layer exclusion，仍需第一方provider/parser。
 - **认知状态**：verified_inference（固定rc.2正式Skill provider/Consumer types、scope merge与tool-skill一方tests；未运行外部provider）。

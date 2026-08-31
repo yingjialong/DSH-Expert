@@ -123,3 +123,4 @@
 | Q116 | `alpha完整Host嵌入` | 是否会提供完整语言无关Remote协议、正式Electron IPC carrier实现或第三方desktop embedding兼容保证；截至alpha.2仍未找到正式承诺。 |
 | Q117 | `MCP modern generation` | 官方是否、何时会发布MCP 2026-07-28 subscriptions/listen、公开且耐久的server/tool generation snapshot，以及fresh observation→request/header→generation-bound call/result barrier；rc.2/alpha.2与SDK 1.29/1.30均未提供，未来API名与版本未知。 |
 | Q118 | `ToolRuntime generation borrow` | 上游是否会把schema publication、body/output projection、post replacement、durable result与cancel/drain绑定到同一opaque ToolDefinition generation handle，并加入retire/refcount/release与外部carrier identity/digest seam；rc.2与正式npm alpha.2均无此合同。static no-swap语义可条件性不依赖它，但运行期replacement/teardown仍缺；未来兼容形状与版本未知。 |
+| Q119 | `Host standing composition drain` | 上游是否会提供Host-wide admission-close→Agent drain→standing preset/plugin dispose的统一public coordinator，或给standing ToolDefinition registration公开waitForIdle/refcount；rc.2只有可手工排序的AgentHandle/Fiber primitives，未来API与版本未知。 |

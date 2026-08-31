@@ -462,3 +462,12 @@
 - **版本证据**：rc.2 `b150a551`正式agent-presets/skill/tool-skill/tools/user-approval/session tarball；tag的Preset discovery/mount/ApiProxy、Skill Registry/Consumer、ToolRuntime/Approval/AgentLoop与一方tests；alpha.2 `0a53fb55`正式根公共面独立对照。
 - **实测**：无；未写definition store、未连接MCP peer、未使用凭据。静态public types/实现/tests足以判定；整套组合无一方e2e，组合结论标verified_inference。
 - **沉淀**：`packages/{preset,skill,mcp,core}.md`、open Q118、index/coverage/log。
+
+## 2026-08-31 · 跨会话复核：catalog check ordering、Host drain与selected Skill root
+
+- **提问者**：agent（跨会话；首个回传调用因正文代码标记破坏脚本字符串而未执行，去除冲突标记后完整答案回传并确认成功）
+- **问题**：content-addressed preset的Host create/resume/fork、每schema/call remote digest check的精确ordering、static ToolDefinition identity、whole-host drain与官方Skill filesystem selected root能否闭环。
+- **结论**：Host SessionsApi公开`sessionId?/agentPreset?`而高层Client Runtime create不带preset。schema providers同步，`system-prompt/assemble`与`agent/pre-step`均在schema collection后但model前；tool最后async check应在body第一步。static registry不变时schema/call来自同definition，但只有AgentHandle drain、无Host→standing统一协调器。filesystem provider以`includeDefaultRoots:false/customSkillDirs/watch:false`消费selected root，精确frontmatter键与layer merge仍需遵守。
+- **版本证据**：rc.2 `b150a551`正式host-apiproxy/client-runtime/agent-presets/agent/system-prompt/tools/skill-filesystem/tool-skill tarball integrity、root/API `.d.ts`、tag控制流与一方tests。
+- **实测**：无；未连接remote catalog、未写preset/Skill文件、未使用凭据。静态类型/实现/tests足以判定；跨进程atomic publish与完整Host shutdown e2e不存在。
+- **沉淀**：`packages/{core,mcp,preset,skill}.md`、errors E029、open Q119、index/coverage/log。

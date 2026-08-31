@@ -9,6 +9,8 @@ anchors:
   - packages/core/agent-loop/README.md
   - packages/core/tools/README.md
   - packages/core/system-prompt/README.md
+  - packages/core/system-prompt/src/index.ts
+  - packages/core/system-prompt/tests/system-prompt.spec.ts
   - packages/core/session/README.md
   - packages/core/scope/README.md
   - packages/core/agent-default-model/README.md
@@ -118,6 +120,14 @@ core 是「主干」而非单一 capability family，但同样按 seam 纪律拆
 - 公开`agent/pre-step`与`tools/pre-execute`/guard/executor可在外部资源失效后拒绝后续step或call；这只建立fail-closed路径，不会生成DSH-owned catalog generation或“必须新建Session”的通用状态。
 - 该结论的硬前提包含HMR/owner teardown不得早于in-flight execution settle。只要允许replacement、并发teardown或需要DSH证明同代，上一节列出的borrow/retire/refcount/drain缺口仍完整存在。
 - **认知状态**：verified_inference（固定rc.2 ToolRuntime current-registry解析与AgentLoop drain控制流；无运行期换代实测）。
+
+### async catalog check的真实ordering与teardown边界
+
+- 每个step先append`turn/start`，再由`preStep()`调用`systemPrompt.assemble()`；assemble同步调用全部tool-schema providers、clone/order schemas，随后才await scope-filtered`system-prompt/assemble`waterfall，返回后才进入`agent/pre-step`。因此两条async event都能在model adapter前fail closed，但都不是“schema collection之前”。`SystemPrompt.tools()`的public provider签名是同步`ToolProviderResult`，不能直接await remote check。
+- `system-prompt/assemble`或`agent/pre-step`throw会把turn收成`UNKNOWN` error且不调用model；pre-step显式reject则收成blocked。两者都带turn signal，但不合作的listener Promise不会被DSH抛弃。assembly每step只算一次，同step`agent/request-error`retry复用原assembly，不会重跑check。
+- tool侧顺序是durable`tool/call`→async`tools/pre-execute`→可选Approval→同步guards→`tools/execute`wrappers→body。`guard()`不能async；pre-execute距离body中间可能隔着人类Approval。adapter若要求最后一次远端校验，应把它放在`ToolDefinition.execute`的第一步、物理effect之前；任意check后的外部TOCTOU仍需远端digest/version条件调用解决。
+- `AgentHandle.dispose()`公开语义包含cancel→whenIdle→agent-scope dispose，factory unload也drain其handles；Preset standing scope却归`AgentPresets.selfCtx`并只在whole-tree teardown回收。DSH没有Host-wide admission-close→all Agents drain→standing/plugin dispose协调器。Host可保留public handles/fibers顺序组合；无法证明该顺序或存在agentless calls时，plugin仍需自管in-flight drain。
+- **认知状态**：verified_inference（固定rc.2正式system-prompt/agent/tools types、AgentLoop/ToolRuntime控制流与一方tests；未连接远端catalog）。
 
 ## 去哪深入（文件路由）
 
