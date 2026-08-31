@@ -374,4 +374,15 @@
 
 ---
 
+### E032 — cold `session.history`会激活preset，`agent/created`不是前置准入门
+
+- **类型**：生命周期/安全边界误判
+- **错误内容**：把cold transcript读取理解成只inspect log、不加载composition；或只在`agent/created`校验preset identity，便断言任何preset plugin activation都已被该检查覆盖。
+- **正解**：rc.2 history在切page前调用`presenterScopeFor→standingKeyFor→ensureStanding`；首读或stamp变化会真实Include/Loader activate recorded preset rows，但不创建Agent/Session/turn，因此`agent/created`根本不发。正常Agent创建也先完成setup/mount再announce。broken standing只让presenter退global并继续history，不能把这一fail-soft行为当成plugin从未执行。
+- **根因**：把“cold read不resume Agent”错误等价成“不compose presenter scope”，又把publication event错当前置activation guard。
+- **发现于**：2026-08-31 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/preset.md](packages/preset.md)。
+
+---
+
 > 更多**按包组分布**的文档与源码冲突（共 81 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

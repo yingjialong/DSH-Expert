@@ -11,6 +11,8 @@ anchors:
   - packages/mcp/mcp-client/src/connection.ts
   - packages/mcp/mcp-client/src/tools.ts
   - packages/mcp/mcp-client/src/transport.ts
+  - packages/mcp/mcp-client/tests/mcp-client.spec.ts
+  - packages/mcp/mcp-client/tests/apply.spec.ts
   - docs/cookbook/extension-cookbook.md
   - docs/cookbook/adding-a-tool.md
   - packages/core/tools/src/index.ts
@@ -81,6 +83,7 @@ asked_by: agent
 8. **图片进入模型上下文需要三个条件同时满足**：`ctx.attachments` 已挂载 + **精确调用 model 路由显式声明支持图片输入** + 图片批次整体解码并准入成功。**整批一起**准入，任一失败则整批变成诊断文本。`isError` 的调用在图片持久化**之前**就被拒。
 9. **inline base64 从不写进 session event**：它只留在 execution-local 的 canonical value 里；provider 从 attachment store 读校验过的字节。
 10. **KV cache 的实际表现**：工具集和 schema 不变时 prefix 稳定；**recover 后拿到完全相同的 list 也是 prefix 稳定的**；只有真正增删改重命名才可能从第一个变化的 schema token 起失效。
+11. **64字符规则是本bridge的内部policy，不是通用ToolRuntime合同**：`serverName`先受`[A-Za-z0-9_-]{1,32}`限制，内部`publicToolName()`再替换/截断到64并加12位hash；但根不导出该helper，正式tarball也不含`src/`。`syncTools()`会排空全部分页并注册完整集合，没有MCP总tool-count上限。
 
 ## 2026-08-22 agent 审核增量（transport 注入面现状）
 

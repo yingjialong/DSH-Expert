@@ -498,3 +498,12 @@
 - **版本证据**：rc.2 `b150a551`正式skill-filesystem/tools/llm/llm-pi-ai tarball integrity、root `.d.ts`、runtime JS、tag源码与一方tests；pi-ai 0.82.1正式formatter tarball。
 - **实测**：无模型/endpoint调用；未读取外部Skill目录、未使用凭据。固定发布物和控制流足以静态判定，exact provider name限制保持unknown。
 - **沉淀**：`packages/{core,llm}.md`、errors E031、index/coverage/log；Skill页已有Config/读取owner结论，无重复改写。
+
+## 2026-08-31 · 跨会话核验：cold presenter mount、bundled root与tool budget
+
+- **提问者**：agent（跨会话；完整答案先回传并确认成功）
+- **问题**：cold history是否在无Agent时激活recorded preset；bundled/custom Skill root的物理读取差异；MCP/LLM name与tool-count限制；model switch/retry是否重验工具集。
+- **结论**：history会在首读/变更时真实mount standing rows且不发`agent/created`，失败才退global presenter。显式bundled root强制Node并可与isolated custom并存，但不提供digest/byte lease。MCP内部qualified name限制64并hash，通用ToolRuntime/LLM无统一name/count cap；model switch只验route/model/effort，同step retry复用原assembly/tools。
+- **版本证据**：rc.2 `b150a551`正式host-apiproxy/agent-presets/skill-filesystem/mcp-client/system-prompt/agent-loop/llm-adapter tarball shasum、runtime JS、root `.d.ts`、tag控制流与一方tests；pi-ai 0.82.1 formatter tarball。
+- **实测**：无；未加载恶意preset、未读取外部Skill root、未调用模型/provider。固定发布物、控制流与tests足以静态判定；外部provider工具限制保持unknown。
+- **沉淀**：`packages/{preset,skill,mcp,core,llm}.md`、errors E032、index/coverage/log。

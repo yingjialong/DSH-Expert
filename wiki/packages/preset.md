@@ -8,6 +8,7 @@ anchors:
   - packages/preset/agent-presets/README.md
   - packages/preset/agent-presets/src/index.ts
   - packages/preset/agent-presets/src/authoring.ts
+  - packages/preset/agent-presets/src/mount.ts
   - packages/preset/agent-presets/src/session.ts
   - packages/preset/agent-presets/tests/discovery.spec.ts
   - packages/preset/agent-presets/tests/mount.spec.ts
@@ -16,6 +17,7 @@ anchors:
   - packages/core/scope/src/index.ts
   - packages/core/session/src/index.ts
   - packages/core/agent-loop/src/agent.ts
+  - packages/core/agent/src/index.ts
   - packages/host/apiproxy/src/api-proxy.ts
   - packages/host/apiproxy/src/api/agent-presets.ts
   - packages/host/apiproxy/src/api/sessions.ts
@@ -80,6 +82,7 @@ asked_by: agent
 - **模型可见 ⟺ 已记录**：切换 preset 会在提交后追加 `agent-preset/selected` session 事件，因为 preset 决定模型看到的 tool schema 与 prompt sections。
 - **trust 不是强制项**：`trust: 'system' | 'user'` 只是给消费者展示用；preset 的权限等同于它命名的插件，user preset 等价于 shell 访问权。
 - **shipped preset 名单不在本组文档里**：以 `apps/cli/config/agent-presets/` 的目录清单为准（当前为 `standard` / `code` / `cordis` / `minimal`）；README 明确拒绝在文档里再列一份。
+- **cold transcript read 不是“不会激活preset”的纯数据读取**：`session.history`会先解析recorded effective preset，再调用`standingKeyFor()`；首读或stamp变化会真实Include/Loader activate该`agent.cordis.yml`。这条路径没有Agent，因此不会发`agent/created`；只在该事件检查composition identity既晚于正常Agent setup，也完全漏掉cold presenter mount。
 
 ## 去哪深入（文件路由）
 
@@ -139,3 +142,12 @@ asked_by: agent
 - 正式Host`@deepseek-ai/dsh-host-apiproxy/api`的`SessionsApi.create`公开`sessionId?`与`agentPreset?`，并承诺resolved id写header；但高层`@deepseek-ai/dsh-client-runtime`的`SessionRuntime.create`只公开`workspaceId?/cwd?/sessionId?`，没有preset参数。调用方必须区分Host API seam与Client convenience层。
 - ordinary ApiProxy fork用`resolveSessionPreset(source)`取得source当前effective id并写入child header/setup，不取current default；但它重新按当前roster/standing解析同id，不持久克隆private live generation。只有source无任何recorded id的legacy/preset-less分支才会在有roster时采用fork时default。
 - **认知状态**：verified_inference（固定rc.2正式root exports/`.d.ts`、roster/discovery/mount、ApiProxy create/resume与一方tests交叉核对；未写外部definition store）。
+
+## 2026-08-31 · cold history presenter会激活standing composition
+
+- `session.history`对attached/cold source都先调用`presenterScopeFor()`，live Agent直接作为scope；无live Agent但有roster时，根据header与最后一条`agent-preset/selected`解析effective id并调用`standingKeyFor()`。该调用不按页面内容或是否实际含tool event短路。
+- `standingKeyFor()`经`ensureStanding()`在首读/文件stamp变化时创建standing scope并执行`mountPreset()`；Include/Loader会真实import/apply全部enabled plugin rows，然后才检查inactive row与root-realm service leak。真实一方test固定了“standing mount存在，但无Agent/Session/turn”。
+- 因为cold路径不创建Agent，`agent/created` listener完全不运行。正常create/resume也先完成unpublished setup/preset mount，进入Session/Agent registry后才announce，因此该event只能观察或在同步throw时回滚publication，不能作为preset plugin activation之前的唯一准入门。
+- roster缺失直接用global presenter；unknown/deleted/broken/unusable preset由`presenterScopeFor()`吞掉standing failure并退global，history继续返回generic card。单个presenter/JSON parse失败也只省略view；只有persistence inspect/source失败才使整个history返回`internal`。
+- mount失败会dispose失败scope，收回遵守Cordis effect ownership的注册；DSH不承诺回滚plugin自行造成、未登记为effect的外部副作用。user preset的trust标签也不是代码sandbox。
+- **认知状态**：verified_inference（固定rc.2正式host-apiproxy/agent-presets runtime JS、Agent lifecycle类型与cold/presenter/mount一方tests；未加载恶意plugin）。

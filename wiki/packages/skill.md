@@ -153,6 +153,8 @@ asked_by: agent
 - rc.2 shipped Web把`@deepseek-ai/dsh-skill` registry留在Host plane，禁用base的`skill-filesystem/tool-skill`，再由standard/code/cordis preset显式挂两row；minimal不挂Skill。`skill-filesystem`硬inject只有`skills`，`tool-skill`硬inject为`agents/tools/skills`。因此完整官方模型链需要可解析的三个正式包与active rows：Host registry + preset provider + Host或preset consumer；仅做Registry读取时consumer可缺席。
 - npm manifests把`dsh-skill`列为filesystem peer，把`dsh-agent/dsh-llm/dsh-skill/dsh-tools`列为tool-skill peers；Loader只按inject services决定激活。`ctx.fs`不是filesystem row的hard inject，缺席时Node fallback。是否把这些包列成宿主“direct dependency”不是DSH runtime合同；模块必须在安装闭包中可由preset bare specifier解析。
 - custom root不是`trustedHost`，当当前scope可见`ctx.fs`时list/get会优先用该FileSystem provider；无`ctx.fs`才用Node fs。若selectedRoot是Host-local而preset可见fs指向另一物理世界，standard provider没有force-Node开关，需由组合保证物理一致或换第一方provider。
+- 显式`bundledSkillDir`是同一provider内唯一的Host-local强制路径：root带`source:'bundled'`、rank 600、`trustedHost:true`，list与`get()`重读都绕过`ctx.fs`使用Node fs。`includeDefaultRoots:false`只禁用环境变量隐式bundled root；显式`bundledSkillDir`仍会与`customSkillDirs`并存。`watch:false`只关watcher；同名时同层custom rank 300先于bundled 600。
+- bundled与custom仍共用同一frontmatter parser和path locator；list/get仍独立open两次。强制Node只固定物理读取世界，不增加digest、authenticated bytes、fd/lease或ID-content校验，不能据此关闭definition漂移/TOCTOU。
 - 正式root`.d.ts`把`providerName`注释为默认`local`，但同tarball runtime JS的Config schema与constructor都用`filesystem`；实际行为以runtime为准，登记C081。
 - **认知状态**：verified_inference（固定rc.2正式tarball root/runtime JS、package manifests、shipped Loader rows与isolated-provider一方test）。
 
