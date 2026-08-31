@@ -55,7 +55,7 @@
 | [attachment](packages/attachment.md) | L1 | Product | 2 | 9 | 10 | 7 | 0 |
 | [boot](packages/boot.md) | L1 | Product | 2 | 10 | 14 | 10 | 1 |
 | [bundle](packages/bundle.md) | L1 | Product | 6 | 12 | 8 | 9 | 0 |
-| [client](packages/client.md) | L1 | Product | 44 | 16 | 14 | 14 | 2 |
+| [client](packages/client.md) | L1 | Product | 44 | 20 | 14 | 14 | 2 |
 | [code-runtime](packages/code-runtime.md) | L1 | Product | 3 | 13 | 12 | 10 | 2 |
 | [compaction](packages/compaction.md) | L1 | Product | 4 | 13 | 9 | 8 | 2 |
 | [context](packages/context.md) | L1 | Product | 6 | 12 | 7 | 8 | 2 |
@@ -70,7 +70,7 @@
 | [goal](packages/goal.md) | L1 | Product | 4 | 13 | 8 | 10 | 2 |
 | [guard](packages/guard.md) | L2 | Product | 2 | 14 | 8 | 10 | 2 |
 | [hooks](packages/hooks.md) | L1 | Product | 3 | 13 | 17 | 13 | 3 |
-| [host](packages/host.md) | L2 | Product | 7 | 32 | 16 | 15 | 3 |
+| [host](packages/host.md) | L2 | Product | 7 | 27 | 16 | 15 | 3 |
 | [identity](packages/identity.md) | L1 | Product | 1 | 5 | 4 | 4 | 2 |
 | [interaction](packages/interaction.md) | L2 | Product | 5 | 15 | 9 | 10 | 2 |
 | [jobs](packages/jobs.md) | L1 | Product | 3 | 10 | 7 | 10 | 2 |
@@ -78,12 +78,12 @@
 | [lsp](packages/lsp.md) | L1 | Product | 3 | 14 | 6 | 12 | 2 |
 | [mcp](packages/mcp.md) | L1 | README 未列出 | 1 | 17 | 7 | 11 | 3 |
 | [plan](packages/plan.md) | L1 | Product | 1 | 7 | 7 | 11 | 2 |
-| [preset](packages/preset.md) | L1 | Product | 2 | 29 | 11 | 11 | 1 |
+| [preset](packages/preset.md) | L1 | Product | 2 | 30 | 11 | 11 | 1 |
 | [runtime-diagnostics](packages/runtime-diagnostics.md) | L1 | README 未列出 | 1 | 10 | 10 | 9 | 1 |
 | [sandbox](packages/sandbox.md) | L1 | Product | 4 | 14 | 24 | 10 | 1 |
 | [schedule](packages/schedule.md) | L1 | Product | 1 | 13 | 11 | 10 | 0 |
 | [sdk](packages/sdk.md) | L1 | Product | 3 | 16 | 23 | 10 | 1 |
-| [session](packages/session.md) | L2 | Product | 14 | 34 | 24 | 13 | 2 |
+| [session](packages/session.md) | L2 | Product | 14 | 29 | 24 | 13 | 2 |
 | [session-query](packages/session-query.md) | L1 | Product | 4 | 16 | 18 | 13 | 1 |
 | [settings](packages/settings.md) | L2 | Product | 2 | 9 | 12 | 7 | 1 |
 | [shell](packages/shell.md) | L1 | Product | 10 | 13 | 10 | 9 | 1 |

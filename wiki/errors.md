@@ -473,4 +473,15 @@
 
 ---
 
+### E041 — `await SessionRuntime.refresh()`不等于binding已同步收敛
+
+- **类型**：client lifecycle/可观测性过推
+- **错误内容**：direct`IApiClient.sessions.create`后只`await runtime.refresh()`，便立即断言`binding(id)`存在；或把`noteAgentPreset`当成public create-result adoption seam。
+- **正解**：refresh等待Manager的list RPC/fold，但Manager→Runtime list store由Notifier microtask投影，一方test显式再flush microtask。应等待public list observable确认id后再取binding；refresh错误又被fold进private Manager snapshot，不是成功receipt。`noteAgentPreset`只承诺已有blank Session成功switch后的label更新，不携带完整birth facts。
+- **根因**：把concrete runtime wire-pump method的完成、manager snapshot完成、outward store发布与binding eligibility合成一个同步点。
+- **发现于**：2026-08-31 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/client.md](packages/client.md)、[packages/host.md](packages/host.md)。
+
+---
+
 > 更多**按包组分布**的文档与源码冲突（共 81 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

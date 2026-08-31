@@ -22,6 +22,7 @@ anchors:
   - packages/core/agent-loop/src/index.ts
   - packages/core/agent-loop/tests/scope-lifecycle.spec.ts
   - packages/core/agent/src/index.ts
+  - packages/core/agent/tests/agent.spec.ts
   - packages/host/apiproxy/src/api-proxy.ts
   - packages/host/apiproxy/src/api/agent-presets.ts
   - packages/host/apiproxy/src/api/sessions.ts
@@ -153,6 +154,8 @@ asked_by: agent
 - standing mount是一preset generation一棵共享plugin subtree，不是每Session一份。多个Session复用同id会join同一实例；失效后新Session也不会自动重跑preflight。需要fresh instance时必须有新preset/file generation、Host重启，或让共享definition内部按`exec.agent`管理per-Session资源。
 - 正式Host`@deepseek-ai/dsh-host-apiproxy/api`的`SessionsApi.create`公开`sessionId?`与`agentPreset?`，并承诺resolved id写header；但高层`@deepseek-ai/dsh-client-runtime`的`SessionRuntime.create`只公开`workspaceId?/cwd?/sessionId?`，没有preset参数。调用方必须区分Host API seam与Client convenience层。
 - ordinary ApiProxy fork用`resolveSessionPreset(source)`取得source当前effective id并写入child header/setup，不取current default；但它重新按当前roster/standing解析同id，不持久克隆private live generation。只有source无任何recorded id的legacy/preset-less分支才会在有roster时采用fork时default。
+- create前调用`standingKeyFor(id)`会真实mount但不创建Agent/Session/turn；标准ApiProxy create仍在unpublished setup里重新`resolveMountable→ensureStanding`并bind。相同id且`agent.cordis.yml` stamp未变（或暂时不可stat）会join同一standing key/service instance；stamp变化才建新generation。一方tests固定第二次standingKeyFor同key、两个Session共享同preset instance。
+- 同步`agent/created` listener throw会在Session/Agent已enter并开始announce后veto，最终触发`agent/disposed→session/disposed`并清registries；returned-Promise rejection只warn。该guard晚于standing mount与`session/created`，不阻止plugin activation，也不dispose AgentPresets selfCtx已有standing generation；先前observer或未纳入Cordis ownership的副作用不自动回滚。
 - source recorded id在current roster缺失或composition mount失败时，ordinary fork不会回退default，也不会发布child。固定rc.2实现中，unknown id在进入child create事务前失败并落到通用HTTP handler failure；已resolve但setup/mount失败则落入fork的typed internal failure。没有找到专门覆盖preset-missing fork的第一方测试，因此错误外形只记为实现级`verified_inference`，不宣称长期wire稳定。
 - **认知状态**：verified_inference（固定rc.2正式root exports/`.d.ts`、roster/discovery/mount、ApiProxy create/resume与一方tests交叉核对；未写外部definition store）。
 

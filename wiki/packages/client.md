@@ -9,6 +9,15 @@ anchors:
   - packages/client/web/README.md
   - packages/client/web/src/platform.ts
   - packages/client/runtime/README.md
+  - packages/client/runtime/package.json
+  - packages/client/runtime/src/client/index.ts
+  - packages/client/runtime/src/client/contract/sessions.ts
+  - packages/client/runtime/src/client/contract/sessions-port.ts
+  - packages/client/runtime/src/client/sessions/service.ts
+  - packages/client/runtime/src/client/sessions/manager.ts
+  - packages/client/runtime/src/client/sessions/notifier.ts
+  - packages/client/runtime/tests/sessions-service.client.spec.ts
+  - packages/client/runtime/tests/manager.client.spec.ts
   - packages/client/ui-slots/README.md
   - packages/client/ui-renderer/README.md
   - packages/client/connection/README.md
@@ -16,7 +25,7 @@ anchors:
   - docs/subsystems/client-modules.md
   - packages/README.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-22
+verified_at: 2026-08-31
 asked_by: self
 ---
 
@@ -90,6 +99,16 @@ Slot 系统自身的三件套：**Definition = `ui-slots`**（`SlotCore` + `Slot
 10. **Web 层是纯表现**："怎么画"（tool 卡片视图、队列状态）**不进 session log**；但新增 *model-visible* 输入仍然必须有 session event（仓库级铁律）。
 11. **样式**：只用 `--dsw-*` token + CSS Modules + `clsx`，禁字面色值、禁组件库、禁 Tailwind；**产品文案是中文，代码注释是英文**。
 12. **client 源码包在逐文件 100% 覆盖率闸门内**（`pnpm run test:coverage`）；jsdom 靠 spec 首行的 `// @vitest-environment jsdom` pragma，共享配置保持 node env。
+
+## 2026-08-31 · Host exact-preset create与client-runtime收敛边界
+
+- Host`SessionsApi.create`接受`agentPreset?`，但正式`@deepseek-ai/dsh-client-runtime/client`导出的concrete`SessionRuntime.create`只接受`workspaceId?/cwd?/sessionId?`；内部`SessionManager.create`同样不透传preset。跨domain`SessionsPort.create`更窄，只收`workspaceId`。上游没有说明省略preset的产品理由。
+- `SessionManager`虽在源码文件export class，却未被`/client`index或package exports导出，正式tarball也不含src，不能作为out-of-tree seam。没有`adoptCreateResult/noteCreated`。正常`SessionRuntime.create`会把Host echo立即merge并同步`projectList()`，所以promise返回时list与`binding(id)`可用；这一保证不能外推给direct`IApiClient.sessions.create`。
+- direct create的官方增量是`host/session-added{sessionId,blank,cwd?,parentSessionId?,origin?,agentPreset?}`；标准Connection pump交给Manager后以microtask投影进`SessionRuntime.list`。`session/subscribed`走mux，workspace attach另发`host/workspace-changed`；idle create不保证`host/session-status`。
+- concrete`SessionRuntime.refresh()`是正式`.d.ts`方法但不在`ISessions` outward face，契约注释把它与frame handlers归runtime-internal。它single-flight重拉`session.list`，却在promise完成后才由Notifier microtask把Manager投影到Runtime；一方test helper显式再`await Promise.resolve()`。因此`await refresh(); binding(id)`无同步保证，需等待公开`list.subscribe/getSnapshot`确认id后再取binding，并由caller自设timeout；refresh把错误fold在private Manager snapshot，outward list不提供成功receipt。
+- `noteAgentPreset`不是private：`ISessions`与`SessionRuntime`都正式公开，ui-agent-preset在成功blank switch后调用。它只承诺更新已有Session的host-confirmed composition label；实现对unknown id可upsert不是external create adoption合同，也不携带cwd/workspace等完整birth facts。
+- client summary对`agentPreset`采用newest-wins，create echo、host/session-added、session.list与noteAgentPreset都可更新。`binding()`只是listed/addressed id的纯懒解析，不主动拉Host。
+- **认知状态**：verified_inference（固定rc.2正式runtime/connection client exports、concrete/outward contracts、Manager/Notifier控制流与sessions-service/manager一方tests；未跑真实Connection end-to-end）。
 
 ## 去哪深入（文件路由）
 

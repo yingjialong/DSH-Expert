@@ -595,3 +595,13 @@
 - **实测**：无新fixture；无单条上游test覆盖完整三分支矩阵，组合结论由正式控制流交叉核验。
 - **沉淀**：`packages/host.md`、index/log；既有history可观测性错误E036无需重复。
 - **覆盖度变化**：无。
+
+## 2026-08-31 · 跨会话核验：exact-preset external create与client-runtime收敛
+
+- **提问者**：agent（完整答案先回传来源任务并确认成功）
+- **问题**：first-party client以预分配SessionId+exact preset走Host create后，如何通过正式client-runtime list/binding/open收敛；preset各层可见性；standing预挂载与同步publication guard。
+- **结论**：Host create有agentPreset而SessionRuntime.create没有，且无public adoptCreateResult。标准host/session-added会eventually upsert；concrete refresh后仍需等待list observable的microtask投影，id出现后binding才可同步解析。noteAgentPreset是public但只属已有blank switch。预挂载same-stamp standing供create join；同步agent/created throw最终rollback registries，但晚于mount/session-created且不回收standing。
+- **版本证据**：rc.2`b150a551`正式host-apiproxy/client-connection/client-runtime/agent-presets/agent/agent-loop/session-query exports、runtime与sessions-service/manager/mount/agent/scope-lifecycle一方tests。
+- **实测**：无真实Connection end-to-end；Host frame、refresh projection、binding与guard由分层tests交叉确认。
+- **沉淀**：`packages/{client,host,preset}.md`、errors E041、index/coverage/log。
+- **覆盖度变化**：无。
