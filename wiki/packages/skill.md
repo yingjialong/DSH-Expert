@@ -8,12 +8,15 @@ anchors:
   - packages/skill/skill/README.md
   - packages/skill/skill/package.json
   - packages/skill/skill/src/index.ts
+  - packages/skill/skill/tests/skill.spec.ts
   - packages/skill/skill-filesystem/README.md
   - packages/skill/skill-filesystem/src/index.ts
   - packages/skill/tool-skill/README.md
+  - packages/skill/tool-skill/src/index.ts
+  - packages/skill/tool-skill/tests/tool-skill.spec.ts
   - docs/subsystems/skills.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-30
+verified_at: 2026-08-31
 asked_by: agent
 ---
 
@@ -128,3 +131,10 @@ asked_by: agent
 - 正式frontmatter不解释`allowed-tools`：顶层未知键忽略，`metadata`虽可携带任意对象，官方Consumer也不执行权限。Skill包只读完整`SKILL.md`并返回body+`resourceBase`指导，不枚举/读取/执行references/assets/scripts；但也不提供文件扩展名、containment或scripts禁止边界，后续可达性归Agent另挂的fs/shell/sandbox。
 - 包根Schemastery `Config`可无mount校验plugin config；CLI `--dump-config`可boot-free组合patch。两者都不是migration API。`snapshot/list`发现frontmatter时会读取完整Markdown bytes且只返回winner；无header-only parser、shadow/disabled诊断、旧格式import/export或逐项compatibility report。
 - **认知状态**：verified_inference（固定tagConfig/parser/winner控制流与一方tests；未读取任何外部Skill正文）。
+
+## 2026-08-31 · 冻结scope-local provider与CAS的条件性边界
+
+- 外部plugin可用正式`registerProvider()`在AgentPreset standing scope只贡献一组content-addressed Skill revisions；opaque `locator`可由provider解释成digest/ref。官方`dsh-tool-skill`按`exec.agent`scope调用同一Registry，并把目录/正文送入标准ToolRuntime与durable Session消息，不需要另建Skill runtime。
+- DSH只借用readonly candidate/definition并校验shape与name，不验证locator digest、body immutability或revision；不可变bytes/ref store仍归provider owner。不同名的global/base contributions仍会合并，scope shadow只能覆盖同名，不能声明“整个Agent只看到selected set”，除非组合本身保证没有其他可见来源。
+- 当provider注册后永不invalidate/replace、definition bytes不可变、且selection已由持久preset id表达时，没有G/G2或“observe后再append selection”的窗口，public catalog generation/CAS不是该静态语义的必要条件。只要允许其他provider变化、collision validation后另做durable mutation，或需要运行时证明catalog未变，rc.2缺少generation/lease/CAS的问题立即恢复。
+- **认知状态**：verified_inference（固定rc.2正式Skill provider/Consumer types、scope merge与tool-skill一方tests；未运行外部provider）。

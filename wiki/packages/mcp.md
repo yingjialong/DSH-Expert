@@ -11,6 +11,11 @@ anchors:
   - packages/mcp/mcp-client/src/connection.ts
   - packages/mcp/mcp-client/src/tools.ts
   - packages/mcp/mcp-client/src/transport.ts
+  - docs/cookbook/extension-cookbook.md
+  - docs/cookbook/adding-a-tool.md
+  - packages/core/tools/src/index.ts
+  - packages/core/agent-loop/src/tool-calls.ts
+  - packages/interaction/user-approval/src/index.ts
   - packages/README.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
 verified_at: 2026-08-31
@@ -107,6 +112,15 @@ asked_by: agent
 - durable call/result、cancel与MCP结果都不携带Client/generation identity。`PreparedProjection`按`ToolExecution`隔离图片投影，只防串call，不是server generation handle。
 - 条件性竞态：ToolRuntime较早快照old finalizer、较晚dispatch到new definition时，两代projection map不共享；finalizer会fail-soft回落。该结果来自控制流推论，未找到专门MCP竞态test。
 - **认知状态**：verified_inference（固定tagMCP closure/swap/dispose与ToolRuntime分阶段解析交叉核对；未连真实server）。
+
+## 2026-08-31 · out-of-tree协议adapter与static no-swap条件
+
+- rc.2官方extension cookbook明确把MCP扩展形状写为“one plugin per server: discover tools → `ctx.tools.register()`”，并说明raw `ToolDefinition`就是MCP tool进入DSH的方式。第一方plugin可不消费`dsh-mcp-client`私有源码，自行拥有任意MCP wire/client/transport，再把model-visible tools注册到正式ToolRuntime。
+- 标准AgentLoop会写`tool/call`/`tool/result`；`tools/pre-execute`返回`ask`时，ToolRuntime经公开ApprovalService写`approval/asked`/`approval/decided`并只在`allowed-once`后执行body。protocol adapter只拥有wire/carrier/reconnect/result mapping，便可让DSH继续拥有Agent/Tool/Approval/Session语义。
+- 若一个Session发布前已完成catalog preflight，活动期ToolDefinition及其closure绝不dispose/shadow/replace，change只翻转adapter-owned健康状态并由`agent/pre-step`或tool gate/executor fail closed，则不存在G2，缺少generation borrow不是该缩窄语义的必要条件。若发生HMR/owner teardown、同名replacement或in-flight期间资源关闭，现有borrow/retire/drain缺口仍适用。
+- preset中的adapter是一preset generation一个共享实例；同id新Session不会自动重跑preflight。DSH也没有标准“catalog失效、必须新建Session”状态码。adapter可以拒绝下一step/call，但产品如何表达重建不属于rc.2合同。
+- 固定源码/文档未规定“禁止第二runtime”；可确认的是公共面允许protocol adapter。是否仍保持DSH唯一Harness owner，取决于model calls是否继续走AgentLoop→ToolRuntime→Session，而不是DSH的技术强制。
+- **认知状态**：verified_inference（固定rc.2正式root exports/`.d.ts`、官方extension cookbook、ToolRuntime/Approval/AgentLoop控制流；未实现或连接现代MCP peer）。
 
 ## 去哪深入（文件路由）
 

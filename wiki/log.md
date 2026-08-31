@@ -453,3 +453,12 @@
 - **版本证据**：rc.2 `b150a551`与alpha.2 `0a53fb55`；两版正式`dsh-tools`/`dsh-mcp-client`tarball integrity、root exports/`.d.ts`、tag控制流与replacement/re-sync一方tests。
 - **实测**：无真实MCP server；未使用凭据。正式发布物、固定tag源码与测试足以静态判定；专门的schema-G→G2竞态e2e未找到，跨阶段后果标verified_inference。
 - **沉淀**：alpha.2版本页、open Q118、index/coverage/log；既有rc.2 core/mcp结论不改。
+
+## 2026-08-31 · 跨会话核验：static content-addressed Preset、Skill provider与MCP adapter
+
+- **提问者**：agent（跨会话；完整答案先回传并确认成功）
+- **问题**：能否靠公开Preset filesystem roster、scope-local Skill provider与`ctx.tools.register`构造content-addressed静态composition，并在不换代时绕开generation-borrow要求。
+- **结论**：预物化目录可由标准preset id进入header/cold resume，无需custom required event；definition store/摘要校验/保留GC归外部owner。scope-local冻结Skill provider继续走官方tool-skill/ToolRuntime/Session，static无mutation时不需要catalog CAS。官方cookbook明确支持MCP plugin discover→register；若活动期不replace且失效只fail closed，generation borrow非必要，但standing实例共享、标准ApiProxy无按Session外部resolver、teardown drain与通用invalid-session状态仍是限定。
+- **版本证据**：rc.2 `b150a551`正式agent-presets/skill/tool-skill/tools/user-approval/session tarball；tag的Preset discovery/mount/ApiProxy、Skill Registry/Consumer、ToolRuntime/Approval/AgentLoop与一方tests；alpha.2 `0a53fb55`正式根公共面独立对照。
+- **实测**：无；未写definition store、未连接MCP peer、未使用凭据。静态public types/实现/tests足以判定；整套组合无一方e2e，组合结论标verified_inference。
+- **沉淀**：`packages/{preset,skill,mcp,core}.md`、open Q118、index/coverage/log。

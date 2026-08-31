@@ -112,6 +112,13 @@ core 是「主干」而非单一 capability family，但同样按 seam 纪律拆
 - **未来架构条件**：中心ToolRuntime、opaque token、per-execution WeakMap、Agent in-flight drain、request/header与tool call/result日志、checkpoint pre-dispatch flush，均可承载未来borrow机制；未发现结构性不可能。但现合同仍缺registration/generation owner、schema+dispatch同handle绑定、retire/refcount/release与durable generation observation。
 - **认知状态**：verified_inference（固定rc.2正式root `.d.ts`、ToolRuntime/AgentLoop控制流与replacement一方tests；未构造外部carrier竞态）。
 
+### static no-swap并不要求generation borrow
+
+- generation borrow解决的是G2替换后仍需让schema G对应的未完成调用继续持有G。若registration/closure在Session活动期绝不dispose、shadow或replace，call-time按name重查仍得到同一对象，因而该静态语义本身不需要不存在的borrow合同。
+- 公开`agent/pre-step`与`tools/pre-execute`/guard/executor可在外部资源失效后拒绝后续step或call；这只建立fail-closed路径，不会生成DSH-owned catalog generation或“必须新建Session”的通用状态。
+- 该结论的硬前提包含HMR/owner teardown不得早于in-flight execution settle。只要允许replacement、并发teardown或需要DSH证明同代，上一节列出的borrow/retire/refcount/drain缺口仍完整存在。
+- **认知状态**：verified_inference（固定rc.2 ToolRuntime current-registry解析与AgentLoop drain控制流；无运行期换代实测）。
+
 ## 去哪深入（文件路由）
 
 | 想知道什么 | 去哪 |

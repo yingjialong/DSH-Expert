@@ -76,9 +76,9 @@
 | [jobs](packages/jobs.md) | L1 | Product | 3 | 10 | 7 | 10 | 2 |
 | [llm](packages/llm.md) | L2 | Product | 7 | 35 | 10 | 14 | 3 |
 | [lsp](packages/lsp.md) | L1 | Product | 3 | 14 | 6 | 12 | 2 |
-| [mcp](packages/mcp.md) | L1 | README 未列出 | 1 | 7 | 7 | 10 | 3 |
+| [mcp](packages/mcp.md) | L1 | README 未列出 | 1 | 13 | 7 | 10 | 3 |
 | [plan](packages/plan.md) | L1 | Product | 1 | 7 | 7 | 11 | 2 |
-| [preset](packages/preset.md) | L1 | Product | 2 | 14 | 11 | 8 | 1 |
+| [preset](packages/preset.md) | L1 | Product | 2 | 17 | 11 | 8 | 1 |
 | [runtime-diagnostics](packages/runtime-diagnostics.md) | L1 | README 未列出 | 1 | 10 | 10 | 9 | 1 |
 | [sandbox](packages/sandbox.md) | L1 | Product | 4 | 14 | 24 | 10 | 1 |
 | [schedule](packages/schedule.md) | L1 | Product | 1 | 13 | 11 | 10 | 0 |
@@ -87,7 +87,7 @@
 | [session-query](packages/session-query.md) | L1 | Product | 4 | 16 | 18 | 13 | 1 |
 | [settings](packages/settings.md) | L2 | Product | 2 | 9 | 12 | 7 | 1 |
 | [shell](packages/shell.md) | L1 | Product | 10 | 13 | 10 | 9 | 1 |
-| [skill](packages/skill.md) | L1 | Product | 4 | 7 | 11 | 8 | 1 |
+| [skill](packages/skill.md) | L1 | Product | 4 | 11 | 11 | 8 | 1 |
 | [spill](packages/spill.md) | L1 | Product | 3 | 9 | 9 | 9 | 0 |
 | [storage](packages/storage.md) | L1 | Product | 4 | 10 | 9 | 9 | 1 |
 | [subagent](packages/subagent.md) | L1 | Product | 11 | 12 | 14 | 13 | 2 |
@@ -127,7 +127,7 @@
 |---|---|
 | 已建立页面 | 75 页（69 内容页 + 6 治理页） |
 | 掌握度分布 | L2 **35** · L1 **34** · L3/L4 **0** |
-| 锚点总数 | 915（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
+| 锚点总数 | 926（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
 | 已记录陷阱 | 572 条（分布在各页「陷阱」一节） |
 | 文档与源码冲突 | 80 条（见 conflicts.md） |
 | 悬而未决 | 112 条（见 open-questions.md） |

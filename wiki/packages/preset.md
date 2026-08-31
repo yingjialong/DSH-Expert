@@ -9,6 +9,9 @@ anchors:
   - packages/preset/agent-presets/src/index.ts
   - packages/preset/agent-presets/src/authoring.ts
   - packages/preset/agent-presets/src/session.ts
+  - packages/preset/agent-presets/tests/discovery.spec.ts
+  - packages/preset/agent-presets/tests/mount.spec.ts
+  - packages/preset/agent-presets/tests/session.spec.ts
   - packages/preset/persona/README.md
   - packages/core/scope/src/index.ts
   - packages/core/session/src/index.ts
@@ -19,7 +22,7 @@ anchors:
   - .agents/notes/implemented/architecture/2026-08-03-per-session-agent-presets.md
   - .agents/notes/implemented/architecture/2026-08-08-per-preset-standing-mounts.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-30
+verified_at: 2026-08-31
 asked_by: agent
 ---
 
@@ -123,3 +126,11 @@ asked_by: agent
 - `agentPreset.read/copy/remove`只面对current roster；`session.export`只导出raw Session artifact，不含preset definition。无historical generation handle、ref-aware retention/tombstone、clear-reference、删前影响枚举或historical export。
 - 同进程同id改文件时已join Session可留旧private standing、新Session用新generation；该generation不可公开寻址且不跨重启。只有不同且长期保留的immutable preset ids及其模块同时在current closure时，preset-scoped旧/新composition才可条件并存；DSH不自动管理plugin version coexistence，Host-plane全局plugin也不因此版本化。
 - **认知状态**：verified_inference（固定tagPreset authoring/standing、ApiProxy与Persistence语义交叉核对；未安装第三方多版本plugin）。
+
+## 2026-08-31 · 预物化content-addressed preset的公共组合边界
+
+- rc.2公共roster可以消费外部在已配置root内预先物化的`<digest-id>/agent.cordis.yml`：preset id语法允许小写hex/连字符，`list()`/`resolve()`每次重扫目录，create把resolved id写入标准`SessionHeader.agentPreset`，cold resume按header与标准`agent-preset/selected`fold出的id在unpublished setup内mount。因此selection已编码为preset id时不需要新增required SessionEvent。
+- DSH不提供任意definition bytes写入口：`copy(from,id)`只能复制既有目录；外部owner必须自己负责canonical bytes/digest、原子目录发布、id-content一致性、依赖闭包、跨重启保留与ref-aware GC。DSH既不校验id等于内容摘要，也不把definition/plugin graph写进Session。
+- 标准ApiProxy没有按recorded id调用out-of-tree definition resolver的注册点。目录必须在create/resume进入roster解析前存在；自定义Agent入口可用公开`AgentRegistry` setup，但这不是标准ApiProxy上的setup chain。
+- standing mount是一preset generation一棵共享plugin subtree，不是每Session一份。多个Session复用同id会join同一实例；失效后新Session也不会自动重跑preflight。需要fresh instance时必须有新preset/file generation、Host重启，或让共享definition内部按`exec.agent`管理per-Session资源。
+- **认知状态**：verified_inference（固定rc.2正式root exports/`.d.ts`、roster/discovery/mount、ApiProxy create/resume与一方tests交叉核对；未写外部definition store）。
