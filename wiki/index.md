@@ -50,7 +50,7 @@
 |---|---|---|---|
 | [docs-map.md](topics/docs-map.md) [stale] | DSH docs/ 顶层 19 主题 + 7 个子目录的路由表：什么问题该查哪个文件、篇幅规模、generated/curated 归属、问题→文件反向索引 | L1 | 21 |
 | [architecture-overview.md](topics/architecture-overview.md) [stale] | 一次用户输入从 agent.followup() 到 tool/result 的完整旅程：21 步逐步标注层/seam/durable-vs-live 事件，工具管线展开，三事件域判据，seam 三角色，11 个易误解术语，7 条源码交叉验证事实 | L2 | 13 |
-| [cordis-primer.md](topics/cordis-primer.md) [stale] | Cordis 内核入门：Context/Fiber/Effect、ctx-key解析、provide与sibling rollback边界、五种dispatch mode及DSH tools接缝。 | L2 | 35 |
+| [cordis-primer.md](topics/cordis-primer.md) [stale] | Cordis 内核入门：Context/Fiber/Effect、provide sibling与generator composite rollback边界、五种dispatch mode及DSH接缝。 | L2 | 35 |
 | [subsystems-map.md](topics/subsystems-map.md) [stale] | 20 个子系统 → ctx 服务名 → packages 组 → 该查什么；含 spine/optional 判定规则与文档可信度分级 | L1 | 22 |
 | [postmortems.md](topics/postmortems.md) [stale] | 0001 export default 吞掉 inject / 0002 !!js 位置错致 fs 工具永久禁用 / 0003 Web agent 验证替身服务器 / 0004 Landlock 提示被误判——现象·根因·修复·可泛化教训 | L2 | 13 |
 | [版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md](topics/版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md) [stale] | 当前发布状态（无稳定版、最新预发布 rc.2、HEAD 与 tag 相同、CLI/SDK/PyPI 渠道差异）+ 版本升级影响：5 组破坏性变更、新增能力表、八维坐标与升级建议。 | L2 | 27 |
@@ -73,7 +73,7 @@
 | [code-runtime](packages/code-runtime.md) [stale] | Code Mode 的执行底座：ctx.codeRuntime seam 加 worker-thread provider；isolation 只是标签不是安全声明，run 只返错不抛错。 | Product | 3 | 13 |
 | [compaction](packages/compaction.md) [stale] | 会话压缩能力族：CompactionEngine seam、token 压力摘要 provider、无模型 tool-result 剪枝伴生、人类 /compact 命令。 | Product | 4 | 13 |
 | [context](packages/context.md) [stale] | 请求上下文扩展组：工作区 AGENTS.md 指令加载、@file 引用 seam 与本地 provider、跨会话快照、时间与 tmux 位置上下文。 | Product | 6 | 12 |
-| [core](packages/core.md) [stale] | 产品API主干；含borrowed ToolDefinition schema、Context registry隔离、batch取消/teardown与definition重解析。 | Product | 8 | 33 |
+| [core](packages/core.md) [stale] | 产品API主干；含borrowed ToolDefinition、detached frozen schema组合、Context隔离与batch teardown。 | Product | 8 | 37 |
 | [credentials](packages/credentials.md) [stale] | 凭据seam；含provider replacement、UI可替换但raw `credentials.set` wire仍存在的分层边界。 | Product | 3 | 15 |
 | [e2b](packages/e2b.md) [stale] | E2B 远程运行时 POC：sandbox 生命周期所有者加 fs/subprocess 两个 adapter，让 bash、PTY、LSP 消费者无需分叉即可搬进沙箱。 | POC | 3 | 10 |
 | [examples](packages/examples.md) [stale] | alpha.2 tag下只余agent-spine-demo package manifest；非产品API，历史demo结论待专项复验。 | Support | 1 | 11 |
@@ -84,11 +84,11 @@
 | [goal](packages/goal.md) [stale] | 同会话持久化目标：状态 event-sourced 进 session log，续跑权限 activation 从不持久化，state 与 scheduling 严格分家。 | Product | 4 | 13 |
 | [guard](packages/guard.md) [stale] | loop卫生守卫与public policy hooks；含hard deny、Session-log条件性重建及run/rate-limit耐久缺口。 | Product | 2 | 14 |
 | [hooks](packages/hooks.md) [stale] | Claude Code / Codex hook 桥接：把外部 shell-hook 协议翻译到 harness 自己的类型化拦截点，外加共享线协议库。 | Product | 3 | 13 |
-| [host](packages/host.md) [stale] | Web Host/API；含create identity、cold models真实resume、history presenter公开可观测性及API/WS trust fence。 | Product | 7 | 29 |
+| [host](packages/host.md) [stale] | Web Host/API；含cold preset三分支resume、history global marker、raw export解耦及API/WS trust fence。 | Product | 7 | 32 |
 | [identity](packages/identity.md) | 共享匿名关联 id（UUID v4）；它不是 Cordis plugin 而是普通共享库，telemetry、feedback 回执与 DeepSeek 请求头三处共用同一值。 | Product | 1 | 5 |
 | [interaction](packages/interaction.md) [stale] | 人机协作平面；含Approval pair/owner signal、frozen arguments与definition重解析边界、无独立grant票据。 | Product | 5 | 15 |
 | [jobs](packages/jobs.md) [stale] | 后台作业 capability family：ctx.jobs 契约、jobs-local 进程内实现、tool-jobs 三工具与完成通知；owner 隔离与唤醒预算是理解重点。 | Product | 3 | 10 |
-| [llm](packages/llm.md) [stale] | LLM seam与adapters；含pi-ai/reasoning、retry identity、工具名wire映射与无route tool-budget边界。 | Product | 7 | 40 |
+| [llm](packages/llm.md) [stale] | LLM seam与adapters；含pi-ai/reasoning、retry identity、`deepFreeze`覆盖面及工具wire边界。 | Product | 7 | 42 |
 | [lsp](packages/lsp.md) [stale] | LSP 能力 seam：恰好四个语义操作、无 JSON-RPC 逃生口；lsp-stdio 通用 stdio 后端与模型侧 lsp 工具（一基 UTF-16 光标坐标）。 | Product | 3 | 14 |
 | [mcp](packages/mcp.md) [stale] | MCP桥；含内部64字符qualified name、out-of-tree adapter、static no-swap与schema/call check位置。 | README 未列出 | 1 | 17 |
 | [plan](packages/plan.md) [stale] | plan mode 是 log-only 的 per-agent 协作状态而非 capability seam；/plan 命令进入，exit_plan_mode 经用户审批退出。 | Product | 1 | 7 |
@@ -97,7 +97,7 @@
 | [sandbox](packages/sandbox.md) [stale] | 进程限制能力族：ctx.sandbox.confine(argv, policy) 返回替代原 argv 的包装 argv，无可用后端就抛错；只管同世界子进程。 | Product | 4 | 14 |
 | [schedule](packages/schedule.md) [stale] | Session 本地定时提醒：持久状态只存在原 Session 事件日志，到期项通过 Agent 普通 follow-up 队列回到同一段对话，无外部通知。 | Product | 1 | 13 |
 | [sdk](packages/sdk.md) [stale] | stdio 上的 newline-delimited JSON-RPC 协议栈，让外部进程把 Harness runtime 当子进程驱动；不负责创建或构建开发者项目。 | Product | 3 | 16 |
-| [session](packages/session.md) [stale] | 持久Session数据平面；alpha.2 tag下14个package manifest，固定rc.2细节回tag核验。 | Product | 14 | 32 |
+| [session](packages/session.md) [stale] | 持久Session数据平面；含rc.2 `snapshotJsonValue` single-read深快照与lossless failure语义。 | Product | 14 | 34 |
 | [session-query](packages/session-query.md) [stale] | Session 检索能力族：逻辑语料、有界读取、血缘追踪、事件关系、语义过滤与 SQLite FTS5 全文搜索，独立于 compaction。 | Product | 4 | 16 |
 | [settings](packages/settings.md) [stale] | 用户配置 namespace seam；含 `load`/`publish` provider 生命周期、update/replace/mutate 热提交、revision 与 composition base 不可由 user layer 删除的边界。 | Product | 2 | 9 |
 | [shell](packages/shell.md) [stale] | bash/pwsh 执行器 seam 与本地、沙箱两类 provider，加模型侧 bash/pwsh 工具及两个走 ctx.terminals 的常驻版 | Product | 10 | 13 |

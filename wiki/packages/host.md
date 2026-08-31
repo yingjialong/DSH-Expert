@@ -7,10 +7,13 @@ anchors:
   - packages/host/README.md
   - packages/host/apiproxy/README.md
   - packages/host/apiproxy/src/api-proxy.ts
+  - packages/host/apiproxy/src/session-export.ts
   - packages/host/apiproxy/src/api/sessions.ts
   - packages/host/apiproxy/src/api/events.ts#EventsApi.mux
   - packages/host/apiproxy/src/api/approvals.ts#ApprovalResponsePayload
   - packages/host/apiproxy/tests/api-proxy-approval.spec.ts
+  - packages/host/apiproxy/tests/session-export.spec.ts
+  - packages/session/session-persistence-jsonl/tests/jsonl.spec.ts
   - packages/host/webserver/README.md
   - packages/host/webserver/src/index.ts
   - packages/host/frontend-static/README.md
@@ -137,8 +140,10 @@ dsh Web GUI 的 host 侧：所有 client 形态共用的 API gateway（`ctx.apiP
 
 - `session.models({sessionId})`先走共享`agentFor()`；ordinary cold identity经Persistence `list/inspect`后构造Host setup并调用`ctx.agents.resume()`，不是纯读header/catalog。Host setup从header+events fold recorded effective preset，并在unpublished Agent scope调用`AgentPresets.mount()`；成功后才读Session selection与model catalog。
 - missing recorded id在`composeAgent→presets.resolve()`阶段就失败，尚未调用`ctx.agents.resume()`；可发现broken row或真实Loader/mount失败则进入resume的unpublished setup后rollback。两者都fail closed且不发布Agent，但只有后一类可称“真实resume setup mount失败”。AgentLoop一方tests固定setup/commit rejection后`ctx.agents`与`ctx.sessions`都无该id。
+- discovery-broken的第一次`presets.resolve()`仍返回管理surface需要的row，因此Host可构造setup；进入resume后`presets.mount→resolveMountable`拒绝。discovery健康但Loader import/apply失败则更深地在`ensureStanding→mountPreset`拒绝；两者共享同一unpublished AgentLoop setup rollback，区别于missing的pre-resume failure。
 - `session.history`不走`agentFor()`。cold路径尝试`standingKeyFor(effectivePreset)`，unknown/broken/unusable时catch并用`scope=undefined`查询global ToolRuntime layer。公开response没有fallback reason或scope字段；`HistoryEntry`只有`event`与可选`view`。
 - 要从公开response正向证明global presenter，必须让历史含tool event且global layer有可辨识`presentCall/presentResult`，再断言`events[].view`。仅“history成功+无Agent”只能证明fail-soft且未resume，不能区分global无presenter、roster缺失、JSON/pairing/presenter软失败；view缺失由官方Client渲染generic card，但Host不发显式generic marker。
+- missing/broken/mount-failed都不阻断标准history的raw events；`/api/session.export`同样完全绕过Agent/preset，只对live Session先flush、再走`SessionPersistence.readRaw`并把原artifact放入ZIP。JSONL`readRaw`不解析current roster，故preset错误本身不阻断；但Host endpoint需要session-query/persistence/attachments与raw-capable backend，artifact/header corruption、缺后代artifact或媒体失败仍可独立阻断。Host返回ZIP，不是裸JSONL response。
 - **认知状态**：verified_inference（固定rc.2ApiProxy/API Remote resolver/AgentLoop/Preset控制流与cold/agent-lookup/resume/mount/view一方tests；未运行新的全链fixture）。
 
 ## 去哪深入（文件路由）

@@ -575,3 +575,23 @@
 - **实测**：无新fixture；caller-mutation与sibling sequence缺专门一方test，固定runtime控制流可静态判定。
 - **沉淀**：`packages/core.md`、`topics/cordis-primer.md`、errors E037/E038、index/log。
 - **覆盖度变化**：无。
+
+## 2026-08-31 · 跨会话核验：lossless snapshot、deepFreeze与composite ownership
+
+- **提问者**：agent（完整答案先回传来源与显式父任务，均确认成功）
+- **问题**：Session snapshot拒绝/getter语义、LLM deepFreeze覆盖、ToolDefinition借用，以及Cordis service/token/transport零残留安装边界。
+- **结论**：snapshot生成detached JSON图并用undefined表示普通非法值，但getter只读一次且throw传播；deepFreeze只沿Object.keys并跳过AbortSignal，在snapshot图上才覆盖全部nested containers。register仍借caller definition；Cordis generator composite仅回滚已yield disposer，未yield Map/transport/provide不会被猜测清理。
+- **版本证据**：rc.2`b150a551`正式session/llm/tools tarball与json/call-config/tools一方tests；Cordis4.0.1 reflect/fiber runtime和API docs。
+- **实测**：无新fixture；getter与deepFreeze有直接一方tests，exact transport composite由固定runtime控制流确认。
+- **沉淀**：`packages/{session,llm,core}.md`、`topics/cordis-primer.md`、errors E038-E040、index/log。
+- **覆盖度变化**：无。
+
+## 2026-08-31 · 跨会话核验：cold preset三分支与raw export独立性
+
+- **提问者**：agent（完整答案先回传来源与显式父任务，均确认成功）
+- **问题**：missing、discovery-broken、Loader mount-failed在cold models中的精确失败点；history global marker；history/raw artifact export是否被preset错误阻断。
+- **结论**：missing在Host setup构造时resolve失败，resume未调用；broken row先resolve、后在unpublished resume mount拒绝；Loader failure同属更深setup rollback。三类history均catch standing失败并可由global marker `HistoryEntry.view`正向证明；Host export完全绕过preset并readRaw后打ZIP，preset错误自身不阻断。
+- **版本证据**：rc.2`b150a551` Host ApiProxy/API Remote resolver/AgentPresets/AgentLoop/session-export/JSONL runtime与分层一方tests。
+- **实测**：无新fixture；无单条上游test覆盖完整三分支矩阵，组合结论由正式控制流交叉核验。
+- **沉淀**：`packages/host.md`、index/log；既有history可观测性错误E036无需重复。
+- **覆盖度变化**：无。

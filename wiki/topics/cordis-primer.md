@@ -62,6 +62,7 @@ Cordis 自述为 "A Meta-Framework of Spatiotemporal Composability"，上游是 
 - fiber 处于 `UNLOADING` 时再建 effect 会抛 `CordisError('INACTIVE_EFFECT')`（`PENDING` / `LOADING` 期间合法）。
 - `ctx.provide(name,value)`本身创建一个独立owned effect并返回unprovide disposer。随后另一次独立`ctx.effect()`同步throw时，只回滚后者内部return/yield并已收集的disposers，不会跨sibling撤销先前provide；provide留到显式disposer或整个Fiber unload。要all-or-nothing，必须把unprovide作为同一个composite effect的return/yield，或让整个plugin startup transaction失败。
 - public types把`provide`返回概括为`()=>void`；runtime返回真实effect disposer，底层unprovide会等待依赖fibers settle。`ctx.effect` disposer single-shot，callback立即执行；inactive/unloading同步抛`INACTIVE_EFFECT`，非法返回形状抛`TypeError`，同步setup失败会先清本effect已收集cleanup再重抛。
+- 公开composite形状是generator effect：每次外部mutation成功后立即`yield`其exact disposer（transport close、Map token delete、`ctx.provide()`返回值）；后续同步throw会按逆序回滚已yield项。Cordis不能猜测未yield ownership：`Map.set()`后在yield前throw、create transport却未提供close disposer、outer callback里provide后直接throw、或非法yield背后的资源都可能残留。inactive fiber则在execute前就拒绝，完全不会清理调用前既有外部状态。
 
 ## 服务的注册与消费（ctx-key 机制）
 

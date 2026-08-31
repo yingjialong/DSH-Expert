@@ -32,7 +32,11 @@ anchors:
   - packages/core/tools/tests/ts-types.spec.ts
   - packages/core/tools/tests/py-types.spec.ts
   - packages/core/session/src/surface.ts
+  - packages/core/session/src/json.ts
+  - packages/core/session/tests/json.spec.ts
   - packages/core/session/src/repair.ts
+  - packages/llm/llm/src/call-config.ts
+  - packages/llm/llm/tests/call-config.spec.ts
   - packages/session/session-persistence/tests/contract.ts
   - docs/subsystems/core.md
   - docs/subsystems/tools.md
@@ -160,6 +164,7 @@ core 是「主干」而非单一 capability family，但同样按 seam 纪律拆
 - `ctx.tools.register(definition)`同步校验当时的output形状/schema、timeout与保留名后，把**原始definition对象**插入当前layer；不clone、不freeze definition、parameters、output或output.schema。只冻结definition顶层仍会留下nested schema可变引用。
 - `ctx.tools.schemas()`每次从当前definition读取name/description/parameters，并对parameters做lossless deep snapshot；所以修改它返回的schema不会污染registry，一方test明确覆盖。反方向不成立：caller注册后修改原nested parameters，下一次`schemas()`会clone修改后的值；output validation也在执行成功时读取当前`tool.output.schema`。
 - raw ToolRuntime不统一用`parameters`校验输入arguments；它只snapshot/freeze arguments后交给body。`defineTool`等helper可另加输入校验。因此parameters mutation确定影响model/schema projection，output.schema mutation确定影响输出校验，不能笼统写成“ToolRuntime输入校验一定变化”。
+- 若schema先经Session根`snapshotJsonValue`脱离remote原图、Tools根`assertObjectJsonSchema`验证、LLM根`deepFreeze`递归冻结，则remote original的任意深层mutation不能再影响register看到的schema。该链只锁schema graph；还要冻结`ToolDefinition`顶层与`output`（或撤销caller可变引用）才能阻止整体替换`parameters/output.schema`。
 - `@deepseek-ai/dsh-tools` rc.2正式root `.d.ts`已导出`assertObjectJsonSchema`、`ToolDefinition`、`ToolRunContext`、`ctx.tools.register`与`tools/pre-execute` Context augmentation；无需私有import。package虽声明`./src/*`，正式tarball不含src。
 - **认知状态**：verified_inference（固定rc.2正式tools tarball/root types、register/schemaOf/createSuccessResult与schema snapshot一方tests；无caller-mutation专项test）。
 

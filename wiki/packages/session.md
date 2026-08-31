@@ -4,6 +4,8 @@ status: verified_inference
 mastery: L2
 freshness: stale
 anchors:
+  - packages/core/session/src/json.ts
+  - packages/core/session/tests/json.spec.ts
   - packages/session/README.md
   - packages/session/session-persistence/README.md
   - packages/session/session-persistence/src/index.ts
@@ -32,7 +34,7 @@ anchors:
   - docs/subsystems/session-title.md
   - docs/subsystems/session-telemetry.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-27
+verified_at: 2026-08-31
 asked_by: agent
 ---
 
@@ -139,6 +141,14 @@ asked_by: agent
 - alpha.1进一步移除unknown-event的ignorable例外，一律拒绝不在build白名单的事件。第三方required durable domain需上游登记/注册契约，不能只靠类型合并。
 - AgentRegistry direct create/resume有公开unpublished`setup`；rc.2 Web ApiProxy的generic create/resume/fork没有out-of-tree setup resolver注册点。`agent/created`/`agent/session-start`均已越过publication边界。
 - **认知状态**：verified_inference（两tag `known-event-types.ts`、persistence coordinator、Agent setup与ApiProxy控制流交叉核对）。
+
+## 2026-08-31 · `snapshotJsonValue`的single-read深快照边界
+
+- `@deepseek-ai/dsh-session`根正式导出`snapshotJsonValue(value)`。它以iterative walk生成完全detached的当前realm plain object/array；共享alias按出现位置各自复制，null-prototype与foreign-realm intrinsic plain containers可接受，`__proto__`被安全写成own data key。
+- 返回`undefined`是无诊断的“非lossless JSON”sentinel：undefined/function/symbol/bigint、NaN/Infinity/-0、任一invalid child、sparse/decorated array、hidden/symbol own key、exotic/custom-prototype container与cycle都拒绝。getter/Proxy trap抛错则**传播异常**，不转成undefined。
+- getter不被一律拒绝：每个property/array slot只读一次，验证与复制共用该值。一方test让getter第一次返回合法JSON、第二次会返回exotic，snapshot仍成功且只读一次。因此准确语义是消除validate→copy双读漂移，不是拒绝stateful getter；第一次读到的值就是snapshot事实。
+- snapshot本身未freeze；要建立immutable local ownership，需在校验后另调`deepFreeze`。但从snapshot返回时remote original graph已完全断开，原图后续深层mutation不会影响snapshot。
+- **认知状态**：verified_inference（固定rc.2正式session root JS/.d.ts、`src/json.ts`与`tests/json.spec.ts`；未跑hostile Proxy新fixture）。
 
 ## 去哪深入（文件路由）
 

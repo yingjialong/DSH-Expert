@@ -7,9 +7,11 @@ anchors:
   - packages/llm/README.md
   - packages/llm/llm/README.md
   - packages/llm/llm/src/index.ts
+  - packages/llm/llm/src/call-config.ts
   - packages/llm/llm/src/types.ts
   - packages/llm/llm/src/adapter-failure.ts
   - packages/llm/llm/tests/service.spec.ts
+  - packages/llm/llm/tests/call-config.spec.ts
   - packages/llm/llm-deepseek/README.md
   - packages/llm/llm-deepseek/src/serialize.ts
   - packages/llm/llm-deepseek/tests/serialize.spec.ts
@@ -146,6 +148,14 @@ LLM seam 及其 provider 适配器。组 README 的原话很关键：**`llm` 包
 - pi-ai明确把SDK `maxRetries`钉为`0`，所以一次DSH adapter invocation不会被SDK暗中倍增；direct `ctx.llm.stream()`也不消费AgentLoop retry plugin。
 - T1 `AgentLoop.step()`在同一`turn/step`的`while`内retry，一方test也只观察到一条`step/start`。同tag `llm-retry/README.md`声称fresh numbered turn，与实现/测试冲突，见`conflicts.md` C080。
 - **认知状态**：verified_inference（固定tag root types、executor/compaction控制流与一方tests；没有另跑`maxRetries:0`最小实测）。
+
+## 2026-08-31 · `deepFreeze`的递归所有权边界
+
+- `@deepseek-ai/dsh-llm`根正式导出`deepFreeze(value)`：原地freeze并返回同一reference，以iterative traversal+WeakSet递归处理`Object.keys()`可达的object/array，终止cycle且不受JS调用栈深度限制；`AbortSignal`被刻意跳过以保留live cancel channel。
+- 单独使用时它不遍历non-enumerable/symbol-key reachable objects，也不冻结AbortSignal，不能泛化成“任意JS object graph全部冻结”。但`snapshotJsonValue`成功产物只含ordinary enumerable string keys/dense indices且不可能含AbortSignal，因此对该snapshot调用deepFreeze会冻结其中全部nested containers。
+- `snapshotJsonValue(remote)→assertObjectJsonSchema(snapshot)→deepFreeze(snapshot)`可建立detached、supported、deep-immutable的JSON schema graph；remote original之后的深层mutation不可达。它仍不自动freeze承载该schema引用的`ToolDefinition/output`属性，caller若还能整体替换`definition.parameters`或`output.schema`，完整definition仍可漂移。
+- 一方`call-config.spec.ts`覆盖nested freeze、strict-mode mutation throw、cycle、5000层nesting与AbortSignal例外。
+- **认知状态**：verified_inference（固定rc.2正式llm root JS/.d.ts、`call-config.ts`与一方tests）。
 
 ## 去哪深入（文件路由）
 

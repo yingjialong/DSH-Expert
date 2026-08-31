@@ -444,10 +444,32 @@
 
 - **类型**：Cordis事务边界过推
 - **错误内容**：先`ctx.provide()`，再独立调用`ctx.effect()`；后者同步throw时，误以为Cordis会把同Fiber上之前注册的service一并撤销。
-- **正解**：每次effect只回滚自己callback return/yield并已collect的disposers；先前provide是另一个sibling effect，仍存活到其disposer或整个Fiber unload。只有同一composite effect显式return/yield unprovide，或整个plugin startup失败，才形成共同rollback边界。
+- **正解**：每次effect只回滚自己callback return/yield并已collect的disposers；先前provide是另一个sibling effect，仍存活到其disposer或整个Fiber unload。只有同一composite effect显式return/yield unprovide，或整个plugin startup失败，才形成共同rollback边界；手工Map/transport也必须在任何后续throw前立即yield可工作的cleanup，Cordis无法猜测未yield外部状态。
 - **根因**：把“同一个Fiber最终拥有全部effects”误解成“任一新effect失败都会事务回滚所有既有siblings”。
 - **发现于**：2026-08-31 · DSH `b150a551` / `@deepseek-ai/cordis@4.0.1`
 - **牵连条目**：[topics/cordis-primer.md](topics/cordis-primer.md)。
+
+---
+
+### E039 — `snapshotJsonValue`不拒绝getter，只固定第一次读取
+
+- **类型**：lossless snapshot语义误读
+- **错误内容**：把“防getter漂移”表述成拒绝accessor/getter，或认为getter抛错会像普通非法JSON一样返回undefined。
+- **正解**：rc.2对每个property/array slot只读一次，第一次读到合法JSON就materialize成功，即使getter第二次会返回exotic；第一次读到非法值才返回undefined。getter/Proxy trap若throw则异常原样传播。single-read消除的是validate/copy双读窗口，不是禁止getter。
+- **根因**：把“一次读取完成验证与复制”误解成“admission拒绝动态property”。
+- **发现于**：2026-08-31 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/session.md](packages/session.md)。
+
+---
+
+### E040 — `deepFreeze`单独使用不等于冻结任意JS对象图
+
+- **类型**：冻结覆盖面过推
+- **错误内容**：看到nested object/array一方test，便宣称`deepFreeze`会遍历non-enumerable、symbol-key、AbortSignal等全部reachable对象。
+- **正解**：rc.2只沿`Object.keys()`递归，刻意跳过AbortSignal；cycle用WeakSet终止。只有先经`snapshotJsonValue`得到ordinary enumerable-string-key JSON graph时，才能推出其全部nested containers都会冻结。
+- **根因**：把“对lossless JSON snapshot完整”扩大成“对任意JavaScript graph完整”。
+- **发现于**：2026-08-31 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/llm.md](packages/llm.md)、[packages/core.md](packages/core.md)。
 
 ---
 
