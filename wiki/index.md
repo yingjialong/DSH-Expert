@@ -69,7 +69,7 @@
 | [attachment](packages/attachment.md) [stale] | 图片附件 seam（ctx.attachments）：源准入（8192px/20MiB/64Mpx）→ normalized 持久化（长边 2048px）→ readImageRequest 按路由预算派生请求版本；region reads 已移除。 | Product | 2 | 9 |
 | [boot](packages/boot.md) [stale] | app bin 共用的启动库：.env 分层、fail-loud Loader 守卫、profile/bundle/patch 组合与热更、launcher 到 app 的命令行交接。 | Product | 2 | 10 |
 | [bundle](packages/bundle.md) [stale] | dsh --profile 的可安装 patch 层；alpha.2 tag下共6个package manifest，具体composition待专项复验。 | Product | 6 | 12 |
-| [client](packages/client.md) [stale] | Web GUI浏览器半边；含exact-preset direct Host create后的list/refresh/binding收敛与`noteAgentPreset`边界。 | Product | 44 | 20 |
+| [client](packages/client.md) [stale] | Web GUI浏览器半边；含exact-preset create后的list/binding收敛、refresh sticky-ready与unknown分类。 | Product | 44 | 20 |
 | [code-runtime](packages/code-runtime.md) [stale] | Code Mode 的执行底座：ctx.codeRuntime seam 加 worker-thread provider；isolation 只是标签不是安全声明，run 只返错不抛错。 | Product | 3 | 13 |
 | [compaction](packages/compaction.md) [stale] | 会话压缩能力族：CompactionEngine seam、token 压力摘要 provider、无模型 tool-result 剪枝伴生、人类 /compact 命令。 | Product | 4 | 13 |
 | [context](packages/context.md) [stale] | 请求上下文扩展组：工作区 AGENTS.md 指令加载、@file 引用 seam 与本地 provider、跨会话快照、时间与 tmux 位置上下文。 | Product | 6 | 12 |
@@ -84,7 +84,7 @@
 | [goal](packages/goal.md) [stale] | 同会话持久化目标：状态 event-sourced 进 session log，续跑权限 activation 从不持久化，state 与 scheduling 严格分家。 | Product | 4 | 13 |
 | [guard](packages/guard.md) [stale] | loop卫生守卫与public policy hooks；含hard deny、Session-log条件性重建及run/rate-limit耐久缺口。 | Product | 2 | 14 |
 | [hooks](packages/hooks.md) [stale] | Claude Code / Codex hook 桥接：把外部 shell-hook 协议翻译到 harness 自己的类型化拦截点，外加共享线协议库。 | Product | 3 | 13 |
-| [host](packages/host.md) [stale] | Web Host/API；含cold preset三分支resume、history global marker、raw export解耦及API/WS trust fence。 | Product | 7 | 27 |
+| [host](packages/host.md) [stale] | Web Host/API；含cold preset resume/history、list absence非commit-status、raw export及trust fence。 | Product | 7 | 27 |
 | [identity](packages/identity.md) | 共享匿名关联 id（UUID v4）；它不是 Cordis plugin 而是普通共享库，telemetry、feedback 回执与 DeepSeek 请求头三处共用同一值。 | Product | 1 | 5 |
 | [interaction](packages/interaction.md) [stale] | 人机协作平面；含Approval pair/owner signal、frozen arguments与definition重解析边界、无独立grant票据。 | Product | 5 | 15 |
 | [jobs](packages/jobs.md) [stale] | 后台作业 capability family：ctx.jobs 契约、jobs-local 进程内实现、tool-jobs 三工具与完成通知；owner 隔离与唤醒预算是理解重点。 | Product | 3 | 10 |
@@ -92,12 +92,12 @@
 | [lsp](packages/lsp.md) [stale] | LSP 能力 seam：恰好四个语义操作、无 JSON-RPC 逃生口；lsp-stdio 通用 stdio 后端与模型侧 lsp 工具（一基 UTF-16 光标坐标）。 | Product | 3 | 14 |
 | [mcp](packages/mcp.md) [stale] | MCP桥；含内部64字符qualified name、out-of-tree adapter、static no-swap与schema/call check位置。 | README 未列出 | 1 | 17 |
 | [plan](packages/plan.md) [stale] | plan mode 是 log-only 的 per-agent 协作状态而非 capability seam；/plan 命令进入，exit_plan_mode 经用户审批退出。 | Product | 1 | 7 |
-| [preset](packages/preset.md) [stale] | 每会话组合；含standing预挂载/join、同步publication guard、多Context bookkeeping及exact-restore责任。 | Product | 2 | 30 |
+| [preset](packages/preset.md) [stale] | 每会话组合；含standing identity、同步publication guard的live/persistence边界及exact restore。 | Product | 2 | 30 |
 | [runtime-diagnostics](packages/runtime-diagnostics.md) [stale] | 包自有运行期不变式注册表 ctx.invariants：每个包发布 ./invariant companion，检查自己拥有的事件关系与可变数据关系。 | README 未列出 | 1 | 10 |
 | [sandbox](packages/sandbox.md) [stale] | 进程限制能力族：ctx.sandbox.confine(argv, policy) 返回替代原 argv 的包装 argv，无可用后端就抛错；只管同世界子进程。 | Product | 4 | 14 |
 | [schedule](packages/schedule.md) [stale] | Session 本地定时提醒：持久状态只存在原 Session 事件日志，到期项通过 Agent 普通 follow-up 队列回到同一段对话，无外部通知。 | Product | 1 | 13 |
 | [sdk](packages/sdk.md) [stale] | stdio 上的 newline-delimited JSON-RPC 协议栈，让外部进程把 Harness runtime 当子进程驱动；不负责创建或构建开发者项目。 | Product | 3 | 16 |
-| [session](packages/session.md) [stale] | 持久Session数据平面；含rc.2 `snapshotJsonValue` single-read深快照与lossless failure语义。 | Product | 14 | 29 |
+| [session](packages/session.md) [stale] | 持久Session数据平面；含projection coldSnapshot无preset链、publication veto耐久边界与JSON快照。 | Product | 14 | 31 |
 | [session-query](packages/session-query.md) [stale] | Session 检索能力族：逻辑语料、有界读取、血缘追踪、事件关系、语义过滤与 SQLite FTS5 全文搜索，独立于 compaction。 | Product | 4 | 16 |
 | [settings](packages/settings.md) [stale] | 用户配置 namespace seam；含 `load`/`publish` provider 生命周期、update/replace/mutate 热提交、revision 与 composition base 不可由 user layer 删除的边界。 | Product | 2 | 9 |
 | [shell](packages/shell.md) [stale] | bash/pwsh 执行器 seam 与本地、沙箱两类 provider，加模型侧 bash/pwsh 工具及两个走 ctx.terminals 的常驻版 | Product | 10 | 13 |

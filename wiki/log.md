@@ -605,3 +605,33 @@
 - **实测**：无真实Connection end-to-end；Host frame、refresh projection、binding与guard由分层tests交叉确认。
 - **沉淀**：`packages/{client,host,preset}.md`、errors E041、index/coverage/log。
 - **覆盖度变化**：无。
+
+## 2026-08-31 · 跨会话核验：standing identity、publication veto与list absence
+
+- **提问者**：agent（完整答案先回传来源任务并确认成功）
+- **问题**：pre-mounted ScopeKey与Agent standing identity；同步agent/created veto对live/persistence；cold list agentPreset；response loss后list absence能否证明未commit。
+- **结论**：same generation key严格对象同一；sync listener最终rollback live registries但session/created已先发，first-party fresh/no-event lazy路径可不留artifact，却无通用磁盘零痕迹保证。attached/cold list公开agentPreset且不resume；一次absence只证current不可见，rc.2无commit-status，禁止重放时保持unknown。
+- **版本证据**：rc.2`b150a551` AgentPresets/Scope/Agent/AgentLoop/Host list/Persistence coordinator runtime与mount/agent/scope-lifecycle/coordinator一方tests。
+- **实测**：无调用方fixture；exact provider/early event未知。
+- **沉淀**：`packages/{client,host,preset,session}.md`、errors E042、index/coverage/log。
+- **覆盖度变化**：无。
+
+## 2026-08-31 · 跨会话核验：refresh缺席分类与history existence
+
+- **提问者**：agent（multi-agent v2直发被拒，完整relay父任务确认成功）
+- **问题**：create响应丢失后refresh ready+list absence能否判not-found；history能否提供exact只读commit-status。
+- **结论**：phase ready首次成功后sticky，refresh error被fold私有且Promise仍resolve；成功baseline absence也只是current absence。history区分current session-not-found与internal storage failure，却不校验expected preset或历史occurrence。exact row+exact preset是正证，absence仍unknown。
+- **版本证据**：rc.2 client SessionRuntime/Manager/Notifier、Host list/history与Persistence public contracts/tests。
+- **实测**：无transport；不知道调用方如何证明本轮refresh成功。
+- **沉淀**：`packages/{client,host}.md`、errors E042、index/log。
+- **覆盖度变化**：无。
+
+## 2026-08-31 · 跨会话核验：projection coldSnapshot不加载preset
+
+- **提问者**：agent（multi-agent v2子任务，完整relay父任务确认成功）
+- **问题**：projection-cache warm-up是否经presenter/standing挂载recorded preset；agent/created guard对create/resume/prompt resume的rollback。
+- **结论**：coldSnapshot只readFrom→projection restore→write-back，不创建Agent/Session、不发agent/created、不读agentPreset。若另行standingKeyFor才执行preset code。sync agent guard对new publication最终live rollback；cold prompt resume在投递前失败，live prompt不重发created；persistence仍受session-created先行的独立边界。
+- **版本证据**：rc.2 session-projection-cache/projection runtime/tests与Agent/AgentLoop/API Remote publication链。
+- **实测**：无warm-up；projection unit自身init/apply/view仍会执行。
+- **沉淀**：`packages/{session,preset}.md`、errors E043、index/coverage/log。
+- **覆盖度变化**：无。

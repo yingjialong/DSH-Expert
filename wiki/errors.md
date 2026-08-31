@@ -484,4 +484,26 @@
 
 ---
 
+### E042 — ready baseline缺席不等于create历史上未commit
+
+- **类型**：commit-status/时间边界过推
+- **错误内容**：create响应丢失后，看到一次`session.list`成功且exact id缺席，便权威分类not committed；或把sticky`SessionListState.phase='ready'`当本次refresh成功回执。
+- **正解**：list只描述当前attached+materialized cold集合，不等待create occurrence；handler可仍在setup，旧generation成功的fresh blank也可能因lazy persistence+restart而消失。phase在首次成功后sticky，后续refresh error仍ready且错误只在private Manager snapshot。rc.2无generic commit-status；禁止幂等create重放时absence必须保留unknown。
+- **根因**：把current visibility snapshot、某次refresh结果与历史operation settlement合并成一个linearizable判定。
+- **发现于**：2026-08-31 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/client.md](packages/client.md)、[packages/host.md](packages/host.md)。
+
+---
+
+### E043 — projection cache `coldSnapshot`不经过preset presenter
+
+- **类型**：cold-read调用链混淆
+- **错误内容**：把ApiProxy history的`presenterScopeFor→standingKeyFor`链套到`SessionProjectionCache.coldSnapshot`，进而认为projection warm-up会按recorded preset import/apply plugins或触发`agent/created`。
+- **正解**：coldSnapshot只走cache row、`SessionPersistence.readFrom`、`SessionProjectionRegistry.restore`与write-back；不创建Session/Agent，不调用AgentPresets/presenter。它会执行已注册projection unit的init/apply/view，但不会动态加载preset。
+- **根因**：两个API都叫cold read且都消费Session log，却把presentation view与projection fold误当成同一层。
+- **发现于**：2026-08-31 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/session.md](packages/session.md)、[packages/preset.md](packages/preset.md)。
+
+---
+
 > 更多**按包组分布**的文档与源码冲突（共 81 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

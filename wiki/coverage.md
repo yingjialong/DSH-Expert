@@ -83,7 +83,7 @@
 | [sandbox](packages/sandbox.md) | L1 | Product | 4 | 14 | 24 | 10 | 1 |
 | [schedule](packages/schedule.md) | L1 | Product | 1 | 13 | 11 | 10 | 0 |
 | [sdk](packages/sdk.md) | L1 | Product | 3 | 16 | 23 | 10 | 1 |
-| [session](packages/session.md) | L2 | Product | 14 | 29 | 24 | 13 | 2 |
+| [session](packages/session.md) | L2 | Product | 14 | 31 | 24 | 13 | 2 |
 | [session-query](packages/session-query.md) | L1 | Product | 4 | 16 | 18 | 13 | 1 |
 | [settings](packages/settings.md) | L2 | Product | 2 | 9 | 12 | 7 | 1 |
 | [shell](packages/shell.md) | L1 | Product | 10 | 13 | 10 | 9 | 1 |
