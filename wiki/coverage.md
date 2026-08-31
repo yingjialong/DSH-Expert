@@ -59,7 +59,7 @@
 | [code-runtime](packages/code-runtime.md) | L1 | Product | 3 | 13 | 12 | 10 | 2 |
 | [compaction](packages/compaction.md) | L1 | Product | 4 | 13 | 9 | 8 | 2 |
 | [context](packages/context.md) | L1 | Product | 6 | 12 | 7 | 8 | 2 |
-| [core](packages/core.md) | L1 | Product | 8 | 26 | 12 | 10 | 2 |
+| [core](packages/core.md) | L1 | Product | 8 | 30 | 12 | 10 | 2 |
 | [credentials](packages/credentials.md) | L2 | Product | 3 | 15 | 6 | 8 | 1 |
 | [e2b](packages/e2b.md) | L1 | POC | 3 | 10 | 6 | 9 | 2 |
 | [examples](packages/examples.md) | L1 | Support | 1 | 11 | 6 | 8 | 1 |
@@ -127,10 +127,10 @@
 |---|---|
 | 已建立页面 | 75 页（69 内容页 + 6 治理页） |
 | 掌握度分布 | L2 **35** · L1 **34** · L3/L4 **0** |
-| 锚点总数 | 941（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
+| 锚点总数 | 945（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
 | 已记录陷阱 | 572 条（分布在各页「陷阱」一节） |
 | 文档与源码冲突 | 81 条（见 conflicts.md） |
-| 悬而未决 | 113 条（见 open-questions.md） |
+| 悬而未决 | 114 条（见 open-questions.md） |
 | 认知状态 | 全部 `verified_inference`（无 `fact`，因无 L3） |
 | 新鲜度 | `stale` 65页 · `fresh` 4页（identity、webhook、固定rc.2 Host页、alpha.2版本页）；固定版本问题回目标tag核验 |
 

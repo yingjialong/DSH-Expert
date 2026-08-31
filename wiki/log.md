@@ -480,3 +480,12 @@
 - **版本证据**：rc.2 `b150a551`正式skill/skill-filesystem/tool-skill/tools/agent/system-prompt tarball integrity、runtime JS、package manifests、base/web/preset rows、AgentLoop/ToolRuntime与一方tests。
 - **实测**：无；未读取外部Skill root、未关闭真实carrier、未使用凭据。固定控制流与tests足以判定，Host-wide shutdown仍无一方e2e。
 - **沉淀**：`packages/{skill,core}.md`、conflicts C081、index/coverage/log。
+
+## 2026-08-31 · 跨会话核验：retry request fence与Skill byte TOCTOU
+
+- **提问者**：agent（跨会话；完整答案先回传并确认成功）
+- **问题**：同step request-error retry是否重跑scope-local`agent/request`，official filesystem locator能否把digest check与get bytes绑定，以及strict validator与宽松parser是否扩权。
+- **结论**：每次loop-level retry都重新buildRequest并重跑Agent-scoped request waterfall，但复用原assembly/tools；middleware failure/cancel在adapter前收口。filesystem locator只有path/directory，list/get独立open，无digest/fd/authenticated byte，因此外部hash gate仍有DSH未封闭的TOCTOU。same bytes下unknown keys不扩官方字段，但validator必须对齐invocation defaults/coercions、metadata与resourceBase等派生语义。
+- **版本证据**：rc.2 `b150a551`正式skill/skill-filesystem/tool-skill/agent/system-prompt tarball、runtime JS、Agent dispatcher/loop与request-error/reconstruction/parser/consumer tests。
+- **实测**：无；未替换真实文件、未调用模型、未使用凭据。控制流足以判定；外部store不可变性未知。
+- **沉淀**：`packages/{core,skill}.md`、errors E030、open Q120、index/coverage/log。

@@ -16,11 +16,15 @@ anchors:
   - packages/core/agent-default-model/README.md
   - packages/core/agent-tool-presentation/README.md
   - packages/core/agent/src/index.ts
+  - packages/core/agent/src/runtime-types.ts
+  - packages/core/agent/src/dispatch.ts
   - packages/core/agent-loop/src/agent.ts
   - packages/core/agent-loop/src/tool-calls.ts
   - packages/core/agent-loop/src/index.ts
   - packages/core/agent-loop/tests/tool-calls.spec.ts
   - packages/core/agent-loop/tests/cancel.spec.ts
+  - packages/core/agent-loop/tests/request-error.spec.ts
+  - packages/core/agent-loop/tests/request-reconstruction.spec.ts
   - packages/core/tools/src/index.ts
   - packages/core/tools/tests/tools.spec.ts
   - packages/core/tools/tests/code-mode.spec.ts
@@ -129,6 +133,13 @@ core 是「主干」而非单一 capability family，但同样按 seam 纪律拆
 - tool侧顺序是durable`tool/call`→async`tools/pre-execute`→可选Approval→同步guards→`tools/execute`wrappers→body。`guard()`不能async；pre-execute距离body中间可能隔着人类Approval。adapter若要求最后一次远端校验，应把它放在`ToolDefinition.execute`的第一步、物理effect之前；任意check后的外部TOCTOU仍需远端digest/version条件调用解决。
 - `AgentHandle.dispose()`公开语义包含cancel→whenIdle→agent-scope dispose，factory unload也drain其handles；Preset standing scope却归`AgentPresets.selfCtx`并只在whole-tree teardown回收。DSH没有Host-wide admission-close→all Agents drain→standing/plugin dispose协调器。Host可保留public handles/fibers顺序组合；无法证明该顺序或存在agentless calls时，plugin仍需自管in-flight drain。
 - **认知状态**：verified_inference（固定rc.2正式system-prompt/agent/tools types、AgentLoop/ToolRuntime控制流与一方tests；未连接远端catalog）。
+
+### `agent/request`是loop-level retry的逐attempt fence
+
+- `step(assembly)`只收一次assembly，但其`while(true)`每轮都重新`buildRequest(...)`；buildRequest每次通过fused Agent dispatcher运行scope-filtered`agent/request`waterfall，再prepare adapter与发起stream。`agent/request-error`返回retry后continue回同一while顶部，因此下一次loop-level adapter attempt会重跑`agent/request`，但复用原`assembly.tools`与rendered system。
+- listener throw/reject使buildRequest失败、adapter不调用，且该middleware failure不再进入`agent/request-error`；一方test断言adapter requests与recovery次数均为0。listener返回后还有`signal.throwIfAborted()`，cancel可阻断；不合作Promise仍会卡住turn。
+- 此保证只覆盖AgentLoop因`agent/request-error`产生的retry。adapter/HTTP SDK在单次`stream()`内部自行重试时不会重新buildRequest，也不会重跑该fence。
+- **认知状态**：verified_inference（固定rc.2 Agent scoped event types/dispatcher、AgentLoop step/buildRequest控制流与request-error/reconstruction tests）。
 
 ### 同一batch pending/started calls与注销顺序
 

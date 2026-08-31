@@ -352,4 +352,15 @@
 
 ---
 
-> 更多**按包组分布**的文档与源码冲突（共 80 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。
+### E030 — content-addressed path不等于official Skill provider持有同一bytes
+
+- **类型**：TOCTOU / identity过推
+- **错误内容**：外部先hash一个immutable-looking `SKILL.md`路径，便断言后续`FileSystemSkillProvider.get()`必然读取刚校验的bytes，或把candidate locator当digest/revision/fd。
+- **正解**：official locator只有path/directory；list与get分别重新open/parse文件，Registry不比较body/digest，也没有authenticated-byte hook。只有外部store真正禁止pathname、目录项、symlink与底层fs替换时才能条件性推出同bytes；DSH本身不封闭check→open窗口。
+- **根因**：把内容寻址命名约定当成provider拥有的byte lease，又忽略了list/get的两次独立读取。
+- **发现于**：2026-08-31 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/skill.md](packages/skill.md)。
+
+---
+
+> 更多**按包组分布**的文档与源码冲突（共 81 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

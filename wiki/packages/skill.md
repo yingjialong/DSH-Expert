@@ -155,3 +155,11 @@ asked_by: agent
 - custom root不是`trustedHost`，当当前scope可见`ctx.fs`时list/get会优先用该FileSystem provider；无`ctx.fs`才用Node fs。若selectedRoot是Host-local而preset可见fs指向另一物理世界，standard provider没有force-Node开关，需由组合保证物理一致或换第一方provider。
 - 正式root`.d.ts`把`providerName`注释为默认`local`，但同tarball runtime JS的Config schema与constructor都用`filesystem`；实际行为以runtime为准，登记C081。
 - **认知状态**：verified_inference（固定rc.2正式tarball root/runtime JS、package manifests、shipped Loader rows与isolated-provider一方test）。
+
+## 2026-08-31 · filesystem locator double-open与strict validator边界
+
+- Official candidate的filesystem locator内部只有`{path,directory}`。list阶段按path读/parse frontmatter生成summary；`get()`再从locator取path，重新走`ctx.fs.resolve→stat→readText`或Node`readFile`并重parse。locator与public types均无digest/revision/FsVersion/fd/authenticated bytes/expected-hash参数。
+- Registry只校验loaded definition shape与name等于candidate name，不校验description/invocation/body仍等于list阶段。因此独立pre-step/use-time hash后再调用official get仍有check→open窗口；`watch:false`只关观察，不pin bytes。只有外部store同时保证pathname、目录项、symlink target与底层fs对象不可替换时，才能从外部不变量推断两次open同bytes。
+- 同一bytes的parser语义是确定且收敛的：unknown top-level keys不生成官方字段；legacy invocation keys拒绝整条Skill。strict validator仍须对齐缺省`modelInvocable/userInvocable=true`、yes/on/1等boolean coercions、object metadata透传，以及provider派生的source/path/resourceBase。runtime出现validator未见recognized字段的主要路径是bytes drift，而非unknown key自动扩权。
+- Official tool-skill只把name/description放catalog，并在load结果使用name/provider/resourceBase/content与invocation checks；metadata/whenToUse/path不被该consumer执行成权限。自定义consumer解释metadata属于外部语义。
+- **认知状态**：verified_inference（固定rc.2正式skill/skill-filesystem/tool-skill root `.d.ts`、runtime JS与parser/consumer一方tests；未构造文件替换竞态）。
