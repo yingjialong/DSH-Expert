@@ -545,3 +545,33 @@
 - **实测**：无新fixture；cap=1串行与cap=2 abort各有一方test，exact cap=1 cancel组合由相同scheduler控制流交叉推出。发现`AgentHandle`根`.d.ts`注释与runtime teardown顺序冲突。
 - **沉淀**：`packages/{core,interaction}.md`、errors E034/E035、index/log。
 - **覆盖度变化**：无。
+
+## 2026-08-31 · 跨会话核验：cold models真实resume与history fallback可观测性
+
+- **提问者**：agent（multi-agent v2直发被拒后，解析parent_thread_id并完整relay确认成功）
+- **问题**：cold`session.models`是否触发recorded preset真实resume/mount及零publication rollback；history成功无Agent能否证明global generic presenter。
+- **结论**：models共用`agentFor`并对ordinary cold Session调用`ctx.agents.resume`；missing id在setup构造前失败，broken/runtime mount在unpublished resume setup内失败，两者都不发布。history只在optional`events[].view`暴露presenter结果，没有fallback marker；成功无Agent不足以证明global lookup，需global独特presenter产生正向view。
+- **版本证据**：rc.2`b150a551`正式host-apiproxy/api-remotes/agent-loop/agent-presets API/runtime与cold/agent-lookup/resume/mount/view一方tests。
+- **实测**：无新fixture；exact Host models+真实broken preset组合无单条一方test，由相邻正式控制流与分层tests交叉确认。
+- **沉淀**：`packages/{host,preset}.md`、errors E036、index/log。
+- **覆盖度变化**：无。
+
+## 2026-08-31 · 跨会话核验：独立Context/process registry隔离
+
+- **提问者**：agent（multi-agent v2子任务，完整答案relay父任务并确认成功）
+- **问题**：Preset/Agent/Session/Tools/Approval/Loop是否因同仓未import源文件或两个独立gate顺序而自动共享/激活。
+- **结论**：产品registry与activation由各Context/Fiber Service实例拥有，未import/未入Loader图/未注册文件保持惰性；但AgentPresets mount Set/WeakMaps与Session attachment WeakMap是module-level object-identity bookkeeping，不能绝对宣称零process-global表。独立进程/完整teardown且无共享外部介质时顺序无DSH语义。
+- **版本证据**：rc.2`b150a551`正式agent-presets/agent/session/tools/approval/agent-loop root runtime与mount/scoped/session/lifecycle一方tests。
+- **实测**：无多进程fixture；Node/pnpm是否真正独立、是否间接import及外部root/backend共享保持调用方前提。
+- **沉淀**：`packages/{core,preset}.md`、index/log。
+- **覆盖度变化**：无。
+
+## 2026-08-31 · 跨会话核验：ToolDefinition引用与Cordis sibling rollback
+
+- **提问者**：agent（multi-agent v2子任务，完整答案relay父任务并确认成功）
+- **问题**：tools.register是否clone/freeze schema；Cordis provide/effect返回、失败与teardown；tools root公共类型闭包。
+- **结论**：register保存caller原definition引用，schemas只在读取时deep snapshot parameters；caller nested mutation可影响后续projection/output validation。Cordis provide是独立owned effect，后一个sibling effect同步失败不回滚它；同一composite return/yield或整plugin startup失败才共同rollback。tools根`.d.ts`已完整导出题列类型/augmentation，无需src。
+- **版本证据**：DSH rc.2`b150a551`正式tools tarball/runtime/tests；`@deepseek-ai/cordis@4.0.1` shasum`e8171e63...`、vendor reflect/fiber与API docs。
+- **实测**：无新fixture；caller-mutation与sibling sequence缺专门一方test，固定runtime控制流可静态判定。
+- **沉淀**：`packages/core.md`、`topics/cordis-primer.md`、errors E037/E038、index/log。
+- **覆盖度变化**：无。

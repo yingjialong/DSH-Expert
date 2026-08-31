@@ -35,7 +35,7 @@ asked_by: self
 
 Cordis 自述为 "A Meta-Framework of Spatiotemporal Composability"，上游是 `cordiverse/cordis`，README 里明写 **API 尚未稳定、可能无预告变更** [T1: cordis:README.md]。DSH 不通过 npm 依赖它，而是**源码 vendor** 进 `vendor/`，并整体 rescope 到 `@deepseek-ai/*`（`cordis` → `@deepseek-ai/cordis`，`@cordisjs/plugin-x` → `@deepseek-ai/cordis-plugin-x`）；`@deepseek-ai/cordis` 是每个 harness 包的 peerDependency [T1: vendor/README.md]。
 
-**回答 DSH 问题时，权威源是 `vendor/cordis/src/`，不是本地 `upstream/cordis` 镜像**：vendored 版本 pin 在 cordis 4.0.0-rc.7（commit `56b3d4f`），而 `upstream/cordis` HEAD 已是 4.0.0-rc.8；`vendor/README.md` 还列了 18 条 local modifications，其中 #6（fiber 生命周期加固）、#8（Loader/Include 事务化重载）、#15（`internal/config` 惰性配置解析）是**行为性**改动，不是注释。名字映射见 `docs/rescope.md`。
+**回答 DSH 问题时，权威源是 `vendor/cordis/src/`，不是本地 `upstream/cordis` 镜像**：rc.2的vendored upstream snapshot标为cordis 4.0.0-rc.7（commit `56b3d4f`），加入DSH local modifications并以`@deepseek-ai/cordis@4.0.1`发布；`upstream/cordis`镜像不是这份正式runtime。`vendor/README.md`列了18条local modifications，其中 #6（fiber 生命周期加固）、#8（Loader/Include 事务化重载）、#15（`internal/config` 惰性配置解析）是**行为性**改动，不是注释。名字映射见`docs/rescope.md`。
 
 ## 核心概念（保留英文原名）
 
@@ -60,6 +60,8 @@ Cordis 自述为 "A Meta-Framework of Spatiotemporal Composability"，上游是 
 - `fiber.await()` 等待稳定并重抛启动错误；`fiber.restart()` 用当前 config 重装；`fiber.update(config, noSave?)` 先跑 `internal/update` waterfall（HMR / 更新钩子可否决或替换重启）再重启。
 - **disposer 顺序有两个层级**：同一个 `ctx.effect()` 内收集到的 disposer 逆序且遇到 promise 就串行 await [T1: `vendor/cordis/src/fiber.ts` 的 `disposables.splice(0).reverse()` 链式 `.then`]；而 fiber 卸载时多个 effect 的 disposer 走 `Promise.all` **并发**。要保证顺序就把相关清理塞进同一个 effect。
 - fiber 处于 `UNLOADING` 时再建 effect 会抛 `CordisError('INACTIVE_EFFECT')`（`PENDING` / `LOADING` 期间合法）。
+- `ctx.provide(name,value)`本身创建一个独立owned effect并返回unprovide disposer。随后另一次独立`ctx.effect()`同步throw时，只回滚后者内部return/yield并已收集的disposers，不会跨sibling撤销先前provide；provide留到显式disposer或整个Fiber unload。要all-or-nothing，必须把unprovide作为同一个composite effect的return/yield，或让整个plugin startup transaction失败。
+- public types把`provide`返回概括为`()=>void`；runtime返回真实effect disposer，底层unprovide会等待依赖fibers settle。`ctx.effect` disposer single-shot，callback立即执行；inactive/unloading同步抛`INACTIVE_EFFECT`，非法返回形状抛`TypeError`，同步setup失败会先清本effect已收集cleanup再重抛。
 
 ## 服务的注册与消费（ctx-key 机制）
 

@@ -133,6 +133,14 @@ dsh Web GUI 的 host 侧：所有 client 形态共用的 API gateway（`ctx.apiP
 - 初始HTML由`frontend-static`fallback直接服务，不经过上述fence；predicate也未从正式package root导出。WebServer公开route/upgrade/fallback原语，但没有全server middleware。因此rc.2没有统一覆盖HTML+API+两WS的公共admission seam。
 - **认知状态**：verified_inference（固定tagApiProxy/Runtime/Connection/WebServer/Frontend控制流与一方tests；未启动真实Web Host）。
 
+## 2026-08-31 · cold `session.models`与history presenter的公开可观测边界
+
+- `session.models({sessionId})`先走共享`agentFor()`；ordinary cold identity经Persistence `list/inspect`后构造Host setup并调用`ctx.agents.resume()`，不是纯读header/catalog。Host setup从header+events fold recorded effective preset，并在unpublished Agent scope调用`AgentPresets.mount()`；成功后才读Session selection与model catalog。
+- missing recorded id在`composeAgent→presets.resolve()`阶段就失败，尚未调用`ctx.agents.resume()`；可发现broken row或真实Loader/mount失败则进入resume的unpublished setup后rollback。两者都fail closed且不发布Agent，但只有后一类可称“真实resume setup mount失败”。AgentLoop一方tests固定setup/commit rejection后`ctx.agents`与`ctx.sessions`都无该id。
+- `session.history`不走`agentFor()`。cold路径尝试`standingKeyFor(effectivePreset)`，unknown/broken/unusable时catch并用`scope=undefined`查询global ToolRuntime layer。公开response没有fallback reason或scope字段；`HistoryEntry`只有`event`与可选`view`。
+- 要从公开response正向证明global presenter，必须让历史含tool event且global layer有可辨识`presentCall/presentResult`，再断言`events[].view`。仅“history成功+无Agent”只能证明fail-soft且未resume，不能区分global无presenter、roster缺失、JSON/pairing/presenter软失败；view缺失由官方Client渲染generic card，但Host不发显式generic marker。
+- **认知状态**：verified_inference（固定rc.2ApiProxy/API Remote resolver/AgentLoop/Preset控制流与cold/agent-lookup/resume/mount/view一方tests；未运行新的全链fixture）。
+
 ## 去哪深入（文件路由）
 
 | 问题 | 去哪 |

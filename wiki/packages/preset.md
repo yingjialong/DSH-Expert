@@ -165,3 +165,10 @@ asked_by: agent
 - mount失败会dispose失败scope，收回遵守Cordis effect ownership的注册；DSH不承诺回滚plugin自行造成、未登记为effect的外部副作用。user preset的trust标签也不是代码sandbox。
 - AgentPresets/ApiProxy没有inventory callback、definition provider或`preset/pre-mount`事件。Loader先dynamic import row module，再patch context并运行plugin apply；所以只覆盖normal create/prompt/publication的外部门无法覆盖cold mount，也不能靠generic Loader事件证明module top-level从未执行。
 - **认知状态**：verified_inference（固定rc.2正式host-apiproxy/agent-presets runtime JS、Agent lifecycle类型与cold/presenter/mount一方tests；未加载恶意plugin）。
+
+## 2026-08-31 · 多Context standing registry的精确隔离边界
+
+- 每个`AgentPresets` Service实例自己的`standing Map`、`bindings WeakMap`、`selfCtx`与roots配置归构造它的Cordis Context；相同preset id在另一个root Context不会自动复用该实例的standing generation。源文件只有被实际import/Loader row引用、再由mount/standing路径激活才会运行；仅存在于同一仓库不构成DSH discovery。
+- 不能把它扩大成“模块内完全没有process-level表”：`mount.ts`有module-level `mounted`/`harnessBase` WeakMap与`mounts Set`，供mount审计、`livePresetMounts()`和`standingMountFor()`反向定位。定位严格比较ScopeKey/Fiber对象身份；源码明确拒绝使用会跨root碰撞的fiber uid，因此这些bookkeeping不会按preset id把一个Context的插件实例激活给另一个Context。
+- 两个独立Node进程连上述module instance也不共享；这属于Node/OS heap隔离前提。两个Context/fixture若共享物理preset root、persistence path、环境或测试自建global，顺序仍可受外部状态影响，不能归因于DSH隐式registry。
+- **认知状态**：verified_inference（固定rc.2AgentPresets实例字段、mount module bookkeeping/object-identity控制流与mount tests；未运行多进程fixture）。

@@ -418,4 +418,37 @@
 
 ---
 
+### E036 — history成功且无Agent不等于已证明global generic presenter
+
+- **类型**：公开可观测性过推
+- **错误内容**：missing/broken recorded preset的`session.history`返回成功且AgentRegistry无该id，便宣称response已证明`presenterScopeFor`尝试standing后回退global generic presenter。
+- **正解**：成功+无Agent只证明fail-soft且未resume。公开`HistoryEntry`只有raw`event`与可选`view`，没有scope/fallback reason；view缺失同时可能来自global无definition/presenter、roster缺失、坏JSON、跨页pair miss或presenter throw。正向证明global lookup需在global layer注册可辨识presenter并断言`events[].view`。
+- **根因**：把Host内部fallback控制流、Client对viewless event的generic渲染与公开API response字段混成同一证据。
+- **发现于**：2026-08-31 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/host.md](packages/host.md)、[packages/preset.md](packages/preset.md)。
+
+---
+
+### E037 — `schemas()`返回快照不等于register接管了caller schema
+
+- **类型**：引用ownership过推
+- **错误内容**：一方test证明修改`ctx.tools.schemas()`返回值不会污染registry，便反推`ctx.tools.register(definition)`已clone/deep-freeze输入，caller保留的nested schema不可再影响运行时。
+- **正解**：register把原始definition引用插入layer；`schemas()`只在每次读取时snapshot parameters。caller事后修改原nested parameters会影响下一次projection，修改`output.schema`会影响后续成功结果校验。顶层freeze不递归保护nested对象。
+- **根因**：混淆“read API返回detached copy”和“write API在admission时取得immutable ownership”。
+- **发现于**：2026-08-31 · DSH `b150a551`（`0.1.1-rc.2`）
+- **牵连条目**：[packages/core.md](packages/core.md)。
+
+---
+
+### E038 — 后一个sibling effect失败不会回滚先前provide
+
+- **类型**：Cordis事务边界过推
+- **错误内容**：先`ctx.provide()`，再独立调用`ctx.effect()`；后者同步throw时，误以为Cordis会把同Fiber上之前注册的service一并撤销。
+- **正解**：每次effect只回滚自己callback return/yield并已collect的disposers；先前provide是另一个sibling effect，仍存活到其disposer或整个Fiber unload。只有同一composite effect显式return/yield unprovide，或整个plugin startup失败，才形成共同rollback边界。
+- **根因**：把“同一个Fiber最终拥有全部effects”误解成“任一新effect失败都会事务回滚所有既有siblings”。
+- **发现于**：2026-08-31 · DSH `b150a551` / `@deepseek-ai/cordis@4.0.1`
+- **牵连条目**：[topics/cordis-primer.md](topics/cordis-primer.md)。
+
+---
+
 > 更多**按包组分布**的文档与源码冲突（共 81 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。

@@ -155,6 +155,21 @@ core 是「主干」而非单一 capability family，但同样按 seam 纪律拆
 - 因此公开可组合顺序是先关闭外部admission，再cancel/dispose所有相关Agents并await idle，补drain任何agentless/detached调用，最后unregister tool与close carrier。若全部调用确由这些Agents拥有，pending已被cancel收口；否则plugin仍需自己的accepting/in-flight计数。
 - **认知状态**：verified_inference（固定rc.2`executeToolCalls`/`ToolRuntime`控制流与tool-calls/cancel一方tests；未关闭真实carrier）。
 
+### `ToolDefinition`注册保留caller引用，`schemas()`只保护读取结果
+
+- `ctx.tools.register(definition)`同步校验当时的output形状/schema、timeout与保留名后，把**原始definition对象**插入当前layer；不clone、不freeze definition、parameters、output或output.schema。只冻结definition顶层仍会留下nested schema可变引用。
+- `ctx.tools.schemas()`每次从当前definition读取name/description/parameters，并对parameters做lossless deep snapshot；所以修改它返回的schema不会污染registry，一方test明确覆盖。反方向不成立：caller注册后修改原nested parameters，下一次`schemas()`会clone修改后的值；output validation也在执行成功时读取当前`tool.output.schema`。
+- raw ToolRuntime不统一用`parameters`校验输入arguments；它只snapshot/freeze arguments后交给body。`defineTool`等helper可另加输入校验。因此parameters mutation确定影响model/schema projection，output.schema mutation确定影响输出校验，不能笼统写成“ToolRuntime输入校验一定变化”。
+- `@deepseek-ai/dsh-tools` rc.2正式root `.d.ts`已导出`assertObjectJsonSchema`、`ToolDefinition`、`ToolRunContext`、`ctx.tools.register`与`tools/pre-execute` Context augmentation；无需私有import。package虽声明`./src/*`，正式tarball不含src。
+- **认知状态**：verified_inference（固定rc.2正式tools tarball/root types、register/schemaOf/createSuccessResult与schema snapshot一方tests；无caller-mutation专项test）。
+
+### 独立Context的core registry与module bookkeeping
+
+- `AgentRegistry.store/factory/AsyncLocalStorage`、`SessionStore.store`与`ToolRuntime.layers/execution WeakMaps`均为Service实例字段，由各自Context/Fiber effects拥有；另一个未import、未进入Loader图且未注册的源文件不会自动贡献Agent、Session或ToolDefinition。`ApprovalService` listeners与`AgentLoop` factory同样绑定各自Context。
+- 仍有少量module-level对象身份bookkeeping：Session模块用`attachments WeakMap<Session,SessionEntry>`禁止同一个Session对象同时attach到两个store；一方test证明detach后才可转交第二store。它不按SessionId共享两个store。AgentPreset侧的module Set见preset页。
+- 因此两个独立process/Context且完整teardown的conformance顺序没有DSH语义；若同进程同时live、共享外部backend/root或直接传同一个Session对象，则必须单独判断，不能用“两个Context”概括成完全无耦合。
+- **认知状态**：verified_inference（固定rc.2Agent/Session/Tools/Approval/AgentLoop root runtime与scope/session/lifecycle一方tests；Node/package-manager进程隔离作为外部前提）。
+
 ## 去哪深入（文件路由）
 
 | 想知道什么 | 去哪 |
