@@ -8,9 +8,11 @@ anchors:
   - packages/preset/agent-presets/README.md
   - packages/preset/agent-presets/src/index.ts
   - packages/preset/agent-presets/src/authoring.ts
+  - packages/preset/agent-presets/src/discovery.ts
   - packages/preset/agent-presets/src/mount.ts
   - packages/preset/agent-presets/src/session.ts
   - packages/preset/agent-presets/tests/discovery.spec.ts
+  - packages/preset/agent-presets/tests/authoring.spec.ts
   - packages/preset/agent-presets/tests/mount.spec.ts
   - packages/preset/agent-presets/tests/session.spec.ts
   - packages/preset/persona/README.md
@@ -83,6 +85,7 @@ asked_by: agent
 - **trust 不是强制项**：`trust: 'system' | 'user'` 只是给消费者展示用；preset 的权限等同于它命名的插件，user preset 等价于 shell 访问权。
 - **shipped preset 名单不在本组文档里**：以 `apps/cli/config/agent-presets/` 的目录清单为准（当前为 `standard` / `code` / `cordis` / `minimal`）；README 明确拒绝在文档里再列一份。
 - **cold transcript read 不是“不会激活preset”的纯数据读取**：`session.history`会先解析recorded effective preset，再调用`standingKeyFor()`；首读或stamp变化会真实Include/Loader activate该`agent.cordis.yml`。这条路径没有Agent，因此不会发`agent/created`；只在该事件检查composition identity既晚于正常Agent setup，也完全漏掉cold presenter mount。
+- **“旧Session保留旧generation”只适用于仍live/joined的Agent**：Session log只存preset id，不存generation/stamp/digest。Agent dispose、cold presenter或Host重启后都按current roster重新解析同id；same-id overwrite会改变旧持久Session下一次实际装配的composition。
 
 ## 去哪深入（文件路由）
 
@@ -101,6 +104,7 @@ asked_by: agent
 
 - rc.2 没有 `registerPreset(id, definition)`、`AgentPresetProvider` 或 definition backend。`AgentPreset` 是文件系统发现结果，不是可注册的 composition definition；正式写入口只有整目录 `copy()`，不接受任意 composition 文本。
 - 可支持的运行期扩展是：宿主在服务构造时已经配置的 root 下物化 `<id>/agent.cordis.yml`。`list()` / `resolve()` 每次重新扫描，所以下一次 `session.create({ agentPreset: id })` 可立即选择它；root 集合本身在服务构造时固定。
+- root内容无memo/negative cache：`resolveMountable()`、`standingKeyFor()`与Host `composeAgent()`最终都重新走`list→discoverPresets→scanRoot`。已配置root内先完成原子目录发布、再调用Host create即可；但roots顺序first-root-wins，较早root的同id会shadow后投影。DSH没有外部publish与create的共同CAS，调用并发时只服从文件系统可见顺序。
 - 创建时的 resolved id 写入 `SessionHeader.agentPreset`；空白 Session 后续切换才追加 `agent-preset/selected`。JSONL / SQLite persistence 持久化的是这个 id 与事件，不是 composition 内容、digest 或 generation。
 - 冷恢复会从 header + 最后一个 selection event 取 recorded id，再向当前 roster 解析并于 Agent publication 前 mount。因此定义文件仍在 root 时无需每次手工注册；若定义只存在于宿主内存，则每次 boot 必须在恢复前重新物化。
 - 缺定义不是统一的 fallback 契约：roster 仍装配但 exact id 缺失时，真实 Agent resume 不回退 default，且 publication 失败；只读 transcript / cold skill catalog 会退到 global presenter/scope；若整个 `agentPresets` 服务都未装配，rc.2 ApiProxy 会采用 rosterless Host composition。最后一条缺少专门一方测试，按实现证据仅标 `verified_inference`。
@@ -131,6 +135,8 @@ asked_by: agent
 - `AgentPresets.remove(id)`不做Session ref check：删除user definition并清current standing pointer；已live Agent仍靠旧standing跑到进程结束。重启后recorded id在current roster缺失，真实resume失败。
 - `agentPreset.read/copy/remove`只面对current roster；`session.export`只导出raw Session artifact，不含preset definition。无historical generation handle、ref-aware retention/tombstone、clear-reference、删前影响枚举或historical export。
 - 同进程同id改文件时已join Session可留旧private standing、新Session用新generation；该generation不可公开寻址且不跨重启。只有不同且长期保留的immutable preset ids及其模块同时在current closure时，preset-scoped旧/新composition才可条件并存；DSH不自动管理plugin version coexistence，Host-plane全局plugin也不因此版本化。
+- generation cache按id single-flight；失败entry会删除供下次重试。成功后仅比较`agent.cordis.yml`的`mtimeMs+size`：不同才建立later generation，同值内容漂移不刷新；stamp又在Loader读取前取得，没有byte/digest绑定。两位later-session racer会共享一个new generation，superseded scope则直到whole-tree teardown都不回收。
+- 因此immutable content-addressed id不是DSH运行所必需——rc.2明确支持same-id编辑；但若要求cold reopen/restart精确重建，它是外部必要不变量，因为只有仍live的parent binding能寻址old generation，持久Session没有historical handle。
 - **认知状态**：verified_inference（固定tagPreset authoring/standing、ApiProxy与Persistence语义交叉核对；未安装第三方多版本plugin）。
 
 ## 2026-08-31 · 预物化content-addressed preset的公共组合边界

@@ -507,3 +507,12 @@
 - **版本证据**：rc.2 `b150a551`正式host-apiproxy/agent-presets/skill-filesystem/mcp-client/system-prompt/agent-loop/llm-adapter tarball shasum、runtime JS、root `.d.ts`、tag控制流与一方tests；pi-ai 0.82.1 formatter tarball。
 - **实测**：无；未加载恶意preset、未读取外部Skill root、未调用模型/provider。固定发布物、控制流与tests足以静态判定；外部provider工具限制保持unknown。
 - **沉淀**：`packages/{preset,skill,mcp,core,llm}.md`、errors E032、index/coverage/log。
+
+## 2026-08-31 · 跨会话核验：运行期preset投影与same-id generation
+
+- **提问者**：agent（跨会话；完整答案先回传并确认成功）
+- **问题**：API ready后在configured root新增preset能否直接被create/standing发现；cold history的unknown/mount fail是否必定退global；same-id编辑与content-addressed immutable责任。
+- **结论**：roots集合构造时固定，内容每次list/resolve重扫且无negative cache；先发布目录再create无需重建Service，first-root-wins与外部publication ordering仍适用。presenter的unknown/mount错误全被捕获，其他history source/projection错误仍可整体失败。same-id按mtimeMs+size换generation，仅live joined Agent保留old；cold/restart只存id，因此immutable id是exact-restore外部不变量而非DSH运行要求。
+- **版本证据**：rc.2 `b150a551`正式agent-presets/host-apiproxy tarball、public `.d.ts`、runtime JS、discovery/index/api-proxy控制流与authoring/mount/presenter一方tests。
+- **实测**：无跨进程rename e2e；未加载preset或创建Session。固定发布物与一方tests足以静态判定，外部文件系统原子性保持unknown。
+- **沉淀**：`packages/preset.md`、index/coverage/log；E032已有cold presenter陷阱，无新增error条目。
