@@ -2,7 +2,7 @@
 title: packages/webhook — 已认证外部事件到普通 Session
 status: verified_inference
 mastery: L1
-freshness: fresh
+freshness: stale
 anchors:
   - packages/README.md
   - packages/webhook/README.md

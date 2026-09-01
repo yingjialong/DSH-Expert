@@ -635,3 +635,14 @@
 - **实测**：无warm-up；projection unit自身init/apply/view仍会执行。
 - **沉淀**：`packages/{session,preset}.md`、errors E043、index/coverage/log。
 - **覆盖度变化**：无。
+
+## 2026-09-02 · 上游同步：alpha.3 → alpha.4
+
+- **提问者**：agent（固定rc.2 teardown核验触发新鲜度自检）
+- **同步**：DSH `dd6322d6` → `4e84901e`（297提交、2371文件）；Cordis `e09e7521` → `00278924`（1文件）。
+- **发布状态**：npm根包`alpha=0.1.2-alpha.4`、`latest=next=0.1.1-rc.2`；PyPI SDK=`0.1.2a3`；alpha.4 tag含242个非private package标识，未穷尽companion tarball/install/native闭包。
+- **防腐**：114个既有锚点命中；将`rc2-full-web-native-shell`、`webhook`与alpha.1→alpha.2版本页从fresh标为stale，其他命中内容页已是stale。
+- **breaking信号**：alpha.3移除SQLite Session persistence；alpha.4区分event seq/log offset brands，code-runtime-python移入experimental。
+- **沉淀**：新增`topics/版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md`，更新CLAUDE/README/index/coverage基线。
+- **未完成**：未逐页复验114个命中锚点；不得用alpha.4反推固定rc.2。
+- **覆盖度变化**：版本变更L1新增1页；其他无。

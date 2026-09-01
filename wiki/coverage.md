@@ -4,7 +4,7 @@
 
 > 想知道「我现在到底懂多少」——看这张表，而不是听我自称。
 
-> 上游基线：DSH `0a53fb55`（仓库tag / npm根包`alpha`为`0.1.2-alpha.2`；根包`latest` / `next`仍为`0.1.1-rc.2`）· 2026-08-30同步。alpha.1→alpha.2跨234提交/1604文件；当前245个非private tag package标识均有alpha.2 tarball，真实install/native闭包未验证。144个既有锚点命中；通用页此前已stale，两篇动态alpha.1页新增stale。
+> 上游基线：DSH `4e84901e`（仓库tag / npm根包`alpha`为`0.1.2-alpha.4`；根包`latest` / `next`仍为`0.1.1-rc.2`）· 2026-09-02同步。alpha.3→alpha.4跨297提交/2371文件，从上一次alpha.2基线累计414提交；114个既有锚点命中，3篇原fresh页标stale。当前tag含242个非private package标识，本次未穷尽tarball/install/native闭包。
 
 
 ## 掌握等级定义
@@ -45,6 +45,7 @@
 | 核心链 core / session / preset / llm（源码级 L2） | **L2** | 27 | [topics/core-chain.md](topics/core-chain.md) | 10 条关键发现 |
 | 配置、工具目录与运行模式 | **L2** | 26 | [topics/config-and-tools.md](topics/config-and-tools.md) | 8 条关键发现 |
 | alpha.1→alpha.2版本变更 | **L1** | 28 | [topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md](topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md) | Skill/Preset/MCP contract、ToolRuntime generation-borrow缺口与npm resolution |
+| alpha.2→alpha.4版本变更 | **L1** | 6 | [topics/版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md](topics/版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md) | 发布状态、统计、breaking信号；详细contract待专项复验 |
 
 ## 三、包组（51 组 / 251 包）
 
@@ -125,14 +126,14 @@
 
 | 指标 | 值 |
 |---|---|
-| 已建立页面 | 75 页（69 内容页 + 6 治理页） |
-| 掌握度分布 | L2 **35** · L1 **34** · L3/L4 **0** |
-| 锚点总数 | 964（69个内容页frontmatter锚点总数；正文重复行内引用不计） |
+| 已建立页面 | 76 页（70 内容页 + 6 治理页） |
+| 掌握度分布 | L2 **35** · L1 **35** · L3/L4 **0** |
+| 锚点总数 | 993（70个内容页frontmatter锚点总数；正文重复行内引用不计） |
 | 已记录陷阱 | 580 条（分布在各页「陷阱」一节） |
 | 文档与源码冲突 | 81 条（见 conflicts.md） |
 | 悬而未决 | 114 条（见 open-questions.md） |
 | 认知状态 | 全部 `verified_inference`（无 `fact`，因无 L3） |
-| 新鲜度 | `stale` 65页 · `fresh` 4页（identity、webhook、固定rc.2 Host页、alpha.2版本页）；固定版本问题回目标tag核验 |
+| 新鲜度 | `stale` 68页 · `fresh` 2页（identity、alpha.2→alpha.4版本页）；固定版本问题回目标tag核验 |
 
 ## 六、下一步学习建议（按 `dsh-wiki` B3 优先级）
 

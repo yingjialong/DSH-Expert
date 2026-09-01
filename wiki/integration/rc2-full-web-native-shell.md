@@ -2,7 +2,7 @@
 title: rc.2 完整 Web Profile 与原生壳插件边界
 status: verified_inference
 mastery: L2
-freshness: fresh
+freshness: stale
 anchors:
   - package.json
   - apps/cli/package.json

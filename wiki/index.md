@@ -2,7 +2,9 @@
 
 > **回答时先读本文件**，据此挑 3-5 篇全文，**永远不要全量加载知识库**。
 
-> 上游基线：DSH `0a53fb55`（仓库tag / npm根包`alpha`为`0.1.2-alpha.2`；根包`latest` / `next`仍为`0.1.1-rc.2`）· Cordis `b912d399`（vendor release 4.0.2）· 同步于 2026-08-30
+> 上游基线：DSH `4e84901e`（仓库tag / npm根包`alpha`为`0.1.2-alpha.4`；根包`latest` / `next`仍为`0.1.1-rc.2`）· Cordis `00278924`（DSH vendor release 4.0.2）· 同步于 2026-09-02
+>
+> 2026-09-02 同步：0.1.2-alpha.3 → 0.1.2-alpha.4（297提交、2371文件变更）；从上一次知识基线alpha.2计算则累计414提交。npm `alpha`=alpha.4，PyPI SDK=`0.1.2a3`，npm `latest/next`仍为rc.2。114个既有锚点命中；将仅有3篇命中且原为`fresh`的页面标为`stale`，未完成全量复验。固定rc.2问题继续回tag `b150a551`。
 >
 > 2026-08-30 同步：0.1.2-alpha.1 → 0.1.2-alpha.2（234提交、1604文件变更）。npm发布在当天分批完成：当前245个非private tag package标识（含根CLI与Web frontend）均有alpha.2 tarball；真实递归install、native helper与第三方依赖闭包仍未验证。144个既有锚点命中；通用页此前已是`[stale]`，另将两篇含动态alpha.1发布断言的页面标stale。固定版本页继续按各自commit/tag使用。
 >
@@ -41,7 +43,7 @@
 | [protocol-jsonrpc.md](integration/protocol-jsonrpc.md) [stale] | SDK JSON-RPC 线协议源码级契约：分帧规则、握手/readiness 边界、3 请求 + 4 通知的完整清单、会话并发模型、错误码偏差、任意语言宿主的最小实现清单 | L2 | 17 |
 | [protocol-acp-http.md](integration/protocol-acp-http.md) [stale] | ACP（automation-only stdio JSON-RPC）与 HTTP API gateway（/api + Typert Remote）两条进程外集成路线的能力边界、鉴权、会话映射与选型对比 | L2 | 28 |
 | [electron-embedding.md](integration/electron-embedding.md) [stale] | Electron/嵌入运行时集成约束：carrier、Workspace 本地 anchor、Assistant Markdown、pi-ai 动态 routes、exact-model reasoning effort 与 Approval owner 边界 | L2 | 57 |
-| [rc2-full-web-native-shell.md](integration/rc2-full-web-native-shell.md) | rc.2正式CLI custom Web Profile、dual-face Client plugin、transport/native capability owner、tarball闭包及alpha拓扑断点 | L2 | 28 |
+| [rc2-full-web-native-shell.md](integration/rc2-full-web-native-shell.md) [stale] | rc.2正式CLI custom Web Profile、dual-face Client plugin、transport/native capability owner、tarball闭包及alpha拓扑断点 | L2 | 28 |
 | [alpha1-full-host-embedding.md](integration/alpha1-full-host-embedding.md) [stale] | alpha.1 GitHub/npm分叉、完整Host形态、Web Remote/controller/carrier、owner矩阵、插件/capability-off/lifecycle/compat/security边界 | L2 | 20 |
 
 ## 主题（topics/）
@@ -55,7 +57,8 @@
 | [postmortems.md](topics/postmortems.md) [stale] | 0001 export default 吞掉 inject / 0002 !!js 位置错致 fs 工具永久禁用 / 0003 Web agent 验证替身服务器 / 0004 Landlock 提示被误判——现象·根因·修复·可泛化教训 | L2 | 13 |
 | [版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md](topics/版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md) [stale] | 当前发布状态（无稳定版、最新预发布 rc.2、HEAD 与 tag 相同、CLI/SDK/PyPI 渠道差异）+ 版本升级影响：5 组破坏性变更、新增能力表、八维坐标与升级建议。 | L2 | 27 |
 | [版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md](topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md) [stale] | Host API controllers / Client Store 拓扑重组、`host-apiproxy` / `client-runtime` 删除、Remote generation stream 与 npm 仍停 rc.2 的升级边界。 | L2 | 18 |
-| [版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md](topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md) | alpha.2发布、Skill/Preset/MCP contract、MCP与ToolRuntime generation-borrow缺口、npm resolution实测。 | L1 | 28 |
+| [版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md](topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md) [stale] | alpha.2发布、Skill/Preset/MCP contract、MCP与ToolRuntime generation-borrow缺口、npm resolution实测。 | L1 | 28 |
+| [版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md](topics/版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md) | alpha.3/alpha.4发布状态、统计、已识别的breaking信号与未复验边界。 | L1 | 6 |
 | [plugin-development.md](topics/plugin-development.md) [stale] | 插件开发全路径：从零写 dsh-plugin 的步骤路由、四种插件形态骨架、依赖纪律（Service Definition 而非 Provider）、Config/schema、事件与扩展点选择、skill provider registry、bundle/profile 发布与八条陷阱 | L2 | 35 |
 | [core-chain.md](topics/core-chain.md) [stale] | agent loop 函数级调用链、agent-loop 可替换性的三道机制保证、session 三层 derive 与持久化/projection seam、会话并发隔离 12 条「条件→结论」、preset standing mount 与 scope 父链、LlmAdapter 接入点、system-prompt/context 注入时机 | L2 | 27 |
 | [config-and-tools.md](topics/config-and-tools.md) [stale] | 配置与工具目录 — 非机密值六层覆盖梯子 + 凭据四层梯子 + 四种运行模式的真实定义（Creator mode 的目录 id 是 cordis）+ dsh --profile/bundle 补丁层 + tool-catalog 路由 + permission preset/approval。排错类问题的第一入口。 | L2 | 26 |
@@ -113,5 +116,5 @@
 | [util](packages/util.md) [stale] | 零依赖共享原语；alpha.2新增deque、time、values，完整owner与稳定性待专项复验。 | Support | 12 | 11 |
 | [web](packages/web.md) [stale] | web 能力族：ctx.web 单 seam 同时承载 search 与 fetch，四个 provider 加 tool-web；HTTP fetch 无 SSRF 防护 | Product | 6 | 12 |
 | [workflow](packages/workflow.md) [stale] | 模型自写编排脚本能力族：ctx.workflowEngine seam、worker-thread 引擎、workflow 与 ralph 两个工具消费者 | Product | 4 | 10 |
-| [webhook](packages/webhook.md) | 已认证外部事件的可信规则运行时：fire-and-forget 创建普通 Workspace Session，GitHub adapter 负责签名与有界 JSON intake | Product | 2 | 10 |
+| [webhook](packages/webhook.md) [stale] | 已认证外部事件的可信规则运行时：fire-and-forget 创建普通 Workspace Session，GitHub adapter 负责签名与有界 JSON intake | Product | 2 | 10 |
 | [workspace](packages/workspace.md) [stale] | workspace 实体单包：ctx.workspaceRegistry 管理目录、标题与有序会话归属；realpath 为身份权威，模型不可见 | Product | 1 | 8 |
