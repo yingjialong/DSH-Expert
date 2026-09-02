@@ -646,3 +646,14 @@
 - **沉淀**：新增`topics/版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md`，更新CLAUDE/README/index/coverage基线。
 - **未完成**：未逐页复验114个命中锚点；不得用alpha.4反推固定rc.2。
 - **覆盖度变化**：版本变更L1新增1页；其他无。
+
+## 2026-09-02 · 上游同步：alpha.4 → alpha.5
+
+- **提问者**：agent（固定rc.2 AgentPreset scope核验触发新鲜度自检）
+- **同步**：DSH `4e84901e` → `49a606bc`（44提交、718文件）；Cordis仍为`00278924`。
+- **发布状态**：GitHub/npm alpha.5 tag=`db6bdc35`，master HEAD=`49a606bc`，两者不同；npm `latest/next`仍为rc.2，PyPI SDK仍为`0.1.2a3`。
+- **防腐**：83个既有锚点命中；将alpha.2→alpha.4版本页标stale，其他命中内容页早已stale。
+- **breaking信号**：Session persistence转为handle-based公共面与lifecycle-owned write path。
+- **沉淀**：新增`topics/版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md`，更新CLAUDE/README/index/coverage基线。
+- **未完成**：未逐页复验83个命中锚点，未实测完整发布闭包。
+- **覆盖度变化**：版本变更L1新增1页；其他无。

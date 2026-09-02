@@ -2,7 +2,9 @@
 
 > **回答时先读本文件**，据此挑 3-5 篇全文，**永远不要全量加载知识库**。
 
-> 上游基线：DSH `4e84901e`（仓库tag / npm根包`alpha`为`0.1.2-alpha.4`；根包`latest` / `next`仍为`0.1.1-rc.2`）· Cordis `00278924`（DSH vendor release 4.0.2）· 同步于 2026-09-02
+> 上游基线：DSH master `49a606bc`；最新发布tag/npm `alpha`=`0.1.2-alpha.5`（tag `db6bdc35`）；根包`latest` / `next`仍为`0.1.1-rc.2` · Cordis `00278924`（DSH vendor release 4.0.2）· 同步于 2026-09-02
+>
+> 2026-09-02 第二次同步：0.1.2-alpha.4 → 0.1.2-alpha.5（44提交、718文件变更）。npm `alpha`=alpha.5，PyPI SDK仍为`0.1.2a3`，npm `latest/next`仍为rc.2。83个既有锚点命中；将alpha.2→alpha.4页标为`stale`，其他命中内容页早已stale，未全量复验。
 >
 > 2026-09-02 同步：0.1.2-alpha.3 → 0.1.2-alpha.4（297提交、2371文件变更）；从上一次知识基线alpha.2计算则累计414提交。npm `alpha`=alpha.4，PyPI SDK=`0.1.2a3`，npm `latest/next`仍为rc.2。114个既有锚点命中；将仅有3篇命中且原为`fresh`的页面标为`stale`，未完成全量复验。固定rc.2问题继续回tag `b150a551`。
 >
@@ -58,7 +60,8 @@
 | [版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md](topics/版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md) [stale] | 当前发布状态（无稳定版、最新预发布 rc.2、HEAD 与 tag 相同、CLI/SDK/PyPI 渠道差异）+ 版本升级影响：5 组破坏性变更、新增能力表、八维坐标与升级建议。 | L2 | 27 |
 | [版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md](topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md) [stale] | Host API controllers / Client Store 拓扑重组、`host-apiproxy` / `client-runtime` 删除、Remote generation stream 与 npm 仍停 rc.2 的升级边界。 | L2 | 18 |
 | [版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md](topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md) [stale] | alpha.2发布、Skill/Preset/MCP contract、MCP与ToolRuntime generation-borrow缺口、npm resolution实测。 | L1 | 28 |
-| [版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md](topics/版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md) | alpha.3/alpha.4发布状态、统计、已识别的breaking信号与未复验边界。 | L1 | 6 |
+| [版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md](topics/版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md) [stale] | alpha.3/alpha.4发布状态、统计、已识别的breaking信号与未复验边界。 | L1 | 6 |
+| [版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md](topics/版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md) | alpha.5发布状态、handle-based Session persistence breaking信号与未复验边界。 | L1 | 5 |
 | [plugin-development.md](topics/plugin-development.md) [stale] | 插件开发全路径：从零写 dsh-plugin 的步骤路由、四种插件形态骨架、依赖纪律（Service Definition 而非 Provider）、Config/schema、事件与扩展点选择、skill provider registry、bundle/profile 发布与八条陷阱 | L2 | 35 |
 | [core-chain.md](topics/core-chain.md) [stale] | agent loop 函数级调用链、agent-loop 可替换性的三道机制保证、session 三层 derive 与持久化/projection seam、会话并发隔离 12 条「条件→结论」、preset standing mount 与 scope 父链、LlmAdapter 接入点、system-prompt/context 注入时机 | L2 | 27 |
 | [config-and-tools.md](topics/config-and-tools.md) [stale] | 配置与工具目录 — 非机密值六层覆盖梯子 + 凭据四层梯子 + 四种运行模式的真实定义（Creator mode 的目录 id 是 cordis）+ dsh --profile/bundle 补丁层 + tool-catalog 路由 + permission preset/approval。排错类问题的第一入口。 | L2 | 26 |

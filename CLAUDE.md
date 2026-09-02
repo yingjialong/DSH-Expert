@@ -154,10 +154,10 @@ DSH 于 **2026-08-13** 首次发布，我的训练数据截止早于该日期。
 | 项 | 值 |
 | --- | --- |
 | **默认回答基线** | **0.1.1-rc.2**（npm `latest`；2026-08-22 起取代 rc.7） |
-| 可对比基线 | master / GitHub prerelease / npm根包`alpha`均为`0.1.2-alpha.4`（`4e84901e`）；根包`next` / `latest`仍为`0.1.1-rc.2`，PyPI SDK为`0.1.2a3` |
+| 可对比基线 | master HEAD为`49a606bc`；GitHub/npm最新预发布为`0.1.2-alpha.5`（tag `db6bdc35`，npm `alpha`）；根包`next` / `latest`仍为`0.1.1-rc.2`，PyPI SDK为`0.1.2a3` |
 | 基线变更方式 | 用户实际升级后，更新本节与 `wiki/index.md` |
 
-回答时若 0.1.1-rc.2 与 master 行为不同，**必须同时说明两者**，并指出升级会踩什么。npm已发布`@deepseek-ai/dsh@0.1.2-alpha.4`，根包dist-tag为`alpha`；根包`latest`/`next`仍指向rc.2。当前tag含242个非private package标识；本次未穷尽每个companion tarball，也未验证完整安装、native helper与第三方依赖闭包，仍须按目标profile做真实install/boot核验。破坏性变更见`wiki/topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md`、`wiki/topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md`与`wiki/topics/版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md`；固定rc.2问题仍回tag`b150a551`核验。
+回答时若 0.1.1-rc.2 与 master 行为不同，**必须同时说明两者**，并指出升级会踩什么。npm已发布`@deepseek-ai/dsh@0.1.2-alpha.5`，根包dist-tag为`alpha`；根包`latest`/`next`仍指向rc.2。alpha.5 tag含242个非private package标识；本次未穷尽每个companion tarball，也未验证完整安装、native helper与第三方依赖闭包，仍须按目标profile做真实install/boot核验。破坏性变更见`wiki/topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md`、`wiki/topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md`、`wiki/topics/版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md`与`wiki/topics/版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md`；固定rc.2问题仍回tag`b150a551`核验。
 
 ---
 
