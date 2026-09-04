@@ -9,6 +9,7 @@ anchors:
   - packages/host/apiproxy/src/api-proxy.ts
   - packages/host/apiproxy/src/session-export.ts
   - packages/host/apiproxy/src/api/sessions.ts
+  - packages/host/apiproxy/src/api/workspace.ts
   - packages/host/apiproxy/src/api/events.ts#EventsApi.mux
   - packages/host/apiproxy/src/api/approvals.ts#ApprovalResponsePayload
   - packages/host/apiproxy/tests/api-proxy-approval.spec.ts
@@ -20,6 +21,11 @@ anchors:
   - packages/host/frontend-static/src/index.ts
   - packages/client/connection/src/index.ts
   - packages/client/connection/src/api-request-trust.ts
+  - packages/client/runtime/src/client/sessions/conversation.ts
+  - packages/client/runtime/src/client/sessions/session.ts
+  - packages/client/runtime/src/client/sessions/manager.ts
+  - packages/client/runtime/tests/sessions-service.client.spec.ts
+  - packages/session/session-persistence/src/index.ts
   - packages/host/directory-picker/README.md
   - packages/host/directory-picker/src/index.ts
   - packages/host/directory-picker-auto/README.md
@@ -32,7 +38,7 @@ anchors:
   - .agents/notes/implemented/architecture/2026-07-19-gui-layering-and-rpc-protocol.md
   - .agents/notes/implemented/architecture/2026-07-28-directory-picker-capability-seam.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-31
+verified_at: 2026-09-05
 asked_by: agent
 ---
 
@@ -147,6 +153,15 @@ dsh Web GUI 的 host 侧：所有 client 形态共用的 API gateway（`ctx.apiP
 - 要从公开response正向证明global presenter，必须让历史含tool event且global layer有可辨识`presentCall/presentResult`，再断言`events[].view`。仅“history成功+无Agent”只能证明fail-soft且未resume，不能区分global无presenter、roster缺失、JSON/pairing/presenter软失败；view缺失由官方Client渲染generic card，但Host不发显式generic marker。
 - missing/broken/mount-failed都不阻断标准history的raw events；`/api/session.export`同样完全绕过Agent/preset，只对live Session先flush、再走`SessionPersistence.readRaw`并把原artifact放入ZIP。JSONL`readRaw`不解析current roster，故preset错误本身不阻断；但Host endpoint需要session-query/persistence/attachments与raw-capable backend，artifact/header corruption、缺后代artifact或媒体失败仍可独立阻断。Host返回ZIP，不是裸JSONL response。
 - **认知状态**：verified_inference（固定rc.2ApiProxy/API Remote resolver/AgentLoop/Preset控制流与cold/agent-lookup/resume/mount/view一方tests；未运行新的全链fixture）。
+
+## 2026-09-05 · Host/Client blank分层与blank Session处置
+
+- Host `SessionSummary.blank` 对attached Session严格fold真实log：初始true，首个`turn/start`清为false，standalone events不影响；对cold Session只在bounded全日志读取证实无turn时返回true，无法probe则保守false。因此cold false不能证明已有turn或preset已锁。
+- Client `ConversationSnapshot.blank`不是同一瞬时事实：从Host summary/frame seed，但首个prompt RPC返回`accepted:true`或收到`running:true`时即单调置false，不等`turn/start`投影；RPC未接受则保持true。一方test明确覆盖accepted后Host list仍true而Client拒绝re-blank的窗口。
+- `agentPreset.select`最终不信Client mirror或cold summary，而在取得真实Agent后于per-session queue内重读Session events；首个`turn/start`之前仍可recompose，之后`agent-preset-locked`。prompt acceptance与preset select无统一linearization barrier，因此Client false不能替代Host锁定receipt。
+- rc.2无`session.delete/remove/abandon`或blank-special删除事务。Client `ISessions.clear()`只清current view；`workspace.archiveSession`保留log与workspace slot，仅从grouping隐藏；`workspace.delete`保留所有Session/log。`SessionPersistence`没有delete，只允许backend MAY lazy-materialize从未append的Session，不能泛化成abandon保证。
+- `selectModel`可重复调用且失败不写Session event、不改变current；首prompt前失败仍保持Host blank。若prompt已经进入AgentLoop，即使在pre-step/model前失败，`turn/start`已先提交，Host blank=false且preset锁定。
+- **认知状态**：verified_inference（固定rc.2 Host/Client public types、blank fold/mirror、preset select、Workspace/Persistence contracts与一方tests交叉核对）。
 
 ## 去哪深入（文件路由）
 

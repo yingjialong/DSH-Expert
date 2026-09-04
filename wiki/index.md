@@ -90,7 +90,7 @@
 | [goal](packages/goal.md) [stale] | 同会话持久化目标：状态 event-sourced 进 session log，续跑权限 activation 从不持久化，state 与 scheduling 严格分家。 | Product | 4 | 13 |
 | [guard](packages/guard.md) [stale] | loop卫生守卫与public policy hooks；含hard deny、Session-log条件性重建及run/rate-limit耐久缺口。 | Product | 2 | 14 |
 | [hooks](packages/hooks.md) [stale] | Claude Code / Codex hook 桥接：把外部 shell-hook 协议翻译到 harness 自己的类型化拦截点，外加共享线协议库。 | Product | 3 | 13 |
-| [host](packages/host.md) [stale] | Web Host/API；含cold preset resume/history、list absence非commit-status、raw export及trust fence。 | Product | 7 | 27 |
+| [host](packages/host.md) [stale] | Web Host/API；含Host/Client blank分层、blank Session无delete、cold preset resume/history、commit-status与trust fence。 | Product | 7 | 33 |
 | [identity](packages/identity.md) | 共享匿名关联 id（UUID v4）；它不是 Cordis plugin 而是普通共享库，telemetry、feedback 回执与 DeepSeek 请求头三处共用同一值。 | Product | 1 | 5 |
 | [interaction](packages/interaction.md) [stale] | 人机协作平面；含Approval pair/owner signal、frozen arguments与definition重解析边界、无独立grant票据。 | Product | 5 | 15 |
 | [jobs](packages/jobs.md) [stale] | 后台作业 capability family：ctx.jobs 契约、jobs-local 进程内实现、tool-jobs 三工具与完成通知；owner 隔离与唤醒预算是理解重点。 | Product | 3 | 10 |

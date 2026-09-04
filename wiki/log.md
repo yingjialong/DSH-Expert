@@ -687,3 +687,13 @@
 - **实测**：无新fixture；公开控制流与一方catalog/MCP coexistence tests足以确定。
 - **沉淀**：`packages/{llm,mcp}.md`、index/log。
 - **覆盖度变化**：无（LLM/MCP仍L2）。
+
+## 2026-09-05 · 跨会话核验：Host/Client blank、preset锁定与blank处置
+
+- **提问者**：agent（两份相关完整答案均先回传来源任务并确认成功）
+- **问题**：SessionSummary/ConversationSnapshot blank的不同边界、accepted到turn/start窗口、blank preset切换、selectModel失败后重试，以及是否能删除/放弃blank Session。
+- **结论**：Host attached blank以turn/start为界，cold false可保守降级；Client在accepted或running时提前单调false。preset锁定仍以真实turn/start为准且与prompt无统一barrier。select失败可重试并保持blank/current；rc.2无Session delete/abandon，clear只清UI，archive保留log。
+- **版本证据**：rc.2`b150a551` Host Sessions/Workspace API、ApiProxy blank/select/prompt、Client Session/Manager mirror、Persistence契约及一方blank/client/preset/model tests。
+- **实测**：无新fixture；公开控制流与一方tests足以确定。
+- **沉淀**：`packages/host.md`、index/log；reasoning与maxTools复用既有`packages/llm.md`，不重复。
+- **覆盖度变化**：无（Host仍L2）。
