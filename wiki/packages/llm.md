@@ -31,10 +31,14 @@ anchors:
   - packages/host/apiproxy/src/api/sessions.ts
   - packages/host/apiproxy/src/api-proxy.ts
   - packages/host/apiproxy/tests/api-proxy-models.spec.ts
+  - packages/host/apiproxy/tests/api-proxy-agent-preset.spec.ts
+  - packages/host/apiproxy/tests/api-proxy-blank.spec.ts
+  - packages/api/remotes/src/agent-lookup.ts
   - packages/core/agent/src/model-selection.ts
   - packages/core/agent/tests/model-selection.spec.ts
   - packages/core/agent-loop/src/agent.ts
   - packages/core/agent-loop/tests/contract-regressions.spec.ts
+  - packages/core/session/src/types.ts
   - packages/client/ui-conversation/src/client/conversation-nodes/turn-error.ts
   - packages/client/ui-model-selection/src/client/ModelSelect.tsx
   - packages/client/ui-model-selection/tests/model-select.client.spec.tsx
@@ -47,7 +51,7 @@ anchors:
   - packages/llm/token-meter/README.md
   - docs/subsystems/llm-streaming.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-31
+verified_at: 2026-09-05
 asked_by: agent
 ---
 
@@ -156,6 +160,16 @@ LLM seam 及其 provider 适配器。组 README 的原话很关键：**`llm` 包
 - `snapshotJsonValue(remote)→assertObjectJsonSchema(snapshot)→deepFreeze(snapshot)`可建立detached、supported、deep-immutable的JSON schema graph；remote original之后的深层mutation不可达。它仍不自动freeze承载该schema引用的`ToolDefinition/output`属性，caller若还能整体替换`definition.parameters`或`output.schema`，完整definition仍可漂移。
 - 一方`call-config.spec.ts`覆盖nested freeze、strict-mode mutation throw、cycle、5000层nesting与AbortSignal例外。
 - **认知状态**：verified_inference（固定rc.2正式llm root JS/.d.ts、`call-config.ts`与一方tests）。
+
+## 2026-09-05 · rc.2 create后首prompt前的model selection
+
+- 正式Host顺序`session.create({sessionId, agentPreset})`成功→`session.selectModel({sessionId, provider, model, reasoningEffort?})`成功→首次`session.prompt`受支持。create的unpublished setup先安装session-local model-selection listeners，再mount resolved preset；成功返回时live Agent已可选择模型且日志仍无`turn/start`。
+- `selectModel`没有blank-only限制，也不修改`SessionHeader.agentPreset`、不调用`AgentPresets.recompose()`、不写`agent-preset/selected`或任何SessionEvent。它只在ApiProxy的`WeakMap<Agent, ModelSelectionRef>`中更新next-step current；因此选择模型与preset composition是两条正交状态链，选择本身也不会让blank Session变成started。
+- 成功前置是ordinary Session可解析、provider有active adapter、exact model metadata可解析、显式reasoning effort受该exact route/model支持。catalog membership只作advisory；无adapter、不支持effort或adapter exact-model失败统一从Host select映射为`model-unavailable`。不存在的Session是`session-not-found`，subagent-owned是`agent-busy`，cold resume失败是`internal`。失败发生在current赋值前，不覆盖既有选择。
+- 要保证首step使用目标选择，调用方必须await select成功后再prompt。selection在`system-prompt/assemble`入口快照，同step的`agent/request`消费该快照；并发切换只作用于后续step。select只与含图片prompt共享`serializeImageAdmission`，纯文本prompt没有跨RPC FIFO，因此并发发出不能证明首step一定捕获新值。
+- select成功本身不耐久；首次step在provider dispatch前把最终provider/model/reasoning连同system/tools写入`request/header`，这才成为Session log事实。Host若在select成功后、首step前退出，per-Session pick没有恢复保证；blank Session会重新取当时deployment default。可选`saveDefaultModelSelection`是Host-level default side effect，不是Session持久化，失败只warning且不撤销live selection。
+- create的`workspace-attach-failed`是partial outcome：Session已创建，只是Workspace attach失败；不能把该错误解释为确定未创建。unknown/unusable preset、workspace/session/preset冲突则按各自typed error返回。
+- **认知状态**：verified_inference（固定`dsh-v0.1.1-rc.2`/`b150a551`公开Host API、ApiProxy、LLM resolver、Agent selection/loop与一方tests交叉核对；未新增本地transport fixture）。
 
 ## 去哪深入（文件路由）
 

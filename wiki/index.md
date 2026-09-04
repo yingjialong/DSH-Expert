@@ -94,7 +94,7 @@
 | [identity](packages/identity.md) | 共享匿名关联 id（UUID v4）；它不是 Cordis plugin 而是普通共享库，telemetry、feedback 回执与 DeepSeek 请求头三处共用同一值。 | Product | 1 | 5 |
 | [interaction](packages/interaction.md) [stale] | 人机协作平面；含Approval pair/owner signal、frozen arguments与definition重解析边界、无独立grant票据。 | Product | 5 | 15 |
 | [jobs](packages/jobs.md) [stale] | 后台作业 capability family：ctx.jobs 契约、jobs-local 进程内实现、tool-jobs 三工具与完成通知；owner 隔离与唤醒预算是理解重点。 | Product | 3 | 10 |
-| [llm](packages/llm.md) [stale] | LLM seam与adapters；含pi-ai/reasoning、retry identity、`deepFreeze`覆盖面及工具wire边界。 | Product | 7 | 42 |
+| [llm](packages/llm.md) [stale] | LLM seam与adapters；含pi-ai/reasoning、create后首prompt前selection、retry identity、`deepFreeze`及工具wire边界。 | Product | 7 | 46 |
 | [lsp](packages/lsp.md) [stale] | LSP 能力 seam：恰好四个语义操作、无 JSON-RPC 逃生口；lsp-stdio 通用 stdio 后端与模型侧 lsp 工具（一基 UTF-16 光标坐标）。 | Product | 3 | 14 |
 | [mcp](packages/mcp.md) [stale] | MCP桥；含内部64字符qualified name、out-of-tree adapter、static no-swap与schema/call check位置。 | README 未列出 | 1 | 17 |
 | [plan](packages/plan.md) [stale] | plan mode 是 log-only 的 per-agent 协作状态而非 capability seam；/plan 命令进入，exit_plan_mode 经用户审批退出。 | Product | 1 | 7 |

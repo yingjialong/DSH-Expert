@@ -667,3 +667,13 @@
 - **实测**：无新fixture；未找到两个enabled rows同module的完全同形一方test，结论由固定控制流交叉核验。
 - **沉淀**：`topics/cordis-primer.md`、index/log。
 - **覆盖度变化**：无（Cordis仍L2）。
+
+## 2026-09-05 · 跨会话核验：create后首prompt前selectModel
+
+- **提问者**：agent（完整答案先回传来源任务并确认成功）
+- **问题**：带AgentPreset创建blank Session后能否在首turn/prompt前选择exact model，以及本地draft→create→select→prompt的公开前置和错误边界。
+- **结论**：该顺序受支持，model selection不改preset/header且不结束blank。必须await create与select成功；exact adapter/model/reasoning校验失败为model-unavailable，Session/subagent查找保留session-not-found/agent-busy。select只存live next-step state，首step request/header才耐久；纯文本prompt与select并发没有通用FIFO。
+- **版本证据**：rc.2`b150a551`正式Host SessionsApi/ApiProxy、Agent model-selection、LLM resolveCallConfig、AgentLoop request-header与一方tests。
+- **实测**：无新fixture；公开控制流和一方model-selection/API测试足以确定。
+- **沉淀**：`packages/llm.md`、index/log。
+- **覆盖度变化**：无（LLM仍L2）。
