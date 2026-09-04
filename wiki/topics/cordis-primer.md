@@ -24,10 +24,20 @@ anchors:
   - vendor/cordis/src/service.ts
   - vendor/cordis/src/events.ts
   - vendor/loader/src/index.ts
+  - vendor/loader/src/config/entry.ts
+  - vendor/loader/src/config/group.ts
+  - packages/core/scope/src/index.ts
+  - packages/core/scope/src/store.ts
+  - packages/core/tools/src/index.ts
+  - packages/core/tools/tests/tools.spec.ts
+  - packages/core/tools/tests/scoped.spec.ts
+  - packages/preset/agent-presets/src/index.ts
+  - packages/preset/agent-presets/src/mount.ts
+  - packages/preset/agent-presets/tests/mount.spec.ts
   - packages/AGENTS.md
   - cordis:packages/core/src/context.ts
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-25
+verified_at: 2026-09-04
 asked_by: self
 ---
 
@@ -118,3 +128,13 @@ waterfall 的纪律（仓库级硬规则）：**只观察或标注的 listener �
 7. **条目并发启动**，YAML 里的先后顺序不构成加载顺序保证；顺序只由服务依赖（`inject`）决定。
 8. **服务名在每个 application 内是一个扁平命名空间**，harness 已占用 `tools` / `llm` / `sessions` / `agents` 等平实名字，自定义服务要加前缀。
 9. 同一 fiber 上不同 effect 的 async disposer **并发**执行；要顺序请合进一个 effect。
+
+## 2026-09-04 · rc.2 Loader 同 module 多实例的身份与清理边界
+
+- 同一 entry tree 只要求 `id` 唯一，不要求 `name` / module 唯一。两个 enabled row 以不同 `id` 指向同一 module 时，每个 row 都有独立 `Entry`，每个 `Entry` 都调用一次 `registry.plugin(plugin, config)`；callback identity 相同只会让它们共用一条 `Plugin.Runtime` 记录，仍会建立两个 Fiber 并分别执行 `apply`。
+- 每个 `Entry` 先创建自己的 child Context，每个 Fiber 又通过 `parent.extend({ fiber })` 创建自己的执行 Context。因此两次 `apply(ctx, config)` 收到的 `ctx` 严格对象不同，config 与 Effect ownership 也各自独立。同一 AgentPreset standing generation 下，这些 Context 通过原型链继承同一个 `ScopeKey`，所以准确关系是「不同 Context / Fiber，同一个 DSH scope identity」。
+- 在没有额外 `isolate` / intercept 差异时，两 Fiber 的 required inject 会解析到同一 service implementation；例如两次 `ctx.tools.register()`都写入同一个 preset ToolLayer。不同 tool name 可共存，同层同名会拒绝。事件 listener 同样按各自 Fiber 注册，但接受相同 scoped dispatch；Loader 并发启动 sibling rows，因此 YAML 行序不是 listener 注册顺序保证。
+- Loader 删除一个 entry 时只 dispose 该 entry 的 Fiber；该 Fiber 的 tool、listener 与其他 Effect随之清理，另一个 Fiber保留。共享 Runtime直到最后一个 Fiber消失才删除。相反，显式 `registry.delete(plugin)` / module-level HMR按 callback identity dispose该 Runtime的全部 Fibers，不能把 entry级独立清理泛化到所有删除路径。
+- 模块级 `WeakSet<Context>` 若以 `apply` 收到的 exact ctx为 key，不会把两个不同 Loader rows判成同一实例；共享 `ScopeKey`不改变对象 identity。但同一 Fiber因 config update或 inject消失/恢复而重新 activate时会复用自己的 Fiber Context，未在cleanup中 `delete(ctx)` 的 WeakSet会挡住该 Fiber的后续 re-apply。
+- 一方测试没有覆盖「同一 preset 内两个 enabled rows、同 module、不同 id/config」的完整同形夹具。固定行为由 Loader `EntryGroup`、Cordis Registry/Fiber、DSH Scope/ToolRuntime控制流交叉确定；现有测试只分别覆盖 standing preset共享、scoped registration与Fiber dispose清理。
+- **认知状态**：verified_inference（固定 `dsh-v0.1.1-rc.2` / `b150a551` 源码、正式根类型与一方测试交叉核对；未新增本地运行时 fixture）。

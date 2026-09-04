@@ -54,7 +54,7 @@
 |---|---|---|---|
 | [docs-map.md](topics/docs-map.md) [stale] | DSH docs/ 顶层 19 主题 + 7 个子目录的路由表：什么问题该查哪个文件、篇幅规模、generated/curated 归属、问题→文件反向索引 | L1 | 21 |
 | [architecture-overview.md](topics/architecture-overview.md) [stale] | 一次用户输入从 agent.followup() 到 tool/result 的完整旅程：21 步逐步标注层/seam/durable-vs-live 事件，工具管线展开，三事件域判据，seam 三角色，11 个易误解术语，7 条源码交叉验证事实 | L2 | 13 |
-| [cordis-primer.md](topics/cordis-primer.md) [stale] | Cordis 内核入门：Context/Fiber/Effect、provide sibling与generator composite rollback边界、五种dispatch mode及DSH接缝。 | L2 | 35 |
+| [cordis-primer.md](topics/cordis-primer.md) [stale] | Cordis 内核入门：Context/Fiber/Effect、同module多Fiber的Context/scope/cleanup边界、provide sibling与generator composite rollback、五种dispatch mode及DSH接缝。 | L2 | 45 |
 | [subsystems-map.md](topics/subsystems-map.md) [stale] | 20 个子系统 → ctx 服务名 → packages 组 → 该查什么；含 spine/optional 判定规则与文档可信度分级 | L1 | 22 |
 | [postmortems.md](topics/postmortems.md) [stale] | 0001 export default 吞掉 inject / 0002 !!js 位置错致 fs 工具永久禁用 / 0003 Web agent 验证替身服务器 / 0004 Landlock 提示被误判——现象·根因·修复·可泛化教训 | L2 | 13 |
 | [版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md](topics/版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md) [stale] | 当前发布状态（无稳定版、最新预发布 rc.2、HEAD 与 tag 相同、CLI/SDK/PyPI 渠道差异）+ 版本升级影响：5 组破坏性变更、新增能力表、八维坐标与升级建议。 | L2 | 27 |

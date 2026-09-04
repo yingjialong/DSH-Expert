@@ -657,3 +657,13 @@
 - **沉淀**：新增`topics/版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md`，更新CLAUDE/README/index/coverage基线。
 - **未完成**：未逐页复验83个命中锚点，未实测完整发布闭包。
 - **覆盖度变化**：版本变更L1新增1页；其他无。
+
+## 2026-09-04 · 跨会话核验：Loader同module多Fiber的Context与cleanup
+
+- **提问者**：agent（完整答案先回传来源任务并确认成功）
+- **问题**：同一AgentPreset以不同id/config重复挂载同一module时，apply Context、scope layer、inject、listener、Effect清理及`WeakSet<Context>`的精确语义。
+- **结论**：不同row建立不同Entry/Fiber/apply Context，但继承同一preset ScopeKey；相同callback共享Runtime而不共享Fiber/config/Effects。不同tool name写入同一scope layer并可共存，entry级dispose只清本Fiber；registry.delete/HMR会清同Runtime全部Fibers。exact Context WeakSet不挡第二row，但会识别同Fiber re-apply。
+- **版本证据**：rc.2 `b150a551` Loader Entry/Group、Cordis Context/Registry/Fiber、DSH Scope/ToolRuntime/AgentPresets源码与scoped/dispose一方tests。
+- **实测**：无新fixture；未找到两个enabled rows同module的完全同形一方test，结论由固定控制流交叉核验。
+- **沉淀**：`topics/cordis-primer.md`、index/log。
+- **覆盖度变化**：无（Cordis仍L2）。
