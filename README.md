@@ -41,6 +41,8 @@ On top of the wiki sit three agent skills (Claude Code loads them automatically 
 
 When a delegated question carries a source-thread identifier, the agent must return the complete answer through the host's cross-session reply capability and confirm delivery; completing only the local conversation is not sufficient. This delivery is latency-sensitive and **must happen before any wiki, playbook, or documentation write-back**. Deposition starts only after the source session has received the answer.
 
+Read-only version discovery may run automatically, but finding a newer release never authorizes syncing mirrors, changing the answer baseline, updating dependencies, or upgrading packages; those actions require an explicit user instruction. When critical evidence is a local file, answers and reports list its verified absolute filesystem path (plus a line or symbol when useful), not only a repository-relative path.
+
 ### Relationship to upstream
 
 This is an **unofficial community project** and is not affiliated with DeepSeek. All knowledge is anchored against local blobless clones of:
@@ -82,7 +84,7 @@ The `dsh` skill fires automatically and runs its six-step workflow: freshness se
 
 ```
 dsh-expert/
-├── CLAUDE.md                # Identity + 13 hard constraints for the agent (the constitution)
+├── CLAUDE.md                # Identity + 15 hard constraints for the agent (the constitution)
 ├── AGENTS.md                # Entry shell for AGENTS.md-convention hosts (Codex etc.)
 ├── .claude/skills/          # dsh / dsh-sync / dsh-wiki
 ├── wiki/                    # The knowledge base (facts layer)
@@ -146,6 +148,8 @@ DSH（[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-har
 
 当跨会话委派携带来源会话标识时，agent 必须通过宿主的跨会话回复能力把完整答案回传来源会话并确认送达；只完成当前本地会话不算交付完成。该交付是延迟敏感的，**必须先于任何 wiki、playbooks 或项目文档沉淀**；只有来源会话收到答案后才能开始写回。
 
+允许自动执行只读的最新版本检测，但发现新版本不等于获得同步、切换回答基线、修改依赖或升级包的授权；这些动作必须先得到用户明确指令。关键证据若位于本地文件系统，答复和报告必须列出经确认的绝对路径（必要时附行号或符号），不能只写仓库相对路径。
+
 ### 与上游的关系
 
 本项目是**非官方社区项目**，与 DeepSeek 无隶属。全部知识锚定以下两个仓库的本地 blobless 克隆：
@@ -187,7 +191,7 @@ codex    # Codex：经 AGENTS.md 引导到同一套约束与工作流
 
 ```
 dsh-expert/
-├── CLAUDE.md                # agent 的身份与 13 条硬约束（本项目宪法）
+├── CLAUDE.md                # agent 的身份与 15 条硬约束（本项目宪法）
 ├── AGENTS.md                # AGENTS.md 约定宿主（Codex 等）的入口壳
 ├── .claude/skills/          # dsh / dsh-sync / dsh-wiki
 ├── wiki/                    # 知识库（事实层）

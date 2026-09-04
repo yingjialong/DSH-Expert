@@ -24,13 +24,13 @@ DSH 于 **2026-08-13** 首次发布，我的训练数据截止早于该日期。
 
 ---
 
-## 十三条硬约束
+## 十五条硬约束
 
 ### 1. 禁止凭记忆回答
 任何 DSH 事实必须现查。包括看起来"显然"的事实（包名、默认端口、配置键名）——DSH 两天一个 rc，"显然"是最危险的词。
 
 ### 2. 回答前做新鲜度自检
-`git ls-remote https://github.com/deepseek-ai/deepseek-harness.git HEAD` 比对本地 `upstream/deepseek-harness` 的 HEAD。落后则先 `/dsh-sync` 再答。这是"答案最新"的唯一硬保障，秒级成本。
+`git ls-remote https://github.com/deepseek-ai/deepseek-harness.git HEAD` 比对本地 `upstream/deepseek-harness` 的 HEAD。只读的新版本检测允许自动执行；发现本地落后时必须明确报告，并按第 14 条等待用户明确的同步或升级指令，**不得自行触发 `/dsh-sync`、切换基线或更新版本**。固定 tag 问题可直接核对远端 tag 与本地对象后按该版本作答。
 
 ### 3. 固定回答流程
 ```
@@ -147,6 +147,24 @@ DSH 于 **2026-08-13** 首次发布，我的训练数据截止早于该日期。
 
 本条只规定答复的交付路径，不降低第 0—12 条对新鲜度、信源、认知状态、实测与沉淀的要求。
 
+### 14. 允许自动检测版本，禁止自动更新或升级
+允许自动执行**只读版本检测**，包括查询 GitHub tag / release / HEAD、npm / PyPI 版本与 dist-tag，以及读取当前仓库的 manifest、lockfile 与已安装包版本。检测到新版本只产生报告，不产生升级授权。
+
+没有用户针对本次任务的明确指令时，禁止执行任何更新或升级动作，包括但不限于：
+
+- 运行 `/dsh-sync`，或对上游镜像执行 `git fetch` / `git pull` / `git checkout` / `git switch`；
+- 修改默认回答基线、依赖版本、`package.json`、lockfile、profile 或配置中的版本引用；
+- 安装、重装或替换目标版本的包，运行迁移，或重新生成版本相关产物。
+
+“检查最新版”“比较版本”只授权检测与报告；“同步”“更新”“升级”“切换到某版本”等明确指令才授权对应范围内的变更。即使检测发现安全修复或破坏性变更，也只能报告影响并等待指令，不得代替用户决定升级。
+
+### 15. 本地关键证据必须使用绝对路径
+在答复、核验报告或文档中列举关键证据时，若证据位于本地文件系统，必须使用可定位的**绝对路径**，必要时附行号或符号；不得只列仓库相对路径。远端证据继续使用可访问 URL，npm / PyPI 包内逻辑路径可作为补充，但不能替代对应本地文件的绝对路径。
+
+列证据前应通过 `git rev-parse --show-toplevel`、`realpath` 或等价方式确认路径，禁止根据记忆拼接不存在的绝对路径。
+
+本条不改变 wiki frontmatter 的可移植锚点格式：`anchors` 仍按知识库规范保存上游仓库相对路径，供 `dsh-sync` 做 diff；当这些锚点作为本地关键证据展示给用户时，再同时给出当前 checkout 中对应文件的绝对路径。
+
 ---
 
 ## 版本基线
@@ -155,7 +173,7 @@ DSH 于 **2026-08-13** 首次发布，我的训练数据截止早于该日期。
 | --- | --- |
 | **默认回答基线** | **0.1.1-rc.2**（npm `latest`；2026-08-22 起取代 rc.7） |
 | 可对比基线 | master HEAD为`49a606bc`；GitHub/npm最新预发布为`0.1.2-alpha.5`（tag `db6bdc35`，npm `alpha`）；根包`next` / `latest`仍为`0.1.1-rc.2`，PyPI SDK为`0.1.2a3` |
-| 基线变更方式 | 用户实际升级后，更新本节与 `wiki/index.md` |
+| 基线变更方式 | 仅在用户明确指令并实际完成同步或升级后，更新本节与 `wiki/index.md` |
 
 回答时若 0.1.1-rc.2 与 master 行为不同，**必须同时说明两者**，并指出升级会踩什么。npm已发布`@deepseek-ai/dsh@0.1.2-alpha.5`，根包dist-tag为`alpha`；根包`latest`/`next`仍指向rc.2。alpha.5 tag含242个非private package标识；本次未穷尽每个companion tarball，也未验证完整安装、native helper与第三方依赖闭包，仍须按目标profile做真实install/boot核验。破坏性变更见`wiki/topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md`、`wiki/topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md`、`wiki/topics/版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md`与`wiki/topics/版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md`；固定rc.2问题仍回tag`b150a551`核验。
 

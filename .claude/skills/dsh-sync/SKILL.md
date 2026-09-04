@@ -1,9 +1,13 @@
 ---
 name: dsh-sync
-description: 同步 DSH 上游镜像并执行知识防腐——拉取 deepseek-harness 与 cordis 最新代码、diff 知识库锚点、把受影响条目批量标记为 stale、生成版本变更摘要、补学变更部分、重试悬而未决问题。在用户输入 /dsh-sync 时触发，或在 dsh skill 的新鲜度自检发现本地镜像落后于远端时由其调用。
+description: 同步 DSH 上游镜像并执行知识防腐——拉取 deepseek-harness 与 cordis 最新代码、diff 知识库锚点、把受影响条目批量标记为 stale、生成版本变更摘要、补学变更部分、重试悬而未决问题。只在用户明确输入 /dsh-sync，或明确要求同步、更新上游镜像时触发；只读检测发现新版本不得自动调用本 skill。
 ---
 
 # dsh-sync — 同步上游与知识防腐
+
+## 授权前置
+
+本 skill 会修改本地上游镜像、知识库与版本基线，**只有用户针对当前任务明确要求同步或更新时才能执行**。`git ls-remote`、GitHub/npm/PyPI 最新版本查询等只读检测不构成调用本 skill 的授权。
 
 ## 为什么这个 skill 是刚需
 
