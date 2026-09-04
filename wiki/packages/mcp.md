@@ -16,13 +16,15 @@ anchors:
   - docs/cookbook/extension-cookbook.md
   - docs/cookbook/adding-a-tool.md
   - packages/core/tools/src/index.ts
+  - packages/core/scope/src/store.ts
   - packages/core/agent-loop/src/tool-calls.ts
   - packages/core/agent-loop/src/agent.ts
   - packages/core/system-prompt/src/index.ts
   - packages/interaction/user-approval/src/index.ts
+  - apps/cli/config/agent-presets/standard/agent.cordis.yml
   - packages/README.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-31
+verified_at: 2026-09-05
 asked_by: agent
 ---
 
@@ -126,6 +128,13 @@ asked_by: agent
 - preset中的adapter是一preset generation一个共享实例；同id新Session不会自动重跑preflight。DSH也没有标准“catalog失效、必须新建Session”状态码。adapter可以拒绝下一step/call，但产品如何表达重建不属于rc.2合同。
 - 固定源码/文档未规定“禁止第二runtime”；可确认的是公共面允许protocol adapter。是否仍保持DSH唯一Harness owner，取决于model calls是否继续走AgentLoop→ToolRuntime→Session，而不是DSH的技术强制。
 - **认知状态**：verified_inference（固定rc.2正式root exports/`.d.ts`、官方extension cookbook、ToolRuntime/Approval/AgentLoop控制流；未实现或连接现代MCP peer）。
+
+## 2026-09-05 · MCP工具是ToolRuntime的增量贡献
+
+- `dsh-mcp-client`每个server实例把发现到的definitions以`mcp__<serverName>__<rawName>`注册到调用Context对应的ToolRuntime layer；re-sync只dispose该server自己保存的previous disposer map，不清空registry或注销foreign tools。
+- ToolRuntime把global、preset standing scope与agent own layer合并，近层同名shadow远层；同一层的exact同名注册直接失败。MCP qualified naming让同raw-name native/MCP tools与多个server并存，一方tests明确覆盖。
+- 因而在保留shipped`standard` rows并新增MCP row的条件下，shell、FS、skill、Question、Todo等基础工具与MCP tools共同进入该Session；DSH没有“MCP选择自动替换基础工具图”的语义。只有preset自身删除/禁用rows、scope shadow/restrict或presentation mode才改变可见集合。
+- **认知状态**：verified_inference（固定rc.2 standard preset、MCP syncTools、ToolRuntime scope merge与一方MCP coexistence tests交叉核对）。
 
 ## 去哪深入（文件路由）
 

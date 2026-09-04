@@ -29,8 +29,11 @@ anchors:
   - packages/llm/llm-pi-ai/tests/convert.spec.ts
   - packages/llm/llm-pi-ai/tests/dynamic-config.spec.ts
   - packages/host/apiproxy/src/api/sessions.ts
+  - packages/host/apiproxy/src/api/llm.ts
   - packages/host/apiproxy/src/api-proxy.ts
+  - packages/host/apiproxy/src/fetch/client.ts
   - packages/host/apiproxy/tests/api-proxy-models.spec.ts
+  - packages/host/apiproxy/tests/api-proxy-config.spec.ts
   - packages/host/apiproxy/tests/api-proxy-agent-preset.spec.ts
   - packages/host/apiproxy/tests/api-proxy-blank.spec.ts
   - packages/api/remotes/src/agent-lookup.ts
@@ -170,6 +173,15 @@ LLM seam 及其 provider 适配器。组 README 的原话很关键：**`llm` 包
 - select成功本身不耐久；首次step在provider dispatch前把最终provider/model/reasoning连同system/tools写入`request/header`，这才成为Session log事实。Host若在select成功后、首step前退出，per-Session pick没有恢复保证；blank Session会重新取当时deployment default。可选`saveDefaultModelSelection`是Host-level default side effect，不是Session持久化，失败只warning且不撤销live selection。
 - create的`workspace-attach-failed`是partial outcome：Session已创建，只是Workspace attach失败；不能把该错误解释为确定未创建。unknown/unusable preset、workspace/session/preset冲突则按各自typed error返回。
 - **认知状态**：verified_inference（固定`dsh-v0.1.1-rc.2`/`b150a551`公开Host API、ApiProxy、LLM resolver、Agent selection/loop与一方tests交叉核对；未新增本地transport fixture）。
+
+## 2026-09-05 · rc.2 无Session的reasoning catalog边界
+
+- 正式`IApiClient.llm.models({})`无需SessionId，返回Host当前registered routes的`groups/failures`；每个advertised exact model row可带adapter-owned opaque`reasoning.efforts[]`与可选`defaultEffort`。它和`session.models`共用`buildModelCatalog()`，后者只额外加入Session的`current/routable`。
+- 目录构造按`listProviders→listModels→resolveModelInfo`执行；一个provider的list或任一advertised row metadata失败会进入该provider的`failures`。catalog membership仍是advisory：unlisted exact model可被adapter接受，catalog failure也不等于route必然不可调用。
+- rc.2没有client/API Proxy级`resolveModelInfo(provider,model)`或`resolveCallConfig` endpoint。`llm.discoverModels`只返回id/name/contextWindow/maxTokens，不带reasoning。因此无Session时只能读取advertised catalog，不能对任意unlisted exact pair取得DSH validation receipt。
+- `session.selectModel`在mutation时重新调用Host`ctx.llm.resolveCallConfig`：显式effort必须匹配当时exact route/model；省略时只物化adapter声明的default。目录响应不含adapter generation/revision/lease，不能作为后续select的CAS或长期能力证明。
+- 产品层在Session创建前展示同源、非wire effort id不与DSH契约冲突，但不得把id当wire value、跨route/model继承、把default缺席解释成off、把groups缺席解释成不可路由，或把该投影称为Session`current`。创建后仍由`session.models/selectModel`拥有最终复核与mutation。
+- **认知状态**：verified_inference（固定rc.2 Host LlmApi/IApiClient、共享catalog builder、LLM exact resolver与一方Host测试交叉核对）。
 
 ## 去哪深入（文件路由）
 

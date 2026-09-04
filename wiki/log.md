@@ -677,3 +677,13 @@
 - **实测**：无新fixture；公开控制流和一方model-selection/API测试足以确定。
 - **沉淀**：`packages/llm.md`、index/log。
 - **覆盖度变化**：无（LLM仍L2）。
+
+## 2026-09-05 · 跨会话核验：sessionless reasoning catalog与MCP增量组合
+
+- **提问者**：agent（完整答案先回传来源任务并确认成功）
+- **问题**：无SessionId读取exact model reasoning的公开面、catalog与select验证关系，以及standard preset叠加MCP后基础工具是否保留。
+- **结论**：公开`llm.models`无需Session并与`session.models`共享advertised groups/failures，但无arbitrary exact-pair resolve RPC；select时重新exact验证且catalog无generation lease。MCP按qualified name增量注册进ToolRuntime，同一preset保留的基础rows不会被MCP身份替换。
+- **版本证据**：rc.2`b150a551`正式Host LlmApi/IApiClient/catalog builder、LLM resolver、MCP sync、ToolRuntime scope merge、standard preset与一方tests。
+- **实测**：无新fixture；公开控制流与一方catalog/MCP coexistence tests足以确定。
+- **沉淀**：`packages/{llm,mcp}.md`、index/log。
+- **覆盖度变化**：无（LLM/MCP仍L2）。
