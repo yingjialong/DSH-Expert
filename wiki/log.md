@@ -780,3 +780,11 @@
 - **验证边界**：只读源码、manifest、diff、官方发布元数据和一方测试源码；未下载/安装依赖，未运行真实MCP/模型或conformance。完整可安装闭包、确定性工具日志同形验收、WKWebView继续UNKNOWN。
 - **沉淀**：[固定版本专题](topics/alpha13-full-host-public-boundaries.md)、index/log、C083、Q121–Q123；状态verified_inference，未冒充FACT/L3，旧版专题不改。
 - **修改逻辑**：新增六组版本化路由与条件限制，纠正BrowserAuth文档的per-request secret读取误述，登记必要未知；当前发布快照不改变默认回答基线。
+
+## 2026-09-06 · 跨会话核验：batch取消与schema value校验
+
+- **提问者**：agent，完整答案先成功回传来源任务后沉淀。
+- **版本**：固定rc.2 / `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`，远端tag一致；全程按SHA读取。
+- **结论**：标准scheduler正常abort后drain已started并为未started补call/result；prepare中调用可保留其他错误，不能宣称所有pending同码或零lookup。cancel(disposed)+idle非永久新prompt闸；公开exact teardown为AgentHandle。validateJsonSchemaValue同步无signal/预算，外部Worker不是唯一内建取消合同。
+- **验证**：源码、公开根导出、取消/替换/深层oneOf一方测试源码交叉核验；未执行runtime测试或physical I/O。
+- **沉淀**：[固定专题](topics/rc2-batch-cancel-value-validation.md)、index/log；verified_inference，不调整其他领域等级，不评价外部项目。
