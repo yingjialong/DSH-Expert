@@ -750,3 +750,13 @@
 - **覆盖度变化**：新增版本对照 L2 1 页；原包组掌握等级不变。当前 73 内容页、6 治理页，L2 37 / L1 36，1058 个 frontmatter 锚点，fresh 4 / stale 69；文档冲突 82、悬而未决 114。
 
 - **收尾检查**：DSH/Cordis 本地 HEAD 再次与远端 HEAD 一致；两个镜像干净，rc.2 固定专题无 diff；两篇版本摘要的 frontmatter、18 个固定提交锚点与相对链接通过；dsh/dsh-sync 的 quick_validate、规则软链接一致性与 git diff --check 均通过。
+
+## 2026-09-05 · 跨会话核验：tools/result撤权等待与credential rotation
+
+- **提问者**：agent（完整答案先回传来源任务，工具确认发送成功后才沉淀）。
+- **问题**：tools/result是否等待listener Promise，adapter自管撤权/whenIdle的公开组合，以及不改变preset/schema时按operation解析opaque credential ref的合同。
+- **版本证据**：远端rc.2 tag与本地对象一致，固定`b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`；所有后续源码读取使用完整SHA，未切换共享工作树；vendored Cordis为4.0.1。
+- **结论**：notifyResult只挂catch日志，不await；adapter可通过公开effect/Fiber自管drain，但不自动加入Agent.whenIdle。Fiber等待cleanup settle且容纳错误，不能单独证明撤权成功。CredentialProvider明确每operation解析；外部identity/ref权限不由DSH定义，无secret载体也不是类型自动保证。
+- **验证**：只读核对公开exports、类型、runtime控制流及observer/rotation一方测试源码；未执行测试、模型调用或物理I/O。
+- **沉淀**：[固定rc.2专题](topics/rc2-tool-result-drain-credentials.md)、index/log；剥离外部项目细节，认知状态`verified_inference`。
+- **覆盖度变化**：新增固定版本专题L2，不调整既有包组掌握度。
