@@ -760,3 +760,12 @@
 - **验证**：只读核对公开exports、类型、runtime控制流及observer/rotation一方测试源码；未执行测试、模型调用或物理I/O。
 - **沉淀**：[固定rc.2专题](topics/rc2-tool-result-drain-credentials.md)、index/log；剥离外部项目细节，认知状态`verified_inference`。
 - **覆盖度变化**：新增固定版本专题L2，不调整既有包组掌握度。
+
+## 2026-09-05 · 跨会话核验：agent/request attempt与schema边界
+
+- **提问者**：agent；两份完整答案分别成功回传各自来源任务后才沉淀。
+- **版本**：固定rc.2 / `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`，远端tag与本地对象一致；所有源码读取使用完整SHA，无工作树版本切换。
+- **结论**：同step retry重跑request而复用assembly；next返回下游配置提案，不保证最终resolved config或覆盖SDK内部HTTP attempt。传播出的throw/abort可阻断后续标准调用。公开Session/turn/step不是attempt id；schema assert为有限子集，拒绝本document ref，不提供资源预算或远端loader。
+- **沉淀**：[固定rc.2专题](topics/rc2-agent-request-attempt-schema.md)、index/log；status=verified_inference，未写入外部项目事实。
+- **验证边界**：源码、公开类型与一方测试源码交叉核验，未运行runtime测试、调用模型或访问真实provider；具体SDK重试配置未指定，保留未知。
+- **覆盖度变化**：新增固定版本L2专题，既有包组等级不变。
