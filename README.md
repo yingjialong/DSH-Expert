@@ -31,6 +31,8 @@ The wiki is based on the [LLM Wiki](https://gist.github.com/karpathy/442a6bf5559
 | **Source anchors + staleness detection** | Every entry binds to concrete upstream files/symbols plus the commit SHA it was verified against. `/dsh-sync` diffs the anchors against upstream changes; anything hit is marked `stale` and **cannot be cited until re-verified**. |
 | **Scope gates on deposition** | Only DSH knowledge (or this repo's own meta-knowledge) may enter the wiki, and it must be de-projectized: integration knowledge is keyed to an eight-dimension coordinate system (host language, runtime shape, concurrency, sandbox, tool reuse, model/credentials, deployment, version baseline) instead of to any specific project. |
 
+`AGENTS.md` is the canonical project rule file; `CLAUDE.md` is a relative symlink to it. Maintain the rules in `AGENTS.md` so both entry points read the same content.
+
 On top of the wiki sit three agent skills (Claude Code loads them automatically from `.claude/skills/`; Codex and other AGENTS.md-convention hosts are routed to the same workflows through `AGENTS.md`):
 
 | Skill | Trigger | What it does |
@@ -43,7 +45,7 @@ When a delegated question carries a source-thread identifier, the agent must ret
 
 Read-only version discovery may run automatically, but finding a newer release never authorizes syncing mirrors, changing the answer baseline, updating dependencies, or upgrading packages; those actions require an explicit user instruction. When critical evidence is a local file, answers and reports list its verified absolute filesystem path (plus a line or symbol when useful), not only a repository-relative path.
 
-This repository has a local Git exception (`CLAUDE.md` §10): pre-existing uncommitted, staged, or untracked changes do not require stopping an authorized task or asking the owner for instructions. Agents must still inspect and preserve those changes, commit only their own safely separable task changes before each turn ends, and explain when a commit cannot be made. All other Git constraints remain in effect.
+This repository has a local Git exception (`AGENTS.md` §10): pre-existing uncommitted, staged, or untracked changes do not require stopping an authorized task or asking the owner for instructions. Agents must still inspect and preserve those changes, commit only their own safely separable task changes before each turn ends, and explain when a commit cannot be made. All other Git constraints remain in effect.
 
 ### Relationship to upstream
 
@@ -86,8 +88,8 @@ The `dsh` skill fires automatically and runs its six-step workflow: freshness se
 
 ```
 dsh-expert/
-├── CLAUDE.md                # Identity + 15 hard constraints for the agent (the constitution)
-├── AGENTS.md                # Entry shell for AGENTS.md-convention hosts (Codex etc.)
+├── AGENTS.md                # Canonical rules: identity, 15 hard constraints, workflow routing
+├── CLAUDE.md -> AGENTS.md    # Relative symlink for Claude Code; no separate rule copy
 ├── .claude/skills/          # dsh / dsh-sync / dsh-wiki
 ├── wiki/                    # The knowledge base (facts layer)
 │   ├── index.md             # Compact index — read this first, never load the whole wiki
@@ -140,6 +142,8 @@ DSH（[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-har
 | **源码锚点 + 失效检测** | 每条知识绑定具体文件/符号与核验时的 commit SHA；`/dsh-sync` 拉取上游后 diff 锚点，命中的条目标 `stale`，**复验前禁止引用** |
 | **沉淀双门槛** | 只收 DSH 知识（或本库元知识）；集成知识挂到八维坐标系（宿主语言 · 运行形态 · 并发与会话隔离 · 沙箱与文件系统 · 工具复用 · 模型与凭据 · 部署环境 · 版本基线），不挂在任何具体项目上，保证跨项目可复用 |
 
+`AGENTS.md` 是项目规则主文件；`CLAUDE.md` 是指向它的相对软链接。规则统一在 `AGENTS.md` 中维护，两个入口读取同一份内容。
+
 三个 agent skill（Claude Code 从 `.claude/skills/` 自动加载；Codex 等遵循 AGENTS.md 约定的宿主经 `AGENTS.md` 引导到同一套工作流）：
 
 | skill | 触发 | 职责 |
@@ -152,7 +156,7 @@ DSH（[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-har
 
 允许自动执行只读的最新版本检测，但发现新版本不等于获得同步、切换回答基线、修改依赖或升级包的授权；这些动作必须先得到用户明确指令。关键证据若位于本地文件系统，答复和报告必须列出经确认的绝对路径（必要时附行号或符号），不能只写仓库相对路径。
 
-本项目设有 Git 工作区例外（`CLAUDE.md` 第 10 条）：已有未提交、已暂存或未跟踪变更时，无需停止已授权任务或请求 owner 指示。仍须检查并保护既有变更，每轮结束前只提交当前任务产生的可安全分离变更，无法提交时说明原因；其余 Git 约束继续生效。
+本项目设有 Git 工作区例外（`AGENTS.md` 第 10 条）：已有未提交、已暂存或未跟踪变更时，无需停止已授权任务或请求 owner 指示。仍须检查并保护既有变更，每轮结束前只提交当前任务产生的可安全分离变更，无法提交时说明原因；其余 Git 约束继续生效。
 
 ### 与上游的关系
 
@@ -195,8 +199,8 @@ codex    # Codex：经 AGENTS.md 引导到同一套约束与工作流
 
 ```
 dsh-expert/
-├── CLAUDE.md                # agent 的身份与 15 条硬约束（本项目宪法）
-├── AGENTS.md                # AGENTS.md 约定宿主（Codex 等）的入口壳
+├── AGENTS.md                # 规则主文件：Agent 身份、15 条硬约束、工作流映射
+├── CLAUDE.md -> AGENTS.md    # Claude Code 使用的相对软链接，不维护规则副本
 ├── .claude/skills/          # dsh / dsh-sync / dsh-wiki
 ├── wiki/                    # 知识库（事实层）
 │   ├── index.md             # 紧凑索引 —— 先读它，永远不全量加载知识库

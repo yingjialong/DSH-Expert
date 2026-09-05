@@ -7,8 +7,8 @@ DSH-Expert 是一套放在 Git 仓库里的 **DSH 专家知识基础设施**。�
 ```text
 DSH-Expert/
 ├── README.md                  项目入口：定位、原理、使用方式和结构
-├── CLAUDE.md                  项目宪法：Agent 身份、硬约束、版本基线
-├── AGENTS.md                  Codex 等宿主的入口壳，指向同一套宪法与 skill
+├── AGENTS.md                  规则主文件：Agent 身份、硬约束、版本基线与宿主工作流映射
+├── CLAUDE.md -> AGENTS.md      Claude Code 使用的相对软链接，读取同一份规则
 ├── CONTRIBUTING.md            知识与文档的贡献规则
 ├── LICENSE                    MIT 许可证
 │
@@ -50,8 +50,8 @@ DSH-Expert/
 
 | 模块 | 负责什么 | 不负责什么 |
 | --- | --- | --- |
-| `CLAUDE.md` | 保存完整约束，是项目规则的单一事实源 | 不承载具体问答知识 |
-| `AGENTS.md` | 把 Codex 等宿主引导到 `CLAUDE.md` 和三个 skill | 不复制或另建一套项目规则 |
+| `AGENTS.md` | 保存完整约束与宿主工作流映射，是项目规则的单一事实源 | 不承载具体问答知识 |
+| `CLAUDE.md` | 通过相对软链接指向 `AGENTS.md`，供 Claude Code 读取 | 不维护独立规则副本 |
 | `.claude/skills/` | 把规则编排成可重复执行的流程 | 不作为 DSH 事实终审来源 |
 | `wiki/` | 保存带状态、版本与源码锚点的事实知识 | 不保存具体业务项目的私有结论 |
 | `playbooks/` | 保存诊断、选型和查证方法 | 不保存容易随版本变化的具体事实 |

@@ -1,12 +1,12 @@
 # Contributing / 贡献指南
 
-> **EN**: This project's contributions are mostly *knowledge entries*, not code. Every entry must carry verifiable upstream anchors and an honest epistemic status. Read `CLAUDE.md` first — it is the constitution of this knowledge base. The Chinese sections below are authoritative.
+> **EN**: This project's contributions are mostly *knowledge entries*, not code. Every entry must carry verifiable upstream anchors and an honest epistemic status. Read `AGENTS.md` first — it is the constitution of this knowledge base; `CLAUDE.md` is a symlink to it. The Chinese sections below are authoritative.
 
 本项目的主要贡献形式是**知识条目**（wiki 页、playbook、错误本条目），其次才是机制与工具的改进。知识的可信度是本项目唯一的资产，因此贡献门槛围绕"可验证"设立。
 
 ## 一、动手前必读
 
-1. **`CLAUDE.md`** —— 12 条硬约束是本知识库的宪法，尤其：
+1. **`AGENTS.md`** —— 第 0 条与 15 条硬约束是本知识库的宪法（`CLAUDE.md` 为其软链接），尤其：
    - 第 4 条：信源分级，源码（T1）是唯一终审
    - 第 5 条：认知状态标注与掌握等级封顶（L1/L2 不得标 `fact`）
    - 第 7 条：沉淀双门槛（主题准入 + 去项目化）
@@ -59,5 +59,5 @@ done
 - 无锚点、无法回源码验证的结论
 - 滥标 `fact`（尤其 L1/L2 领域）
 - 复制上游文档正文充数
-- 与 DSH 无关的知识（见 `CLAUDE.md` 第 7 条主题门槛）
+- 与 DSH 无关的知识（见 `AGENTS.md` 第 7 条主题门槛）
 - 未经实测就写"必然抛错 / 必然不可能"级别的强断言（先跑一行最小复现，见 `wiki/errors.md` E012 的教训）
