@@ -788,3 +788,10 @@
 - **结论**：标准scheduler正常abort后drain已started并为未started补call/result；prepare中调用可保留其他错误，不能宣称所有pending同码或零lookup。cancel(disposed)+idle非永久新prompt闸；公开exact teardown为AgentHandle。validateJsonSchemaValue同步无signal/预算，外部Worker不是唯一内建取消合同。
 - **验证**：源码、公开根导出、取消/替换/深层oneOf一方测试源码交叉核验；未执行runtime测试或physical I/O。
 - **沉淀**：[固定专题](topics/rc2-batch-cancel-value-validation.md)、index/log；verified_inference，不调整其他领域等级，不评价外部项目。
+
+## 2026-09-06 · 跨会话核验：pre-step reject的窄合同
+
+- **提问者**：agent，完整答案先成功回传后沉淀。
+- **版本与结论**：固定rc.2 `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`，远端tag一致。assembly先于pre-step；正常reject关闭turn为blocked、不进入该拟议step/provider，但不撤回assembly或前面step。reject应短路不调next；prepend不是assembly前置闸或绝对第一保证。
+- **新增事实**：claimed prompt不自动返还，独立inject/steer可保留；abort/throw与append失败须区分正常blocked路径。
+- **验证与沉淀**：读取公开类型、AgentLoop/Cordis实现及interception一方测试源码，未运行测试或模型；补既有[rc.2专题](topics/rc2-agent-request-attempt-schema.md)、索引和本日志，status仍verified_inference。

@@ -11,13 +11,15 @@ anchors:
   - packages/llm/llm/src/index.ts#prepareCall
   - packages/llm/llm-retry/src/index.ts
   - packages/core/agent-loop/tests/request-error.spec.ts
+  - packages/core/agent-loop/tests/interception.spec.ts
+  - vendor/cordis/src/events.ts#waterfall
   - packages/core/session/src/types.ts#SessionEvent
   - packages/llm/llm/src/message.ts#UserMessage
   - packages/core/tools/src/index.ts#ToolDefinition
   - packages/core/tools/src/json-schema.ts#assertObjectJsonSchema
   - packages/core/tools/tests/json-schema.spec.ts
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-09-05
+verified_at: 2026-09-06
 asked_by: agent
 ---
 
@@ -38,6 +40,14 @@ TS/JS plugin · 标准 AgentLoop/LLM pipeline · 多 Agent 与同 step retry · 
 - fallback/route 改变若经 request waterfall 或 recovery→retry，走上述路径；若在 llm/stream、adapter或SDK内部发生，不会因此重进 agent/request。PreparedLlmCall 一次性 stream handle 不等于单次物理 HTTP。[prepare/handle](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/llm/llm/src/index.ts#L814-L868) · [stream middleware](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/llm/llm/src/index.ts#L985-L998)。
 - **条件性推论**：该 hook 覆盖标准 AgentLoop 的每轮 buildRequest，不能单独保证每次 physical attempt 都重查；adapter/SDK内部HTTP重试、middleware额外dispatch、直接llm调用均不自动回到它。normal maxRetries:0只令可选llm-retry listener delegate，不能阻止其他listener返回retry或SDK自行重试。[retry](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/llm/llm-retry/src/index.ts#L157-L210)。
 - listener拒绝若最终传播出waterfall、未被外层恢复，buildRequest在prepare/stream前退出，该次标准provider调用为零且不走request-error恢复。signal等待中abort而listener正常返回时，紧接的throwIfAborted阻止后续调用；不合作Promise会一直等待，不是hard kill。此前attempt、日志、assembly或其他middleware的副作用不被撤回。[一方零请求测试](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent-loop/tests/request-error.spec.ts#L31-L48)。
+
+## pre-step reject 的精确日志与短路（2026-09-06 固定 rc.2 复验）
+
+`PreStepDecision` 的拒绝值只有 `{kind:'reject'}`，没有内置reason/message字段。最终waterfall结果为reject且没有abort/throw抢先改走catch时，loop将turn结束为`blocked`；turn/start已经记录，但该拟议step不写step/start/step/end、claimed user/message或request/header，不进入agent/request及provider。首次step拒绝的一方测试明确断言零adapter请求、无user/message与step/start、turn/start→turn/end及blocked。此前step、inbox或plugin独立事件不被撤回，不能推广成整个Session零模型调用或仅两条日志。[测试](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent-loop/tests/interception.spec.ts#L234-L255) · [loop路径](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent-loop/src/agent.ts#L245-L323)。
+
+拒绝分支直接返回reject、不调用next，是waterfall的主动短路合同；先await next再reject会先运行下游，不能宣称其零副作用。prepend只在同一事件链unshift，不会提前到assembly前，也不保证永久第一。更外层listener仍可改写下游结果，只有loop最终收到reject才成立。拒绝时signal已abort则turn变aborted；throw走error；append失败不能保证blocked日志。[waterfall与prepend](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/vendor/cordis/src/events.ts#L224-L259)。
+
+claimed prompt已从inbox取走，reject不自动退回；并发独立inject/steer可保留，不能当作清空全部pending。[一方独立context测试](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent-loop/tests/interception.spec.ts#L426-L455)。本次只读源码与测试，不报告runtime实测。
 
 ## 公开 occurrence 身份
 
