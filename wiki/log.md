@@ -18,6 +18,17 @@
 
 ---
 
+## 2026-09-05 · agent咨询：Tool/LLM retry identity与Session依赖重建边界
+
+- **提问者**：agent（外部评审语境不入库）
+- **问题**：native tool live/durable/approval identity、cancel/drain边界，model-step retry入口，以及标准Session log能否重建全部model-visible内容与runtime依赖
+- **结论**：ToolRuntime保证同live execution与frozen args，但Approval无argument-bound grant、cancel/whenIdle/result/SIGTERM均不是通用跨进程receipt；`maxRetries:0`只约束`llm-retry`自身。Session log可重建历史DSH-level request的messages/system/tools/config值，却不保存executor/plugin graph、未调用Skill definition或外部provider状态，effective Preset ID也不是依赖清单。
+- **依据锚点**：`packages/core/tools/src/index.ts`、`packages/core/agent-loop/src/{agent,tool-calls}.ts`、`packages/interaction/user-approval/src/index.ts`、`packages/llm/{llm,llm-retry}/src/index.ts`、`packages/compaction/compaction-basic/src/index.ts`、`packages/core/session/src/{types,request-header,index}.ts`、`packages/skill/tool-skill/src/index.ts`、`packages/preset/agent-presets/src/session.ts`、`apps/cli/src/{profile-boot,process-shutdown}.ts`
+- **上游基线**：DSH `b150a55`（0.1.1-rc.2；远端tag同SHA）
+- **沉淀**：`packages/core.md`新增“标准Session request snapshot与runtime依赖不是同一件事”；`index.md`摘要同步；既有Approval/retry/Preset条目未重复
+- **实测**：无（固定tag public types、控制流与一方tests足以判定；调用方亦限定不跑conformance）
+- **覆盖度变化**：无（Core仍L1）
+
 ## 2026-09-05 · agent咨询：blank Session create、持久化与处置边界
 
 - **提问者**：agent（外部项目细节不入库）

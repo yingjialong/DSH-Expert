@@ -33,8 +33,14 @@ anchors:
   - packages/core/tools/tests/py-types.spec.ts
   - packages/core/session/src/surface.ts
   - packages/core/session/src/json.ts
+  - packages/core/session/src/types.ts
+  - packages/core/session/src/request-header.ts
+  - packages/core/session/src/known-event-types.ts
   - packages/core/session/tests/json.spec.ts
   - packages/core/session/src/repair.ts
+  - packages/skill/tool-skill/src/index.ts
+  - packages/preset/agent-presets/src/session.ts
+  - packages/session/session-persistence/src/coordinator.ts
   - packages/llm/llm/src/call-config.ts
   - packages/llm/llm/tests/call-config.spec.ts
   - packages/session/session-persistence/tests/contract.ts
@@ -42,8 +48,8 @@ anchors:
   - docs/subsystems/tools.md
   - docs/tool-execution-pipeline.md
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
-verified_at: 2026-08-31
-asked_by: self
+verified_at: 2026-09-05
+asked_by: agent
 ---
 
 ## 一句话定位
@@ -149,6 +155,15 @@ core 是「主干」而非单一 capability family，但同样按 seam 纪律拆
 - listener throw/reject使buildRequest失败、adapter不调用，且该middleware failure不再进入`agent/request-error`；一方test断言adapter requests与recovery次数均为0。listener返回后还有`signal.throwIfAborted()`，cancel可阻断；不合作Promise仍会卡住turn。
 - 此保证只覆盖AgentLoop因`agent/request-error`产生的retry。adapter/HTTP SDK在单次`stream()`内部自行重试时不会重新buildRequest，也不会重跑该fence。
 - **认知状态**：verified_inference（固定rc.2 Agent scoped event types/dispatcher、AgentLoop step/buildRequest控制流与request-error/reconstruction tests）。
+
+### 标准Session request snapshot与runtime依赖不是同一件事
+
+- AgentLoop在provider dispatch前把effective config、adapter-default markers、rendered system字符串和完整tool schemas写入`request/header` full snapshot；进入step的human/plugin/runtime context则以完整`user/message`记录。`assistant/message`与`tool/result`同样保存model-facing message。因此标准AgentLoop→LlmRuntime路径的历史DSH-level request envelope可从Session log重建。
+- Skill的可见性按实际披露程度记录：`tool-skill` catalog message只耐久name/description；user gesture加载的完整Skill作为injected `user/message`，模型调用`skill` tool加载的完整内容进入标准`tool/result`。未调用Skill的正文/revision/digest、provider locator与资源树不在日志。
+- `request/header.tools`是当时schema的值快照，不含`ToolDefinition.execute`、presenter/finalizer、registration generation或plugin/package identity。resume的新step仍从当前Preset/plugin/provider重新assemble system/tools；旧header能证明历史输入，不能独自重建可执行runtime。
+- out-of-tree插件可复用公开logged channels：`systemPrompt.section/context/tools/variable`由loop自动snapshot到header，`agent.inject`/`agent/pre-step`进入标准message，`ctx.tools.register`结果走标准call/result；需要durability时可在append后调用`ctx.sessions.flush(session)`。但rc.2的`KNOWN_SESSION_EVENT_TYPES`是build-time vocabulary，`Session.append()`没有public `ignorable`选项；仅TypeScript declaration merge不足以注册cold reader必须理解的required event。
+- 因而Session log不是Session→全部plugin/Skill依赖索引。即使另有immutable product manifest，只有它额外穷尽Host/global、Preset、动态Agent-scope tool与Skill provider revision时，才能由外部约定形成依赖闭包；DSH rc.2不生成或校验这种manifest。
+- **认知状态**：verified_inference（固定rc.2 Session request-header/types、AgentLoop buildRequest、SystemPrompt、ToolRuntime、tool-skill、Preset public types与一方request-reconstruction tests；未执行provider wire实测）。
 
 ### 同一batch pending/started calls与注销顺序
 
