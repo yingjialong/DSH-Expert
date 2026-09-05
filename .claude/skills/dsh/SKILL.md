@@ -24,6 +24,8 @@ echo "local=$LOCAL remote=$REMOTE"
 - 不一致 → 明确报告本地与远端 SHA；**不得自动执行 `dsh-sync`、fetch、pull、checkout、升级依赖或切换回答基线**。固定 tag 问题直接核对该 tag 后作答；确需同步或升级时，等待用户明确指令。
 - 网络不可用 → 继续，但**回答中必须声明**"本地镜像可能落后，未能校验"。
 
+按 `AGENTS.md` 第 2 条，为本次咨询确认目标版本并解析、记录完整 commit SHA；未指定版本时使用默认回答基线。多个来源会话分别记录，版本对比分别固定两端 SHA。后续核验沿用这些 SHA，不随共享工作树、分支或同步结果改变；不得为了咨询不同版本而切换共享上游工作目录。目标对象不可读取时报告证据缺失，不得回退到当前版本。
+
 ### 步骤 2 — 查库（先索引，后全文）
 
 按顺序读：
@@ -38,11 +40,15 @@ echo "local=$LOCAL remote=$REMOTE"
 
 ### 步骤 3 — 回源核验（T1 优先）
 
-无论 wiki 命中与否，**结论必须落到上游源码或文档上**：
+无论 wiki 命中与否，**结论必须落到本次固定 SHA 的上游源码或文档上**。下面的 `DSH_QUERY_SHA` 必须填入步骤 1 已固定的完整 SHA，不得改用 `HEAD` 或重新解析可移动 ref：
 
 ```bash
-cd "$(git rev-parse --show-toplevel)/upstream/deepseek-harness"
-rg -n "<关键词>" packages/ apps/ python/ --type ts --type py
+DSH_SOURCE_REPO="$(git rev-parse --show-toplevel)/upstream/deepseek-harness"
+DSH_QUERY_SHA='<步骤 1 已固定的完整 commit SHA>'
+# 搜索指定提交的源码，不读取共享工作树当前版本。
+git -C "$DSH_SOURCE_REPO" grep -n '<关键词>' "$DSH_QUERY_SHA" -- packages/ apps/ python/
+# 读取同一提交中的文件；上游文档也按此方式读取。
+git -C "$DSH_SOURCE_REPO" show "${DSH_QUERY_SHA}:<文件路径>"
 ```
 
 定位路径参考：
@@ -89,6 +95,7 @@ rg -n "<关键词>" packages/ apps/ python/ --type ts --type py
 4. 禁止"可能 / 大概 / 应该是 / 通常来说"式蒙混
 5. 允许自动查询最新版本并报告，但检测结果不授权同步、更新或升级；相关写操作必须有用户明确指令
 6. 列举关键证据时，本地文件必须使用经确认的绝对路径，必要时附行号或符号
+7. 答复及后续沉淀的版本、SHA 与文件锚点须对应本次固定的提交，不得混入其他咨询或同步后的版本证据
 
 **跨会话交付（不可省略，且是步骤 6 的硬前置）**：请求携带 `source_thread_id` 或等价来源会话标识时，答案形成后必须立即调用宿主的跨会话回复能力，将完整、自包含的答复正文发送回该来源会话并确认成功。确认成功前不得修改 `wiki/`、`playbooks/`、`docs/` 或其他项目文档；只在当前会话输出 final 或仅发送完成通知不算交付。调用失败时按 `CLAUDE.md` 第 13 条报告并保留答案等待重试，不得先进入沉淀。
 
