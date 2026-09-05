@@ -43,6 +43,8 @@ When a delegated question carries a source-thread identifier, the agent must ret
 
 Read-only version discovery may run automatically, but finding a newer release never authorizes syncing mirrors, changing the answer baseline, updating dependencies, or upgrading packages; those actions require an explicit user instruction. When critical evidence is a local file, answers and reports list its verified absolute filesystem path (plus a line or symbol when useful), not only a repository-relative path.
 
+This repository has a local Git exception (`CLAUDE.md` §10): pre-existing uncommitted, staged, or untracked changes do not require stopping an authorized task or asking the owner for instructions. Agents must still inspect and preserve those changes, commit only their own safely separable task changes before each turn ends, and explain when a commit cannot be made. All other Git constraints remain in effect.
+
 ### Relationship to upstream
 
 This is an **unofficial community project** and is not affiliated with DeepSeek. All knowledge is anchored against local blobless clones of:
@@ -149,6 +151,8 @@ DSH（[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-har
 当跨会话委派携带来源会话标识时，agent 必须通过宿主的跨会话回复能力把完整答案回传来源会话并确认送达；只完成当前本地会话不算交付完成。该交付是延迟敏感的，**必须先于任何 wiki、playbooks 或项目文档沉淀**；只有来源会话收到答案后才能开始写回。
 
 允许自动执行只读的最新版本检测，但发现新版本不等于获得同步、切换回答基线、修改依赖或升级包的授权；这些动作必须先得到用户明确指令。关键证据若位于本地文件系统，答复和报告必须列出经确认的绝对路径（必要时附行号或符号），不能只写仓库相对路径。
+
+本项目设有 Git 工作区例外（`CLAUDE.md` 第 10 条）：已有未提交、已暂存或未跟踪变更时，无需停止已授权任务或请求 owner 指示。仍须检查并保护既有变更，每轮结束前只提交当前任务产生的可安全分离变更，无法提交时说明原因；其余 Git 约束继续生效。
 
 ### 与上游的关系
 
