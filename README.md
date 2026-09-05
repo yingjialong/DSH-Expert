@@ -43,6 +43,8 @@ On top of the wiki sit three agent skills (Claude Code loads them automatically 
 
 When a delegated question carries a source-thread identifier, the agent must return the complete answer through the host's cross-session reply capability and confirm delivery; completing only the local conversation is not sufficient. This delivery is latency-sensitive and **must happen before any wiki, playbook, or documentation write-back**. Deposition starts only after the source session has received the answer.
 
+Incoming `steer` or follow-up messages are classified by source and question, not by delivery mode. Independent questions, including separate questions from one source, retain their own version/SHA, constraints, progress, evidence, and reply target. Process them individually without overwriting unfinished work; apply genuine corrections only to the identified question, clarify ambiguous ownership, and confirm each reply separately. See `AGENTS.md` rule 13.
+
 Read-only version discovery may run automatically, but finding a newer release never authorizes syncing mirrors, changing the answer baseline, updating dependencies, or upgrading packages; those actions require an explicit user instruction. When critical evidence is a local file, answers and reports list its verified absolute filesystem path (plus a line or symbol when useful), not only a repository-relative path.
 
 This repository has a local Git exception (`AGENTS.md` §10): pre-existing uncommitted, staged, or untracked changes do not require stopping an authorized task or asking the owner for instructions. Agents must still inspect and preserve those changes, commit only their own safely separable task changes before each turn ends, and explain when a commit cannot be made. All other Git constraints remain in effect.
@@ -155,6 +157,8 @@ DSH（[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-har
 | `dsh-wiki` | `/dsh-wiki`、`/dsh-learn` | 知识库健康检查（lint / 查重 / 复验 / 覆盖度报告）；手动指定领域学习 |
 
 当跨会话委派携带来源会话标识时，agent 必须通过宿主的跨会话回复能力把完整答案回传来源会话并确认送达；只完成当前本地会话不算交付完成。该交付是延迟敏感的，**必须先于任何 wiki、playbooks 或项目文档沉淀**；只有来源会话收到答案后才能开始写回。
+
+收到 `steer` 或 follow-up 时，先按来源与问题判断归属，不按投递形式合并。独立咨询（包括同一来源的不同问题）分别保留版本/SHA、约束、进度、证据和回传目标，逐项处理且不覆盖未完成工作；真实纠正只作用于所指问题，归属不明先确认，答复分别回传并确认。详见 `AGENTS.md` 第 13 条。
 
 允许自动执行只读的最新版本检测，但发现新版本不等于获得同步、切换回答基线、修改依赖或升级包的授权；这些动作必须先得到用户明确指令。关键证据若位于本地文件系统，答复和报告必须列出经确认的绝对路径（必要时附行号或符号），不能只写仓库相对路径。
 
