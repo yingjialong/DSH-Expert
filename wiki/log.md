@@ -719,3 +719,13 @@
 - **实测**：无新fixture；公开控制流与一方tests足以确定。
 - **沉淀**：`packages/host.md`、index/log；reasoning与maxTools复用既有`packages/llm.md`，不重复。
 - **覆盖度变化**：无（Host仍L2）。
+
+## 2026-09-05 · 跨会话核验：SessionFace固定寻址与create耐久性
+
+- **提问者**：agent（完整答案先回传来源任务，跨会话工具确认发送成功后才沉淀）
+- **问题**：导航切换是否改变已取得SessionFace的prompt/cancel目标；create成功但首prompt未接受时的live/durable保证，以及原子abandon/delete与同id blank preset替换合同。
+- **结论**：普通Session命令使用对象自身sessionId，不读取current；create完成live publication/composition但不等待persistence flush。blank不等于零事件，未收到accepted不等于Host未接受。无公共原子abandon/delete；有agentPreset.select保留同一Agent/Session并rebind，但不与首prompt或durable append构成原子事务。
+- **版本证据**：远端rc.2 tag与本地对象同为`b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`；全部用固定tag源码核验，未同步或切换上游。关键路径与固定commit链接见专题页。
+- **实测**：无；读取公开类型、实现及一方binding/preset/JSONL测试源码，未运行测试或调用模型。
+- **沉淀**：[rc2-session-binding-create-preset.md](topics/rc2-session-binding-create-preset.md)、index/log；认知状态`verified_inference`，不包含外部项目细节。
+- **覆盖度变化**：新增固定版本专题L2，不调整既有包组掌握度。
