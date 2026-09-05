@@ -18,6 +18,17 @@
 
 ---
 
+## 2026-09-05 · agent咨询：blank Session create、持久化与处置边界
+
+- **提问者**：agent（外部项目细节不入库）
+- **问题**：Host `session.create`成功时live Session/header、Session persistence与Workspace membership分别到达什么边界；zero-event blank Session是否有public abandon/delete或换preset的幂等create语义
+- **结论**：create ok已发布idle Agent、live Session与immutable header，但不等待PersistenceCoordinator的`session/flush`；backend可lazy到first append才物化。带`workspaceId`的attach另行等待domain durability但与Session artifact不原子。rc.2无Session delete/abandon；detach/dispose只收口live lifecycle，不证明删除artifact或Workspace account；同id不同explicit preset返回`agent-preset-conflict`。
+- **依据锚点**：`packages/host/apiproxy/src/{api/sessions.ts,api-proxy.ts}`、`packages/core/{agent/src/index.ts,agent-loop/src/index.ts,session/src/index.ts}`、`packages/session/session-persistence/src/{index,coordinator}.ts`、`packages/workspace/workspace/src/entity.ts`、`packages/storage/storage-domain/src/domain.ts`、`packages/host/apiproxy/tests/api-proxy-agent-preset.spec.ts`、`packages/session/session-persistence/tests/{contract,coordinator-contract}.ts`
+- **上游基线**：DSH `b150a55`（0.1.1-rc.2；远端tag同SHA）
+- **沉淀**：`packages/host.md`补充create/persistence/workspace三边界与detach/dispose限制；`index.md`摘要同步
+- **实测**：无（固定tag源码、公开类型与一方tests足以判定）
+- **覆盖度变化**：无（Host仍L2）
+
 ## 2026-08-24 · 教学批次开始
 
 - **提问者**：human（请求系统学习 DSH，多日课程）
