@@ -26,7 +26,7 @@
 | 文件 | 用途 | 何时读 |
 |---|---|---|
 | [errors.md](errors.md) | 错误本：答错的、死路、命名/版本陷阱 | **每次回答前必读** |
-| [conflicts.md](conflicts.md) | 文档与源码不符登记册（82 条） | 引用上游文档作结论前 |
+| [conflicts.md](conflicts.md) | 文档与源码不符登记册（83 条） | 引用上游文档作结论前 |
 | [open-questions.md](open-questions.md) | 悬而未决 | 查不到答案时先看是否已知 |
 | [coverage.md](coverage.md) | 覆盖度地图（掌握等级） | 判断自己有多懂、该学什么 |
 | [log.md](log.md) | 问答/学习/实测时间线 | 追溯历史结论 |
@@ -72,6 +72,7 @@
 | [rc2-session-binding-create-preset.md](topics/rc2-session-binding-create-preset.md) | 固定rc.2：SessionFace命令不随current改目标；create非落盘回执；无原子abandon但有同id blank preset select（verified_inference / fresh）。 | L2 | 16 |
 | [rc2-tool-result-drain-credentials.md](topics/rc2-tool-result-drain-credentials.md) | 固定rc.2：result observer不等待Promise；adapter drain与Agent idle分离；per-operation credential与opaque ref边界（verified_inference / fresh）。 | L2 | 12 |
 | [rc2-agent-request-attempt-schema.md](topics/rc2-agent-request-attempt-schema.md) | 固定rc.2：request配置提案与physical retry分层、occurrence身份及非2020-12的schema子集（verified_inference / fresh）。 | L2 | 12 |
+| [alpha13-full-host-public-boundaries.md](topics/alpha13-full-host-public-boundaries.md) | 固定1.3-alpha.1对照1.2-rc.1：Host/Client、MCP/Skill、Team、attempt、handle及Web认证；发布状态需复查（verified_inference / fresh）。 | L2 | 36 |
 | [config-and-tools.md](topics/config-and-tools.md) [stale] | 配置与工具目录 — 非机密值六层覆盖梯子 + 凭据四层梯子 + 四种运行模式的真实定义（Creator mode 的目录 id 是 cordis）+ dsh --profile/bundle 补丁层 + tool-catalog 路由 + permission preset/approval。排错类问题的第一入口。 | L2 | 26 |
 
 ## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解

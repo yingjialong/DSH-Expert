@@ -769,3 +769,14 @@
 - **沉淀**：[固定rc.2专题](topics/rc2-agent-request-attempt-schema.md)、index/log；status=verified_inference，未写入外部项目事实。
 - **验证边界**：源码、公开类型与一方测试源码交叉核验，未运行runtime测试、调用模型或访问真实provider；具体SDK重试配置未指定，保留未知。
 - **覆盖度变化**：新增固定版本L2专题，既有包组等级不变。
+
+## 2026-09-06 · 跨会话研究：1.3-alpha.1完整Host公开面
+
+- **提问者**：agent；六组完整研究结果先回传来源任务并确认成功，随后补正一处空export链接，再沉淀。
+- **固定版本**：A=`d347e703908d0406b7a7ef80e3a0e594d86b2215`（1.3-alpha.1），R=`a66e4702047846cdaa10c66c9d3df3951f5ea70d`（1.2-rc.1），远端tag与本地对象一致；所有查询按SHA，无版本切换。
+- **范围**：发布渠道/公开exports与Profile、MCP/Skill、Team/subagent/workflow/jobs/goal、LLM attempt与计费边界、SessionHandle/迁移、Web认证与Client能力；不检查外部项目，不提供补丁。
+- **关键结论**：ApiProxy消失但ClientTransportHooks仍在；controllers/store拓扑R已具备。A有handle/flush/跨进程write lease/v2 settlement，但GenerateOptions无turn/step/attempt计费键。Team仍private experimental；默认语言为zh/en；Approval要求open turn。MCP和Skill能力不能扩为OAuth/immutable dependency snapshot；raw credential方法仍在，HTTP公开route拒绝不等于所有carrier统一ACL。
+- **发布查询**：浏览工具未打开registry/API，改用只读HTTP；GitHub /releases/latest返回404，列表/tag成功且A为首个prerelease，assets为空；npm根A及11个关键companions均404，R根及前10个companion有tarball metadata，migration包在R不存在；PyPI仍0.1.2rc1。
+- **验证边界**：只读源码、manifest、diff、官方发布元数据和一方测试源码；未下载/安装依赖，未运行真实MCP/模型或conformance。完整可安装闭包、确定性工具日志同形验收、WKWebView继续UNKNOWN。
+- **沉淀**：[固定版本专题](topics/alpha13-full-host-public-boundaries.md)、index/log、C083、Q121–Q123；状态verified_inference，未冒充FACT/L3，旧版专题不改。
+- **修改逻辑**：新增六组版本化路由与条件限制，纠正BrowserAuth文档的per-request secret读取误述，登记必要未知；当前发布快照不改变默认回答基线。
