@@ -27,14 +27,14 @@ echo "OLD_DSH=$OLD_DSH"; echo "OLD_CORDIS=$OLD_CORDIS"
 ### 步骤 2 — 拉取
 
 ```bash
-git -C upstream/deepseek-harness fetch --all --tags --quiet && git -C upstream/deepseek-harness pull --ff-only --quiet
-git -C upstream/cordis fetch --all --tags --quiet && git -C upstream/cordis pull --ff-only --quiet
+git -C upstream/deepseek-harness fetch --all --tags --quiet && git -C upstream/deepseek-harness merge --ff-only --no-stat '@{upstream}'
+git -C upstream/cordis fetch --all --tags --quiet && git -C upstream/cordis merge --ff-only --no-stat '@{upstream}'
 NEW_DSH=$(git -C upstream/deepseek-harness rev-parse HEAD)
 git -C upstream/deepseek-harness log -1 --format='%H %cI %s'
 git -C upstream/deepseek-harness tag | tail -5
 ```
 
-若 `pull --ff-only` 失败（上游 force-push 或本地被改动），**不要强推**：报告并改用 `git reset --hard origin/master`（本地镜像是只读事实源，无需保留本地改动）。
+执行前核对镜像工作区与跟踪分支，不假定两个仓库都使用 `master`。无跟踪分支或 fast-forward 失败时报告原因，保护已有内容，不得用 `reset --hard` 覆盖。保留历史 tag / commit；按 `AGENTS.md` 第 2 条，同步不得改变其他进行中咨询已固定的 SHA。
 
 ### 步骤 3 — 变更概览
 
@@ -60,11 +60,11 @@ rg -oN '^\s*-\s+([a-z0-9_./-]+\.(ts|py|md|yml|yaml|json))' -r '$1' wiki/ | sort 
 comm -12 <(sort -u /tmp/dsh-changed.txt) /tmp/dsh-anchors.txt
 ```
 
-对**每一个命中的锚点**：
+对**每一个命中的锚点**，先判断条目的版本归属：
 
-1. 找到引用它的 wiki 页，把 frontmatter 的 `freshness` 改为 `stale`
-2. 在 `wiki/index.md` 对应行标注 `[stale]`
-3. 看具体 diff 判断是否真的影响结论：
+1. 明确固定历史版本且 `commit`、锚点仍可核对的条目，按原 SHA 保留；新 HEAD 同路径变动不使旧快照失效。动态发布状态另行复验，不能拿 master 改动覆盖 release tag 的结论。
+2. 跟随新基线的通用条目或含已过期动态断言的条目，把 `freshness` 改为 `stale`，并在 `wiki/index.md` 标注。分别统计原已 stale、本轮新增 stale、固定版本保留的条目。
+3. 看固定两端 SHA 的 diff 判断影响；历史条目必须使用其自己的 `commit`，不能只比较两个 master 快照就宣称已复验：
    ```bash
    git -C upstream/deepseek-harness diff $OLD_DSH..$NEW_DSH -- <锚点文件>
    ```
@@ -75,7 +75,7 @@ comm -12 <(sort -u /tmp/dsh-changed.txt) /tmp/dsh-anchors.txt
 
 只补学**"上游变了且我已沉淀过"**的部分——这是已知会腐烂的区域，目标明确、成本可控：
 
-1. 逐条复验步骤 4 标出的 stale 条目，更新结论、`commit`、`verified_at`，改回 `fresh`
+1. 逐条复验步骤 4 本轮新增的 stale 条目，更新结论、`commit`、`verified_at`，改回 `fresh`；固定版本条目保持原版本归属。原已 stale 且未完成整页复验的内容保持 stale，只作检索路由，不宣称支持新基线的直接引用。
 2. 结论被推翻的，**写入 `wiki/errors.md`**（记录：旧结论、为何失效、哪个 commit 改的）
 3. 更新 `wiki/coverage.md` 中相关领域的核验时间
 
@@ -104,12 +104,14 @@ rg -n '锚点|anchors' wiki/log.md | head -50
 
 ### 步骤 9 — 更新基线与汇报
 
-更新 `CLAUDE.md` 版本基线节与 `README.md` 的 Key facts / 关键事实表（若 npm `latest` tag 变了）：
+更新规则主文件 `AGENTS.md` 的版本基线节、`wiki/index.md` 与 `README.md` 双语事实表，保留 `CLAUDE.md` 软链接。分别记录 npm 默认基线、GitHub 最新 release、master 与旧版本的完整 SHA，不能假定渠道同步发布：
 
 ```bash
 curl -s "https://registry.npmjs.org/@deepseek-ai%2Fdsh" | python3 -c "import sys,json;print(json.load(sys.stdin)['dist-tags'])"
 curl -s "https://pypi.org/pypi/deepseek-harness-sdk/json" | python3 -c "import sys,json;print(json.load(sys.stdin)['info']['version'])"
 ```
+
+交付前按固定 SHA 验证默认版、GitHub 最新版与至少一个旧版的 manifest 和实际接口；确认旧 tag 保留、共享 HEAD 未因咨询切换，旧版缺失文件不能回退读取当前工作树。此检查只证明源码咨询路径可用；是否执行 runtime/install 测试须另行如实记录。
 
 向用户汇报（固定格式）：
 

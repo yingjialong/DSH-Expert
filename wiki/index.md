@@ -2,7 +2,11 @@
 
 > **回答时先读本文件**，据此挑 3-5 篇全文，**永远不要全量加载知识库**。
 
-> 上游基线：DSH master `49a606bc`；最新发布tag/npm `alpha`=`0.1.2-alpha.5`（tag `db6bdc35`）；根包`latest` / `next`仍为`0.1.1-rc.2` · Cordis `00278924`（DSH vendor release 4.0.2）· 同步于 2026-09-02
+> 默认回答基线：`0.1.2-rc.1` / `a66e4702047846cdaa10c66c9d3df3951f5ea70d`（npm `latest/next`）；GitHub 最新版与本次 master：`0.1.3-alpha.1` / `d347e703908d0406b7a7ef80e3a0e594d86b2215`，npm 根包尚无该版本。npm `alpha=0.1.2-alpha.5`；PyPI SDK/runtime-bin `0.1.2rc1`。Cordis 镜像 `2ceea231802cc23892b4ad10012c55c7dd4982d4`；DSH vendor `4.0.2` 单独按 DSH SHA 核验。同步于 2026-09-05。
+>
+> 旧版入口：rc.2 固定 `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`；alpha.5 固定 `db6bdc3576c2d4e7c965e8e3ed0c2a731eed87f5`。11 个历史发布 tag 已核对并保留；每次咨询独立固定 SHA，不切换共享工作目录。
+>
+> 2026-09-05 同步：DSH `49a606bc` → `d347e703`（292 提交、1780 文件），Cordis 前进 2 提交。141 个锚点路径命中 54 页：52 页原已 stale；固定 rc.2 专题保留；alpha.5 摘要复验发布 tag 后纠正 master/release 混用（E044）。新增[最新版本对照](topics/版本变更-0.1.2-alpha.5-到-0.1.3-alpha.1.md)，三个基线并发源码读取及缺失文件负对照通过；原 69 篇 stale 页未冒充已复验。
 >
 > 2026-09-02 第二次同步：0.1.2-alpha.4 → 0.1.2-alpha.5（44提交、718文件变更）。npm `alpha`=alpha.5，PyPI SDK仍为`0.1.2a3`，npm `latest/next`仍为rc.2。83个既有锚点命中；将alpha.2→alpha.4页标为`stale`，其他命中内容页早已stale，未全量复验。
 >
@@ -14,7 +18,7 @@
 >
 > 2026-08-22 同步：rc.8 → 0.1.1-rc.2（207 提交）。47 页锚点命中、全部复验完毕（32 确认 / 9 更新 / 4 页结论被推翻已重写，见 [errors.md](errors.md) E008–E011 与 [topics/版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md](topics/版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md)）。
 
-> 图例：`status` 全为 `verified_inference`（冷启动只到 L1/L2，按封顶规则不得标 `fact`）；`fresh` 表示锚点未被上游改动，`[stale]` 表示必须回当前源码或目标版本 tag 复验。
+> 图例：`status` 全为 `verified_inference`（冷启动只到 L1/L2，按封顶规则不得标 `fact`）；`fresh` 仅对该页声明的版本与 commit 有效，`[stale]` 表示只能作为路由，须回本次目标版本的固定 SHA 复验。
 
 
 ## 治理文件
@@ -22,7 +26,7 @@
 | 文件 | 用途 | 何时读 |
 |---|---|---|
 | [errors.md](errors.md) | 错误本：答错的、死路、命名/版本陷阱 | **每次回答前必读** |
-| [conflicts.md](conflicts.md) | 文档与源码不符登记册（81 条） | 引用上游文档作结论前 |
+| [conflicts.md](conflicts.md) | 文档与源码不符登记册（82 条） | 引用上游文档作结论前 |
 | [open-questions.md](open-questions.md) | 悬而未决 | 查不到答案时先看是否已知 |
 | [coverage.md](coverage.md) | 覆盖度地图（掌握等级） | 判断自己有多懂、该学什么 |
 | [log.md](log.md) | 问答/学习/实测时间线 | 追溯历史结论 |
@@ -61,13 +65,14 @@
 | [版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md](topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md) [stale] | Host API controllers / Client Store 拓扑重组、`host-apiproxy` / `client-runtime` 删除、Remote generation stream 与 npm 仍停 rc.2 的升级边界。 | L2 | 18 |
 | [版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md](topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md) [stale] | alpha.2发布、Skill/Preset/MCP contract、MCP与ToolRuntime generation-borrow缺口、npm resolution实测。 | L1 | 28 |
 | [版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md](topics/版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md) [stale] | alpha.3/alpha.4发布状态、统计、已识别的breaking信号与未复验边界。 | L1 | 6 |
-| [版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md](topics/版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md) | alpha.5发布状态、handle-based Session persistence breaking信号与未复验边界。 | L1 | 5 |
+| [版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md](topics/版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md) | 固定 alpha.5 发布 diff；纠正同期 master 的 SessionHandle 误归属（verified_inference / fresh）。 | L1 | 5 |
+| [版本变更-0.1.2-alpha.5-到-0.1.3-alpha.1.md](topics/版本变更-0.1.2-alpha.5-到-0.1.3-alpha.1.md) | 默认 rc.1、最新 alpha 与旧 rc.2 的 SHA 路由；create/handle/format v2 断点及发布边界（verified_inference / fresh）。 | L2 | 13 |
 | [plugin-development.md](topics/plugin-development.md) [stale] | 插件开发全路径：从零写 dsh-plugin 的步骤路由、四种插件形态骨架、依赖纪律（Service Definition 而非 Provider）、Config/schema、事件与扩展点选择、skill provider registry、bundle/profile 发布与八条陷阱 | L2 | 35 |
 | [core-chain.md](topics/core-chain.md) [stale] | agent loop 函数级调用链、agent-loop 可替换性的三道机制保证、session 三层 derive 与持久化/projection seam、会话并发隔离 12 条「条件→结论」、preset standing mount 与 scope 父链、LlmAdapter 接入点、system-prompt/context 注入时机 | L2 | 27 |
 | [rc2-session-binding-create-preset.md](topics/rc2-session-binding-create-preset.md) | 固定rc.2：SessionFace命令不随current改目标；create非落盘回执；无原子abandon但有同id blank preset select（verified_inference / fresh）。 | L2 | 16 |
 | [config-and-tools.md](topics/config-and-tools.md) [stale] | 配置与工具目录 — 非机密值六层覆盖梯子 + 凭据四层梯子 + 四种运行模式的真实定义（Creator mode 的目录 id 是 cordis）+ dsh --profile/bundle 补丁层 + tool-catalog 路由 + permission preset/approval。排错类问题的第一入口。 | L2 | 26 |
 
-## 包组（packages/）—— 51 组 / 251 包
+## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解
 
 | 包组 | 一行摘要 | 稳定性 | 包数 | 锚点 |
 |---|---|---|---|---|

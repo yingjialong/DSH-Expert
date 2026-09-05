@@ -76,6 +76,8 @@ DSH 于 **2026-08-13** 首次发布，我的训练数据截止早于该日期。
 ### 6. stale 条目必须复验才能引用
 `freshness: stale` 的条目（锚点文件被上游改动，或超过 30 天未核验）**禁止直接引用**。必须先回源码复验、更新条目、改回 `fresh`，然后才能用。
 
+`fresh` 只对条目声明的版本与 `commit` 有效。明确固定历史版本的条目，不因其他 SHA 上同路径发生变化就失效；同步时核对其固定对象与锚点，保留版本归属。混有“当前最新”等动态断言的条目必须单独复验这些断言；未指定版本的旧通用页不得直接作为新基线证据。
+
 ### 7. 沉淀双门槛：主题准入 + 去项目化
 知识入库先过**主题门槛**（能不能进），再过**形式门槛**（怎么写）。DSH 是项目无关的 harness，知识库必须保持同样的无关性。**主题门槛适用于一切写入 `wiki/` 与 `playbooks/` 的内容，包括治理文件（index / log / coverage / errors / open-questions）的每个字段**；混合任务只允许其中的 DSH 切片入库。
 
@@ -186,11 +188,13 @@ DSH 于 **2026-08-13** 首次发布，我的训练数据截止早于该日期。
 
 | 项 | 值 |
 | --- | --- |
-| **默认回答基线** | **0.1.1-rc.2**（npm `latest`；2026-08-22 起取代 rc.7） |
-| 可对比基线 | master HEAD为`49a606bc`；GitHub/npm最新预发布为`0.1.2-alpha.5`（tag `db6bdc35`，npm `alpha`）；根包`next` / `latest`仍为`0.1.1-rc.2`，PyPI SDK为`0.1.2a3` |
+| **默认回答基线** | **0.1.2-rc.1**（npm `latest` / `next`）；固定 SHA `a66e4702047846cdaa10c66c9d3df3951f5ea70d` |
+| GitHub 最新版与 master | **0.1.3-alpha.1**；本次两者均为 `d347e703908d0406b7a7ef80e3a0e594d86b2215`；2026-09-05 查询时 npm 根包尚无该版本 |
+| 旧版本咨询 | 显式指定版本优先；`0.1.1-rc.2` 固定 `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`，`0.1.2-alpha.5` 固定 `db6bdc3576c2d4e7c965e8e3ed0c2a731eed87f5`；其他历史 tag 仍可解析后按 SHA 查证 |
+| 发布渠道与 Cordis | npm `alpha=0.1.2-alpha.5`；PyPI SDK/runtime-bin `0.1.2rc1`；Cordis 镜像 `2ceea231802cc23892b4ad10012c55c7dd4982d4`，DSH vendor 包标识仍为 `4.0.2`，两者不可互代 |
 | 基线变更方式 | 仅在用户明确指令并实际完成同步或升级后，更新本节与 `wiki/index.md` |
 
-回答时若 0.1.1-rc.2 与 master 行为不同，**必须同时说明两者**，并指出升级会踩什么。npm已发布`@deepseek-ai/dsh@0.1.2-alpha.5`，根包dist-tag为`alpha`；根包`latest`/`next`仍指向rc.2。alpha.5 tag含242个非private package标识；本次未穷尽每个companion tarball，也未验证完整安装、native helper与第三方依赖闭包，仍须按目标profile做真实install/boot核验。破坏性变更见`wiki/topics/版本变更-0.1.1-rc.2-到-0.1.2-alpha.1.md`、`wiki/topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md`、`wiki/topics/版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md`与`wiki/topics/版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md`；固定rc.2问题仍回tag`b150a551`核验。
+以上为 2026-09-05 的同步快照。“最新版”咨询使用最新 GitHub release 的固定 SHA；未指定版本使用默认回答基线，不能把 npm dist-tag、release tag 与 master 混为一谈。回答涉及目标版本与新版的行为差异时，分别列明版本、SHA 与升级影响。新旧咨询入口、实查接口差异和发布边界见 `wiki/topics/版本变更-0.1.2-alpha.5-到-0.1.3-alpha.1.md`；历史升级摘要继续保留。此次只同步源码与知识，不代表各版本正式包完整 install/boot、native helper 或第三方依赖闭包已通过实测。
 
 ---
 

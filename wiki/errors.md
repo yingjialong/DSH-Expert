@@ -507,3 +507,13 @@
 ---
 
 > 更多**按包组分布**的文档与源码冲突（共 81 条）见 [conflicts.md](conflicts.md)。本文件只保留**跨组、每次回答都可能踩**的条目，以保证它足够短、能在每次回答前被真正扫一遍。
+
+
+### E044 — 同期 master 的 SessionHandle 改动不属于 alpha.5 发布 tag
+
+- **类型**：版本基线混用；asked_by: human；2026-09-05 复验，`verified_inference`。
+- **错误内容**：alpha.4→alpha.5 摘要曾把 master `49a606bc` 的 handle-based persistence 和异步 create 归入 alpha.5 发布行为，并用到 master 的 diff 统计描述发布变化。
+- **正解**：alpha.5 tag `db6bdc3576c2d4e7c965e8e3ed0c2a731eed87f5` 与 rc.1 tag `a66e4702047846cdaa10c66c9d3df3951f5ea70d` 仍是同步 `AgentLoop.create(...): Agent`、`SessionPersistence.create(...): Promise<void>`；最新 alpha.1 `d347e703908d0406b7a7ef80e3a0e594d86b2215` 才在发布 tag 中包含异步 create 和 `SessionHandle`。不能以 manifest 中同一个版本号推断 master 与 release 内容相同。
+- **根因**：虽记录了不同 SHA，却在结论归属与 diff 分母上混用了 master 和 release tag。
+- **源码锚点**：对上述完整 SHA 分别读取 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/src/index.ts`（`AgentLoop.create`）与 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session/session-persistence/src/index.ts`（`SessionPersistence.create`）。
+- **牵连条目**：[alpha.4→alpha.5 摘要](topics/版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md) 已更正；2026-09-02 log 保留历史原文，本次 log 明确补正。新摘要分别列发布 diff 与镜像快进 diff。

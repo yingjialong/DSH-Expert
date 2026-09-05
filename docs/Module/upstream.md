@@ -15,6 +15,18 @@ DSH 与 Cordis 的本地只读克隆，是知识库的 **T1 唯一事实源**。
 
 克隆后的基线由 `/dsh-sync` 维护，当前知识库基线见 `CLAUDE.md` 版本基线节。
 
+### 2026-09-05 同步与多版本入口
+
+| 用途 | 版本 / 固定完整 SHA |
+| --- | --- |
+| 默认咨询（npm `latest/next`） | `0.1.2-rc.1` / `a66e4702047846cdaa10c66c9d3df3951f5ea70d` |
+| GitHub 最新版与本次 master | `0.1.3-alpha.1` / `d347e703908d0406b7a7ef80e3a0e594d86b2215` |
+| 历史 rc.2 | `0.1.1-rc.2` / `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e` |
+| 历史 alpha.5（npm `alpha`） | `0.1.2-alpha.5` / `db6bdc3576c2d4e7c965e8e3ed0c2a731eed87f5` |
+| Cordis 独立镜像 | `2ceea231802cc23892b4ad10012c55c7dd4982d4`；DSH 自带内核仍从对应 DSH SHA 的 `vendor/cordis/` 核验 |
+
+11 个 `dsh-v*` tag 已逐一核对远端 SHA 和本地 manifest。源码读取使用 `git -C <镜像绝对路径> show <SHA>:<文件路径>` 或 `git grep ... <SHA> -- <路径>`；禁止为不同咨询切换共享工作目录。新旧三个基线的 `AgentLoop.create` / `SessionPersistence.create` 并发读取、rc.2 专题的 16 个锚点和缺失文件负对照均通过；详细结果见 `wiki/log.md` 的本次同步记录。历史 blob 为按需缓存，本次验证不承诺全部历史文件均已离线缓存，也不代表 runtime 安装或运行验证。
+
 ## 三、克隆策略：为什么是 blobless
 
 ```bash
@@ -52,8 +64,9 @@ git clone --filter=blob:none <url> upstream/<name>
 
 由 `dsh-sync` skill 负责。要点：
 
-- `pull --ff-only` 失败时**不要强推**，直接 `git reset --hard origin/master`（本地镜像是只读事实源，没有需要保留的本地改动）
+- 核对工作区与跟踪分支后 fast-forward；DSH 当前跟踪 `origin/master`，Cordis 跟踪 `origin/main`。失败时保留内容并报告，不得用 `reset --hard` 覆盖
 - 每次同步后必须做锚点 diff，否则同步等于白做
+- 新基线变动与固定历史版本分开判定：保留历史 tag 和已验证条目的版本归属，未完成复验的通用页保持 stale
 
 ## 六、实测所需工具链（上游要求）
 

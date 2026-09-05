@@ -729,3 +729,24 @@
 - **实测**：无；读取公开类型、实现及一方binding/preset/JSONL测试源码，未运行测试或调用模型。
 - **沉淀**：[rc2-session-binding-create-preset.md](topics/rc2-session-binding-create-preset.md)、index/log；认知状态`verified_inference`，不包含外部项目细节。
 - **覆盖度变化**：新增固定版本专题L2，不调整既有包组掌握度。
+
+
+## 2026-09-05 · 授权同步：多版本咨询与 0.1.3-alpha.1
+
+- **提问者**：human；明确授权更新到最新 DSH，同时保留新旧版本咨询。开始时主仓库、DSH 与 Cordis 镜像均干净。
+- **任务契约**：同步官方上游镜像和版本路由；按固定 SHA 验证默认版、GitHub 最新版与旧版；更新受影响摘要和防腐记录。不升级其他项目、不安装全局软件、不调用模型、不迁移用户 Session 数据。
+- **同步结果**：DSH `49a606bc5b5934603f22a26957a07dc799ab0291` → `d347e703908d0406b7a7ef80e3a0e594d86b2215`，292 提交、1780 文件（+49143 / -14402）；Cordis `00278924a984fedfaffb4bc3d5eb7d8e76215643` → `2ceea231802cc23892b4ad10012c55c7dd4982d4`，2 提交、7 文件（+125 / -14）。
+- **实际同步命令**：对两个镜像执行 `git fetch --all --tags --quiet`，DSH `git merge --ff-only origin/master` 成功；Cordis 首次使用 `origin/master` 失败且未移动 HEAD，查询跟踪分支后以 `git merge --ff-only --no-stat origin/main` 成功。没有执行 checkout/switch/reset。已将 sync skill 改为使用各自 `@{upstream}`，失败时保护已有内容；dsh 答复尾部改为输出本次目标版本与固定 SHA，避免默认基线覆盖旧版咨询。
+- **发布渠道**：GitHub 最新 release 与 master 都是 `0.1.3-alpha.1` / `d347e703`；npm 根包 metadata 没有该 version，`latest/next=0.1.2-rc.1`，`alpha=0.1.2-alpha.5`；PyPI SDK 为 `0.1.2rc1`，声明依赖 runtime-bin `==0.1.2rc1`。默认回答基线按既有 npm latest 约定升级为 rc.1；明确问“最新版”时走 GitHub alpha.1；旧版显式指定优先。
+- **只读版本检测**：`git ls-remote` 查询 HEAD 与 `refs/tags/dsh-v*`；读取 `https://api.github.com/repos/deepseek-ai/deepseek-harness/releases?per_page=4`、`https://registry.npmjs.org/@deepseek-ai%2Fdsh`、`https://pypi.org/pypi/deepseek-harness-sdk/json`。本次日期快照，后续发布状态仍须现查。
+- **锚点审计**：遍历 wiki frontmatter，将 DSH `49a606bc..d347e703` changed paths 与去掉 `#symbol` 的 anchors 相交：141 个去重路径、54 页。52 页原已 stale；固定 rc.2 专题按自身 commit 保留；alpha.5 动态摘要须复验，已按发布 tag 纠错。原有 69 篇 stale 页保持 stale；无本轮新增未解决 stale，不声称全库复验。
+- **抽查与纠错**：回查 2026-09-02 的 alpha.5 问答记录，发现其 handle-based breaking 信号属于同期 master `49a606bc`，不属于 alpha.5 发布 tag `db6bdc35`。已纠正摘要并登记 E044；历史日志原文保留，以此条补正。新增 C082：Release 的“所有出站代理”概括未体现源码与一方测试明确保留的 OTLP 直连路径。
+- **悬疑重试**：Q107 获得 `0.1.3-alpha.1` JSONL 写 owner 内核锁与双进程测试源码证据；read handle 可共存，新建 artifact 到 materializing write 才获跨进程锁。未运行 runtime 测试，rc.2 的实际竞争行为仍未解；完整关闭问题 0 条，分版本推进 1 条。
+- **多版本源码验收**：禁用隐式补取 `GIT_NO_LAZY_FETCH=1` 后，11 个本地发布 tag 与远端完整 SHA 一致，11 份 `git show <SHA>:package.json` 的 version 都与 tag 一致。三个独立 SHA 并发读取 `AgentLoop.create` 和 `SessionPersistence.create`：rc.2 与 rc.1 分别保持 `Agent` / `Promise<void>` 返回；最新 alpha.1 为 `Promise<Agent>` / `Promise<SessionHandle>`。rc.2 专题 16 个锚点均能用 `git cat-file -e <SHA>:<path>` 读取。
+- **负对照与 HEAD 稳定性**：`git show b150a551b8d465e31e418e1b2eaf5e79bbb7d28e:packages/session/session-persistence/src/handle.ts` 返回 128 且 stdout 为空，没有回退到当前工作树。验证脚本首次过度匹配报错措辞导致断言失败，改为检查退出码与无源码输出后通过。全部咨询读取前后 DSH HEAD 均为 `d347e703`，镜像工作区干净。
+- **验证边界**：仅运行 Git 对象/源码读取与文档、skill 校验，未运行 DSH 单元测试、native 双进程测试、模型调用或正式包 install/boot。新 topic 为源码交叉验证 `verified_inference` / L2，不能把“读取命令通过”算成 DSH runtime L3。
+- **修改逻辑**：AGENTS/README/index 更新渠道与 SHA；sync skill 和模块说明保留固定版本条目并避免硬编码 master；旧 alpha.5 摘要按真实发布快照更正；新 topic 提供三版本接口对照、格式变化与来源边界；errors/conflicts/open-questions/log/coverage 同步直接改变的事实。未改写旧 rc.2 专题或全量刷新历史通用页。
+- **关键证据**：各版本 SHA 与绝对路径见[最新版本对照](topics/版本变更-0.1.2-alpha.5-到-0.1.3-alpha.1.md)；镜像根为 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness` 和 `/Users/majiajun/workspace/DSH-Expert/upstream/cordis`。本次临时 `sandbox/sync-20260905` 审计清单已清理，关键命令与结果保留在本记录。
+- **覆盖度变化**：新增版本对照 L2 1 页；原包组掌握等级不变。当前 73 内容页、6 治理页，L2 37 / L1 36，1058 个 frontmatter 锚点，fresh 4 / stale 69；文档冲突 82、悬而未决 114。
+
+- **收尾检查**：DSH/Cordis 本地 HEAD 再次与远端 HEAD 一致；两个镜像干净，rc.2 固定专题无 diff；两篇版本摘要的 frontmatter、18 个固定提交锚点与相对链接通过；dsh/dsh-sync 的 quick_validate、规则软链接一致性与 git diff --check 均通过。

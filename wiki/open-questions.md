@@ -112,7 +112,7 @@
 | Q103 | `插件开发全路径（dsh-plugin）` | dsh.bundle manifest 除 `patch` 之外是否还有其它字段（版本约束、依赖 bundle 声明等）？publish.md 与 apps/cli/reference/README.md 都只出现 `{ "patch": "./cordis.patch.yml" }` 一种形态 |
 | Q104 | `ACP 与 HTTP API gateway（进程外集成的两条协议路线）` | Typert Remote endpoint 若需要等价于 PRIVILEGED_METHODS 的 loopback pin，上游是否有计划（intercept 的 ConnectionRpcHandlerOptions 支持 authority: 'loopback'，但目前 gateway 只注册一个全局 'trusted-host' 拦截器，无法按 endpoint 区分）——未在文档中找到说明。 |
 | Q105 | `ACP 与 HTTP API gateway（进程外集成的两条协议路线）` | ACP 的 approval/request waterfall 在多个 frontend 共存（如同时挂 ACP 与 Web）时的监听顺序与短路语义，未在 ACP README 或 docs 中找到跨 frontend 的仲裁说明。 |
-| Q107 | `核心链 core / session / preset / llm（源码级 L2）` | JSONL 后端在同一目录被两个进程同时打开时的实际失败模式（静默交错 append 还是 seq 冲突报错）未从源码确认，需实测 packages/session/session-persistence-jsonl。 |
+| Q107 | `核心链 core / session / preset / llm（源码级 L2）` | rc.2 的 JSONL 跨进程竞争实际失败模式仍未实测。2026-09-05 重试最新版：`0.1.3-alpha.1` / `d347e703` 的 SessionWriteLease 已用内核锁排斥竞争写 owner，read handle 可共存；`lease.two-process.e2e.ts` 有双进程测试但本次未运行。此进展只适用于最新版，不能反推 rc.2；固定 SHA 与绝对路径见[最新版本对照](topics/版本变更-0.1.2-alpha.5-到-0.1.3-alpha.1.md)。 |
 | Q108 | `核心链 core / session / preset / llm（源码级 L2）` | `SessionStore` 是否在 Cordis root 之外还有第二实例（例如 worker 线程内的 code-runtime）尚未核实，影响"进程内唯一 store"这一表述的边界。 |
 | Q109 | `核心链 core / session / preset / llm（源码级 L2）` | `ctx.agentPresets.mount()` 在一方产品里除 apiproxy 的 `composeAgent()` 外是否还有其他生产调用点（例如 acp / headless profile）未穷尽检索。 |
 | Q110 | `配置、工具目录与运行模式` | “Standard / Code / Minimal / Creator” 这套英文名只在 packages/client/ui-agent-preset/src/client/locales.ts 的 BUILT_IN_PRESET_KEYS 里；preset.yml 里的源文案是中文（标准模式 / PTC 模式 / 极简模式 / 创造模式）。是否还有 CLI/TUI surface 用第三套名字，本仓无法验证（TUI 不在这个仓库里）。 |

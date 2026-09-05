@@ -4,7 +4,7 @@
 
 > 想知道「我现在到底懂多少」——看这张表，而不是听我自称。
 
-> 上游基线：DSH master `49a606bc`；最新tag/npm `alpha`=`0.1.2-alpha.5`（tag `db6bdc35`），根包`latest` / `next`仍为`0.1.1-rc.2` · 2026-09-02同步。alpha.4→alpha.5跨44提交/718文件；83个既有锚点命中，alpha.2→alpha.4页标stale，未穷尽tarball/install/native闭包。
+> 2026-09-05 同步：默认 npm `latest/next` 为 `0.1.2-rc.1`（`a66e4702`）；GitHub 最新版/master 为 `0.1.3-alpha.1`（`d347e703`），npm 根包尚无该版本；PyPI SDK `0.1.2rc1`。Cordis 镜像 `2ceea231`。完整 SHA 见 index；新旧版本分别核验，69 篇原有 stale 页仅作路由。
 
 
 ## 掌握等级定义
@@ -46,9 +46,10 @@
 | 配置、工具目录与运行模式 | **L2** | 26 | [topics/config-and-tools.md](topics/config-and-tools.md) | 8 条关键发现 |
 | alpha.1→alpha.2版本变更 | **L1** | 28 | [topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md](topics/版本变更-0.1.2-alpha.1-到-0.1.2-alpha.2.md) | Skill/Preset/MCP contract、ToolRuntime generation-borrow缺口与npm resolution |
 | alpha.2→alpha.4版本变更 | **L1** | 6 | [topics/版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md](topics/版本变更-0.1.2-alpha.2-到-0.1.2-alpha.4.md) | 发布状态、统计、breaking信号；详细contract待专项复验 |
-| alpha.4→alpha.5版本变更 | **L1** | 5 | [topics/版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md](topics/版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md) | 发布状态、handle-based persistence breaking信号；详细contract待专项复验 |
+| alpha.4→alpha.5版本变更 | **L1** | 5 | [topics/版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md](topics/版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md) | 2026-09-05 按发布 tag 复验；已纠正同期 master 的 SessionHandle 误归属 |
+| alpha.5→0.1.3-alpha.1版本对照 | **L2** | 13 | [topics/版本变更-0.1.2-alpha.5-到-0.1.3-alpha.1.md](topics/版本变更-0.1.2-alpha.5-到-0.1.3-alpha.1.md) | 2026-09-05：默认/最新/旧版路由、create/handle/format v2 与发布边界；源码核验，未跑 runtime |
 
-## 三、包组（51 组 / 251 包）
+## 三、既有包组路由（51 组；包数按各页版本解释）
 
 | 包组 | 掌握度 | 稳定性 | 包数 | 锚点 | 扩展点 | 陷阱 | 悬疑 |
 |---|---|---|---|---|---|---|---|
@@ -127,14 +128,14 @@
 
 | 指标 | 值 |
 |---|---|
-| 已建立页面 | 77 页（71 内容页 + 6 治理页） |
-| 掌握度分布 | L2 **35** · L1 **36** · L3/L4 **0** |
-| 锚点总数 | 998（71个内容页frontmatter锚点总数；正文重复行内引用不计） |
+| 已建立页面 | 79 页（73 内容页 + 6 治理页） |
+| 掌握度分布 | L2 **37** · L1 **36** · L3/L4 **0** |
+| 锚点总数 | 1058（73 个内容页 frontmatter 锚点总数；正文重复引用不计） |
 | 已记录陷阱 | 580 条（分布在各页「陷阱」一节） |
-| 文档与源码冲突 | 81 条（见 conflicts.md） |
-| 悬而未决 | 114 条（见 open-questions.md） |
+| 文档与源码冲突 | 82 条（见 conflicts.md，各条按其版本解释） |
+| 悬而未决 | 114 条；Q107 最新版部分获得源码证据，旧版仍待实测 |
 | 认知状态 | 全部 `verified_inference`（无 `fact`，因无 L3） |
-| 新鲜度 | `stale` 69页 · `fresh` 2页（identity、alpha.4→alpha.5版本页）；固定版本问题回目标tag核验 |
+| 新鲜度 | `stale` 69 页 · `fresh` 4 页；fresh 仅对各页 commit 有效，本轮不将旧通用页批量标为已验证 |
 
 ## 六、下一步学习建议（按 `dsh-wiki` B3 优先级）
 

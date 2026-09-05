@@ -4,7 +4,7 @@
 
 > 引用上游文档作为结论前，先查这里有没有该文档的已知偏差。
 
-> 建于 2026-08-20 · 当前复验上游 `b150a55` · 共 80 条
+> 建于 2026-08-20 · 条目按各自版本解释；最新新增 C082 核验 `d347e703`（2026-09-05）· 共 82 条
 
 
 | # | 来源单元 | 冲突内容 |
@@ -90,3 +90,5 @@
 | C079 | `bundle/base` | alpha.1 `packages/bundle/base/README.md:50` 称 telemetry “stays off unless you opt in”，但同tag `cordis.patch.yml:168-203`实际mount `session-telemetry-otel`并默认`mode: FEEDBACK_ONLY`；只有`DSH_TELEMETRY_DISABLED`非空时launcher追加disabled patch。以composition与profile-boot源码为准。 |
 | C080 | `llm-retry` | rc.2 `packages/llm/llm-retry/README.md:5,11`称每次retry会打开fresh numbered turn、关闭failed turn再开retry turn；同tag `packages/core/agent-loop/src/agent.ts:339-389`实际在同一`turn/step`的`while`中continue，一方`packages/llm/llm-retry/tests/retry.spec.ts:207-217`也断言两次adapter request只有一条`step/start`。以实现与测试为准。 |
 | C081 | `skill-filesystem` | rc.2正式tarball根`lib/types/index.d.ts`把`Config.providerName`注释为“Defaults to local”，但同tarball`lib/index.js`的Schemastery schema与`FileSystemSkillProvider` constructor均使用`filesystem`；tag源码和一方tests也断言plugin名/provider默认沿`filesystem`。实际runtime default是`filesystem`，`local`只是声明注释漂移。 |
+
+| C082 | `0.1.3-alpha.1 proxy` | Release 将代理支持概括为所有出站请求；固定 `d347e703908d0406b7a7ef80e3a0e594d86b2215` 的 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/util/http-proxy/README.md` 明确 OTLP 仍直连，`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session/session-telemetry-otel/tests/egress.spec.ts:63` 的用例断言 proxy 未收到 telemetry 请求。不能从全局 dispatcher 推出任意 SDK transport 都遵循代理；本次源码核验，未运行该测试。 |
