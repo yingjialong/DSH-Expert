@@ -74,6 +74,7 @@
 | [rc2-agent-request-attempt-schema.md](topics/rc2-agent-request-attempt-schema.md) | 固定rc.2：request/retry分层、pre-step reject的blocked日志与短路、occurrence及schema子集（verified_inference / fresh）。 | L2 | 14 |
 | [rc2-batch-cancel-value-validation.md](topics/rc2-batch-cancel-value-validation.md) | 固定rc.2：batch取消的started/pending区分、零lookup不保证、cancel非永久admission锁、value校验无预算（verified_inference / fresh）。 | L2 | 9 |
 | [rc1-standing-policy-inbox.md](topics/rc1-standing-policy-inbox.md) | 固定rc.1：standing工具限制、Skill双入口与Schedule own层、N+1步骤候选和inbox观察非veto（verified_inference / fresh）。 | L2 | 14 |
+| [rc1-input-authority-retry.md](topics/rc1-input-authority-retry.md) | 固定rc.1：requestId/MessageId与queue edit、plugin来源非授权、逻辑重试不同body及unary/mux策略范围（verified_inference / fresh）。 | L2 | 12 |
 | [alpha13-full-host-public-boundaries.md](topics/alpha13-full-host-public-boundaries.md) | 固定1.3-alpha.1对照1.2-rc.1：Host/Client、MCP/Skill、Team、attempt、handle及Web认证；发布状态需复查（verified_inference / fresh）。 | L2 | 36 |
 | [config-and-tools.md](topics/config-and-tools.md) [stale] | 配置与工具目录 — 非机密值六层覆盖梯子 + 凭据四层梯子 + 四种运行模式的真实定义（Creator mode 的目录 id 是 cordis）+ dsh --profile/bundle 补丁层 + tool-catalog 路由 + permission preset/approval。排错类问题的第一入口。 | L2 | 26 |
 

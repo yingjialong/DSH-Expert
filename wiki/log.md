@@ -803,3 +803,11 @@
 - **结论**：restrict过滤继承standing但不及own工具/run_code；assembly hook在收集之后。Skill模型catalog检查工具可见，用户slash加载独立；Schedule工具注册在Agent own层。各Goal/Jobs/subagent状态不因工具mask自动终止。N+1是同loop策略候选而非现成finalization合同；inbox splice/inserted/claimed/discarded均非可veto的steering闸。
 - **验证**：读取公开类型、实现及scoped工具一方测试源码；未运行模型/conformance。具体完整预算/消费者组合保持UNKNOWN。
 - **沉淀**：[固定rc.1专题](topics/rc1-standing-policy-inbox.md)、index/log；verified_inference，不评价外部项目，既有包组掌握度不变。
+
+## 2026-09-06 · 跨会话核验：rc.1输入身份与retry authority
+
+- **提问者**：agent；使用来信封装的确定来源ID成功回传完整答案，不猜测或回传历史来源。
+- **版本**：固定rc.1 `a66e4702047846cdaa10c66c9d3df3951f5ea70d`，远端tag一致；所有源码按SHA读取。
+- **新增事实**：prompt DTO只有requestId/sessionId/mode/content/timezone，Host构造user source；queue edit保留MessageId/source但没有revision比较。Host MessageSourceMap可扩展，plugin来源记录不等于认证授权。逻辑step允许经overflow产生不同body；llm-retry日志不是全adapter通用attempt权限。
+- **carrier边界**：公开namespace/method/args足以在相应入口拒绝而复用Gateway codec；正常mux拒绝unary方法，但直接in-process及可信Host service调用不自动受Connection unary策略约束。
+- **验证与沉淀**：只读类型、实现与既有测试源码，不安装/运行runtime；新增[固定专题](topics/rc1-input-authority-retry.md)、index/log，状态verified_inference，不含外部项目结论。
