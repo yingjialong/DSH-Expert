@@ -795,3 +795,11 @@
 - **版本与结论**：固定rc.2 `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`，远端tag一致。assembly先于pre-step；正常reject关闭turn为blocked、不进入该拟议step/provider，但不撤回assembly或前面step。reject应短路不调next；prepend不是assembly前置闸或绝对第一保证。
 - **新增事实**：claimed prompt不自动返还，独立inject/steer可保留；abort/throw与append失败须区分正常blocked路径。
 - **验证与沉淀**：读取公开类型、AgentLoop/Cordis实现及interception一方测试源码，未运行测试或模型；补既有[rc.2专题](topics/rc2-agent-request-attempt-schema.md)、索引和本日志，status仍verified_inference。
+
+## 2026-09-06 · 跨会话核验：rc.1固定standing与Agent策略
+
+- **提问者**：agent；四组完整答案已先回传来源任务并确认成功。
+- **版本**：固定rc.1 `a66e4702047846cdaa10c66c9d3df3951f5ea70d`，远端tag一致；全程固定SHA读源码，无版本切换。
+- **结论**：restrict过滤继承standing但不及own工具/run_code；assembly hook在收集之后。Skill模型catalog检查工具可见，用户slash加载独立；Schedule工具注册在Agent own层。各Goal/Jobs/subagent状态不因工具mask自动终止。N+1是同loop策略候选而非现成finalization合同；inbox splice/inserted/claimed/discarded均非可veto的steering闸。
+- **验证**：读取公开类型、实现及scoped工具一方测试源码；未运行模型/conformance。具体完整预算/消费者组合保持UNKNOWN。
+- **沉淀**：[固定rc.1专题](topics/rc1-standing-policy-inbox.md)、index/log；verified_inference，不评价外部项目，既有包组掌握度不变。
