@@ -77,6 +77,7 @@
 | [rc1-input-authority-retry.md](topics/rc1-input-authority-retry.md) | 固定rc.1：requestId/MessageId与queue edit、plugin来源非授权、逻辑重试不同body及unary/mux策略范围（verified_inference / fresh）。 | L2 | 12 |
 | [alpha13-full-host-public-boundaries.md](topics/alpha13-full-host-public-boundaries.md) | 固定1.3-alpha.1对照1.2-rc.1：Host/Client、MCP/Skill、Team、attempt、handle及Web认证；发布状态需复查（verified_inference / fresh）。 | L2 | 36 |
 | [config-and-tools.md](topics/config-and-tools.md) [stale] | 配置与工具目录 — 非机密值六层覆盖梯子 + 凭据四层梯子 + 四种运行模式的真实定义（Creator mode 的目录 id 是 cordis）+ dsh --profile/bundle 补丁层 + tool-catalog 路由 + permission preset/approval。排错类问题的第一入口。 | L2 | 26 |
+| [rc1-question-delivery-lifecycle.md](topics/rc1-question-delivery-lifecycle.md) | 固定rc.1：live pending重投、delegate与signal终止、迟到结果和非持久草稿（verified_inference / fresh）。 | L2 | 10 |
 
 ## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解
 

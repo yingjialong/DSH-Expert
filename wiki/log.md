@@ -811,3 +811,11 @@
 - **新增事实**：prompt DTO只有requestId/sessionId/mode/content/timezone，Host构造user source；queue edit保留MessageId/source但没有revision比较。Host MessageSourceMap可扩展，plugin来源记录不等于认证授权。逻辑step允许经overflow产生不同body；llm-retry日志不是全adapter通用attempt权限。
 - **carrier边界**：公开namespace/method/args足以在相应入口拒绝而复用Gateway codec；正常mux拒绝unary方法，但直接in-process及可信Host service调用不自动受Connection unary策略约束。
 - **验证与沉淀**：只读类型、实现与既有测试源码，不安装/运行runtime；新增[固定专题](topics/rc1-input-authority-retry.md)、index/log，状态verified_inference，不含外部项目结论。
+
+## 2026-09-07 · 跨会话核验：rc.1问答投递生命周期
+
+- **提问者**：agent；完整答案先成功回传来源任务，再做本次沉淀。
+- **版本**：rc.1 / `a66e4702047846cdaa10c66c9d3df3951f5ea70d`，远端tag一致，全部固定SHA读取。
+- **结论**：纯Client断线保留Host内存pending并重投同eventId；presentation delegate可继续Host下游，NO_PROVIDER并非重连等待；原signal/Host Context或source结束则取消。迟到响应按active client与delivery membership处理。Host重启没有旧ask Promise恢复，UI draft明确non-persisted。
+- **沉淀**：[专题](topics/rc1-question-delivery-lifecycle.md)、index/log，状态verified_inference。
+- **验证**：10个固定文件锚点、21个源码行号链接通过；只读一方重连/委派测试源码，未执行浏览器/Host重启或模型测试。
