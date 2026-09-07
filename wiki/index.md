@@ -1,3 +1,11 @@
+---
+title: DSH 知识库索引
+description: 按版本与主题定位 DSH 知识条目及治理文件。
+type: index
+status: active
+updated: 2026-09-07
+---
+
 # 知识库索引（index.md）
 
 > **回答时先读本文件**，据此挑 3-5 篇全文，**永远不要全量加载知识库**。

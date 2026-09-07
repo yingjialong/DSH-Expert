@@ -1,3 +1,11 @@
+---
+title: DSH 问答与学习日志
+description: 记录 DSH 咨询、核验、学习与知识沉淀的历史证据。
+type: reference
+status: active
+updated: 2026-09-07
+---
+
 # 问答与学习日志
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
