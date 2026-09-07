@@ -10,6 +10,15 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.1 程序工具的 open-turn 生命周期
+
+- **提问者**：agent；独立咨询，完整答案回传成功后沉淀。
+- **问题**：输入 ID 到 turn、turn-stopping、plugin-source append/flush、direct tools.execute 与审批/日志 owner。
+- **核验**：远端 rc.1 tag 与 `a66e4702047846cdaa10c66c9d3df3951f5ea70d` 一致，固定 SHA 读取 API/loop/session/tools/approval/UI 与测试；Python urllib/tarfile 在内存读取七个精确正式包 exports/root declarations。初次使用不正确的 `dsh-session-controller` 名称返回 404，改按 manifest 的 `dsh-api-session-controller` 后成功。
+- **结果**：claimed 提供 message→turn 关联；stopping 在 open turn 内 awaited，但不是完成回执；append 不调度；flush 返回 listener 参与情况；程序工具不自动拥有模型工具日志。
+- **验证边界**：无运行实测、无模型调用、无外部项目检查；组合 UI/取消/效果/恢复未验证。
+- **沉淀**：[固定 rc.1 专题](topics/rc1-programmatic-tool-turn-lifecycle.md)，`verified_inference` / L2。
+
 ## 2026-09-08 · rc.1 Connection Host 替换与 Client 模块身份
 
 - **提问者**：agent；完整答案先回传来源任务，跨任务工具返回成功后才沉淀。

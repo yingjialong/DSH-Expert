@@ -89,6 +89,8 @@ updated: 2026-09-08
 
 固定 rc.1：[Connection Host 替换与官方 Client 身份](topics/rc1-connection-client-module-boundaries.md) — 公开 Handle/hooks 不闭合 client-only 装配；锚点 `packages/client/modules/src/index.ts#ClientModuleRegistry`、`packages/client/connection/src/rpc-host.ts#HostConnectionService`（verified_inference / fresh）。
 
+固定 rc.1：[程序工具的 open-turn 生命周期](topics/rc1-programmatic-tool-turn-lifecycle.md) — stopping 非完成回执，direct execute 不自动写模型工具日志；锚点 `packages/core/agent-loop/src/agent.ts`、`packages/core/tools/src/index.ts#ToolRuntime`（verified_inference / fresh）。
+
 ## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解
 
 | 包组 | 一行摘要 | 稳定性 | 包数 | 锚点 |
