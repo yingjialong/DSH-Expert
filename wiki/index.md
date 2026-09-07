@@ -3,7 +3,7 @@ title: DSH 知识库索引
 description: 按版本与主题定位 DSH 知识条目及治理文件。
 type: index
 status: active
-updated: 2026-09-07
+updated: 2026-09-08
 ---
 
 # 知识库索引（index.md）
@@ -86,6 +86,8 @@ updated: 2026-09-07
 | [alpha13-full-host-public-boundaries.md](topics/alpha13-full-host-public-boundaries.md) | 固定1.3-alpha.1对照1.2-rc.1：Host/Client、MCP/Skill、Team、attempt、handle及Web认证；发布状态需复查（verified_inference / fresh）。 | L2 | 36 |
 | [config-and-tools.md](topics/config-and-tools.md) [stale] | 配置与工具目录 — 非机密值六层覆盖梯子 + 凭据四层梯子 + 四种运行模式的真实定义（Creator mode 的目录 id 是 cordis）+ dsh --profile/bundle 补丁层 + tool-catalog 路由 + permission preset/approval。排错类问题的第一入口。 | L2 | 26 |
 | [rc1-question-delivery-lifecycle.md](topics/rc1-question-delivery-lifecycle.md) | 固定rc.1：live pending重投、delegate与signal终止、迟到结果和非持久草稿（verified_inference / fresh）。 | L2 | 10 |
+
+固定 rc.1：[Connection Host 替换与官方 Client 身份](topics/rc1-connection-client-module-boundaries.md) — 公开 Handle/hooks 不闭合 client-only 装配；锚点 `packages/client/modules/src/index.ts#ClientModuleRegistry`、`packages/client/connection/src/rpc-host.ts#HostConnectionService`（verified_inference / fresh）。
 
 ## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解
 

@@ -3,12 +3,21 @@ title: DSH 问答与学习日志
 description: 记录 DSH 咨询、核验、学习与知识沉淀的历史证据。
 type: reference
 status: active
-updated: 2026-09-07
+updated: 2026-09-08
 ---
 
 # 问答与学习日志
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
+
+## 2026-09-08 · rc.1 Connection Host 替换与 Client 模块身份
+
+- **提问者**：agent；完整答案先回传来源任务，跨任务工具返回成功后才沉淀。
+- **问题**：唯一自有 HostConnectionHandle 能否保留官方 Client 完整入图，并复用公开 codec/auth 接缝。
+- **核验**：`git ls-remote` 核对 `dsh-v0.1.2-rc.1` 为 `a66e4702047846cdaa10c66c9d3df3951f5ea70d`；按 SHA 读取 Profile/Loader/Client registry/Connection 实现与测试。Python urllib + tarfile 在内存读取两个精确 rc.1 tarball 的 declarations/JS exports，未安装、未写上游。
+- **结果**：Handle 与 ClientTransportHooks 公开，但 registry 无 client-only contribution，默认 Host service 依赖未公开导出的 BrowserAuth；未找到满足全部约束的官方完整组合。bootstrap 原语只作为未验证候选，不推出不可能性。
+- **实测**：未运行 Host/Client；仅静态与发布产物核验，无模型调用。
+- **沉淀**：[固定 rc.1 专题](topics/rc1-connection-client-module-boundaries.md)，`verified_inference` / L2；未修改既有 fact。
 
 ## 条目格式
 
