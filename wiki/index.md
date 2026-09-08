@@ -80,7 +80,7 @@ updated: 2026-09-08
 | [rc2-session-binding-create-preset.md](topics/rc2-session-binding-create-preset.md) | 固定rc.2：SessionFace寻址、create耐久、idle不等blank及Preset选择；锚点 apiproxy/src/api-proxy.ts、agent-presets/src/index.ts（verified_inference / fresh）。 | L2 | 16 |
 | [rc2-tool-result-drain-credentials.md](topics/rc2-tool-result-drain-credentials.md) | 固定rc.2：result observer不等待Promise；adapter drain与Agent idle分离；per-operation credential与opaque ref边界（verified_inference / fresh）。 | L2 | 12 |
 | [rc2-agent-request-attempt-schema.md](topics/rc2-agent-request-attempt-schema.md) | 固定rc.2：request/retry、pre-step、exact-one与额外输入校验；锚点 tools/src/json-schema.ts、tools/src/index.ts（verified_inference / fresh）。 | L2 | 17 |
-| [rc2-batch-cancel-value-validation.md](topics/rc2-batch-cancel-value-validation.md) | 固定rc.2：batch取消的started/pending区分、零lookup不保证、cancel非永久admission锁、value校验无预算（verified_inference / fresh）。 | L2 | 9 |
+| [rc2-batch-cancel-value-validation.md](topics/rc2-batch-cancel-value-validation.md) | 固定rc.2：batch取消、runMaintenance及局部工具贡献；锚点 agent-loop/src/agent.ts、tools/src/index.ts（verified_inference / fresh）。 | L2 | 12 |
 | [rc1-standing-policy-inbox.md](topics/rc1-standing-policy-inbox.md) | 固定rc.1：standing工具限制、Skill双入口与Schedule own层、N+1步骤候选和inbox观察非veto（verified_inference / fresh）。 | L2 | 14 |
 | [rc1-input-authority-retry.md](topics/rc1-input-authority-retry.md) | 固定rc.1：requestId/MessageId与queue edit、plugin来源非授权、逻辑重试不同body及unary/mux策略范围（verified_inference / fresh）。 | L2 | 12 |
 | [alpha13-full-host-public-boundaries.md](topics/alpha13-full-host-public-boundaries.md) | 固定1.3-alpha.1对照1.2-rc.1：Host/Client、MCP/Skill、Team、attempt、handle及Web认证；发布状态需复查（verified_inference / fresh）。 | L2 | 36 |

@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.2 runMaintenance 与局部工具动态贡献
+
+- **提问者**：agent；限定补充，完整回传成功后沉淀。
+- **核验**：固定 rc.2 tag/SHA，回源确认维护 phase、cancel/wake、tools inherited/own view 与 disposer；只读内存核对正式 Agent runtime-types 声明。
+- **结果**：runMaintenance 取得 true-idle 执行权，status 仍 idle；动态 register/restrict 可用但取消不回滚，own 注册豁免 inherited filter，维护不锁所有 ToolRuntime 调用。
+- **沉淀**：复用[rc.2 生命周期专题](topics/rc2-batch-cancel-value-validation.md)，新增证据及分节，verified_inference；未运行组合实测、未检查外部项目。
+
 ## 2026-09-08 · rc.2 Preset 选择的 idle/blank 边界
 
 - **提问者**：agent；独立咨询，完整答案成功回传后沉淀。

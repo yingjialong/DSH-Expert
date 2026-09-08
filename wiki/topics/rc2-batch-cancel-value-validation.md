@@ -1,5 +1,8 @@
 ---
 title: rc.2 batch取消、Agent admission与同步schema value校验
+description: rc.2 取消收敛、维护执行权、动态工具贡献及同步校验的公开边界。
+type: reference
+updated: 2026-09-08
 status: verified_inference
 mastery: L2
 freshness: fresh
@@ -13,6 +16,9 @@ anchors:
   - packages/core/tools/src/index.ts
   - packages/core/tools/src/json-schema.ts
   - packages/core/tools/tests/json-schema.spec.ts
+  - packages/core/agent-loop/tests/loop.spec.ts
+  - packages/core/agent-loop/tests/scope-lifecycle.spec.ts
+  - packages/core/tools/tests/scoped.spec.ts
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
 verified_at: 2026-09-06
 asked_by: agent
@@ -64,3 +70,19 @@ dsh-tools根正式导出validateJsonSchemaValue；签名validateJsonSchemaValue(
 可核验的取消结论：DSH这一个函数没有中途合作取消接口；在它当前同步执行的JS线程里，普通timer、Promise.race超时或AbortSignal事件不能抢占该循环。外部隔离执行环境的终止可停止其所在执行单元，但“只能由Worker取消”不是DSH公共合同——也可能是进程等其他运行环境能力，且DSH不自动把此helper放入Worker。对具体Worker termination机制，本次未核验外部宿主，不报告其保证。仅给schema freeze/输出有界也不等于oneOf分支计算已有预算。
 未触及任意插件physical drain，不重复ToolSchema/observer旧议题。
 依据：rc.2 / b150a551b8d465e31e418e1b2eaf5e79bbb7d28e，固定commit路径见上；本地对象库 /Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness。
+
+## 2026-09-08 · runMaintenance 与 Agent-local 工具贡献
+
+本节同一固定 rc.2 SHA 复验，asked_by: agent，verified_inference；其他分节不因此刷新 verified_at。
+
+- 正式 Agent 方法是 `runMaintenance<T>(task:(signal:AbortSignal)=>Promise<T>):Promise<T>`，没有查到 betweenTurns。只允许 true idle，同步取得 maintenance phase；turn driver 或另一 maintenance 已占用时同步 throw，不排队。
+- 维护期间 public status 仍 idle；不能用 status===idle 判定维护锁空闲。task settle 后 finally 释放，已有 waking input 可立即启动 driver，因此 await runMaintenance 后不保证仍 idle。whenIdle 跟随维护及随后释放的 driver。
+- 输入仍可入 Inbox，wake latch 等 task 结束；删除全部 pending 可抑制 replay。cancel 默认清 Inbox/latch、abort task signal，keepInbox 保留 pending；非 disposed cause 后的新 waking input 可以再次 latch。
+- 无 Promise.race 强杀、无 task 返回后的强制 throwIfAborted、无注册回滚。任务忽略 signal 可以继续乃至成功；task 失败也会释放 phase 并可唤醒后续输入。
+- 存活 Agent 可通过 `agent.ctx.tools.register(definition)` 与 `restrict(filter)` 作局部动态贡献，无 blank 前置；各自返回 exact disposer，归 Agent Context effect，而非归维护 Promise。接口不自动重写 Preset/Header 或写 agent-preset/selected。
+- own 工具最后覆盖 inherited（含 standing）同名定义，撤销 own 后可重新露出未受限继承项。同层 duplicate 与 run_code 拒绝；register 不是 replace。
+- restrict 过滤 global+ancestor inherited surface，不过滤本 scope 的 own 注册。仅 own 名称无 inherited 对应项时不允许作 filter 名；`{}` 无效，`{allow:[]}` 则明确排除 inherited 工具。多 restriction 交集，各 disposer 只撤销自己。
+- cancel signal 不销毁 scope、不自动禁 register；真正 disposed Agent ctx 拒绝新增 effect。标准 owned dispose 等维护/driver quiescence 后才卸 scope。先撤旧再装新没有 all-or-old 事务或自动恢复。
+- definition 仍在 body dispatch 时重查；call 初始捕获 finalizeContent/参数快照不 pin 整个 definition。维护只阻止该 Agent driver 同时运行，不锁整个 ToolRuntime，不阻止其他直接调用或独立后台任务。
+
+证据：[正式维护合同](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent/src/runtime-types.ts#L95)、[实现与 wake](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent-loop/src/agent.ts#L134)、[维护取消/replay 测试](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent-loop/tests/loop.spec.ts#L80)、[inherited/own view](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/tools/src/index.ts#L1130)、[祖先限制测试](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/tools/tests/scoped.spec.ts#L204)、[inactive ctx 测试](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent-loop/tests/scope-lifecycle.spec.ts#L902)。本次内存读取正式 dsh-agent@0.1.1-rc.2 的 runtime-types.d.ts，确认 runMaintenance；未运行 maintenance+工具更新组合，不把上述原语当成全系统安全更新证明。
