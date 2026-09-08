@@ -4,6 +4,9 @@ status: verified_inference
 mastery: L2
 freshness: fresh
 anchors:
+  - packages/api/session-controller/src/commands.ts#prompt
+  - packages/api/session-controller/src/types.ts#SessionPromptRequest
+  - packages/llm/llm/src/message.ts#createUserMessage
   - packages/core/tools/src/index.ts
   - packages/core/tools/tests/scoped.spec.ts
   - packages/core/system-prompt/src/index.ts
@@ -19,7 +22,8 @@ anchors:
   - packages/subagent/subagent/src/types.ts
   - packages/interaction/user-approval/src/index.ts
 commit: a66e4702047846cdaa10c66c9d3df3951f5ea70d
-verified_at: 2026-09-06
+verified_at: 2026-09-09
+updated: 2026-09-09
 asked_by: agent
 ---
 
@@ -105,3 +109,24 @@ Agent.steer→send(input,'next-step',true)，inject→send(input,'next-step',fal
 没有找到统一、位于所有Agent.send/steer/inject/Inbox直接mutation之前且可await/veto的公开hook。agent/pre-step能在未来claim后拒绝拟议step或筛选messages，但已经过inbox admission与assembly，不能冒充统一steering入口闸。此结论只限所核公开面，不把任意外部输入策略设计带入本答复。
 
 依据：0.1.2-rc.1 / a66e4702047846cdaa10c66c9d3df3951f5ea70d；所有关键源码/测试链接固定该SHA。未读取调用方项目、未运行模型或conformance。
+
+
+## rc.1 prompt、inserted 与 MessageId 关联
+
+条件：TypeScript/Node 同进程 Host · 默认 AgentLoop · 普通 queue prompt · live 或显式恢复 Session · 文件系统与工具复用不限 · 无模型实测 · 固定本页 rc.1。源码与正式 types 核验，verified_inference；外部调用方上下文传播未验证。
+
+Controller wrapper 先检查 signal，commands.prompt await resolveAgent；admit 内始终 await admitPromptContent，纯文本 helper 虽不访问 attachment store 仍产生 await continuation。有图片另有 model resolve 和 image admission 串行链。随后同一 continuation 同步 createUserMessage→followup→send→inbox.splice；精确实现不经 Inbox.append 便利方法，二者最终都进入 mutate。
+
+mutate 顺序为 validate→session.append(agent/inbox/spliced)→live array.splice→discarded→inserted。AgentLoop 将 inserted 接到 scoped dispatcher，补入 agent；listener 同步调用，返回 Promise 不 await，throw/rejection 各自 catch/log，不 veto 插入或后续 wake。
+
+send 在 splice/通知返回后才 wakeDriver；idle driver 可同步进入 kick/turn/preStep 并 claim，再到其后 await。因此正常非重入链上 inserted 先于 claim，但 await Controller.prompt 回执时消息不保证仍 pending。Controller 到 admission 有 await，不是一整条同步栈；目标插入段没有独立 worker/timer 转投。外部 AsyncLocalStorage/代理/RPC 的正确传播与隔离不属于这些源码能代证的事实，监听器重入调用也可产生嵌套事件。
+
+新 createUserMessage 使用 randomUUID 生成真实 MessageId 并 deep-freeze。公开 inserted payload={agent,message}，含 message.id；没有独立 target/新建标志/requestId 字段。Controller 接收必需 requestId，并写到 message.source.rpcId；receipt 只有 accepted:true。这个 rpcId 是公开关联字段但不是幂等键，同 requestId 可再次产生新 MessageId。Controller 路径没有另一个 awaited 返回新 MessageId 的接缝；Agent.followup/send 返回 void。
+
+**编辑仍发 inserted**：updateQueue edit 以 freezeMessage({...message,content}) 保留旧 id/source，Inbox.replace 做一删一插，发 discarded+inserted。updateQueue steer remove 后再 steer 同一 message，也再发 inserted。直接 inject/followup/steer、Inbox append/prepend/splice/replace 以及 goal/schedule 等 producer 都可触发该观察事件；claim 只删除并发 claimed，历史 replay 只恢复投影而不重发 live inserted。
+
+因此 inserted 不等于 Controller 新投递。实际 message.id/source.rpcId 是上游给出的证据；requestId 唯一性、其他 producer 的字段使用、监听时机/过滤、异步上下文和重入假设须由使用方独立核验。观察事件不是 admission veto，也不证明后续模型执行、物理 flush 或 exactly-once。
+
+证据：[Controller admission/edit](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/commands.ts#L288)、[Agent send/wake](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/core/agent-loop/src/agent.ts#L95)、[Inbox mutation](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/core/agent/src/inbox.ts#L166)、[替换测试](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/core/agent/tests/agent.spec.ts#L54)。本地固定镜像根 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness`，使用 git show SHA:path。
+
+正式 rc.1 tarball 内存核对 Controller root prompt、request/receipt types 和 Agent runtime-types 的 inserted/followup 声明；未安装。测试仅读取同 id editedStep 仍进入 inserted 数组的断言，未运行应用或模型调用。

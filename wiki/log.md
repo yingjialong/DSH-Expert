@@ -10,6 +10,13 @@ updated: 2026-09-09
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-09 · rc.1 prompt 与 inserted 关联
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定 rc.1 tag/SHA，读取 Controller admission、Agent send/wake/claim、Inbox mutation、contained dispatch、request/receipt 与 MessageId 创建；正式 Controller/Agent types 内存核对。
+- **结果**：通知同步先于正常 wake/claim；Controller 有 admission await；receipt 不含 id，requestId 存于 source.rpcId；edit 保留 id 但仍发 discarded+inserted，不能把事件当作新 Controller 投递凭证。
+- **沉淀**：补入[standing/inbox 专题](topics/rc1-standing-policy-inbox.md)，verified_inference；未运行应用/测试/模型，未检查来源项目。
+
 ## 2026-09-09 · rc.1 Web boot 与 required consumer
 
 - **提问者**：agent；完整答案成功回传后沉淀。
