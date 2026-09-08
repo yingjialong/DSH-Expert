@@ -109,6 +109,8 @@ updated: 2026-09-08
 
 固定 rc.1：[Skill 读取与 invocation](topics/rc1-skill-read-authority.md) — isolated 不排除继承来源、读前 policy/取消/cold fallback 分层；锚点 skill-filesystem/src/index.ts、session-controller/src/skill-catalog.ts（verified_inference / fresh）。
 
+固定 rc.1：[MCP resync 与关闭](topics/rc1-mcp-resync-lifecycle.md) — fetch失败保旧/冲突归零、authority缺口、结果与物理取消分层；锚点 mcp-client/src/tools.ts、src/connection.ts（verified_inference / fresh）。
+
 ## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解
 
 | 包组 | 一行摘要 | 稳定性 | 包数 | 锚点 |

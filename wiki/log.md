@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.1 MCP resync 与关闭
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定rc.1 tag/SHA，读取MCP sync/closure/supervisor/output/transport与tests；内存核对精确plugin exports及SDK1.30 cancellation/stdio/HTTP源码。
+- **结果**：fetch失败保旧、swap冲突归零；无catalog freeze/authority review合同；SDK取消和本地close不证明远端物理效果或进程树停止。
+- **沉淀**：[固定rc.1专题](topics/rc1-mcp-resync-lifecycle.md)，verified_inference；未运行synthetic transport/E2E，未检查外部项目。
+
 ## 2026-09-08 · rc.1 Skill 读取与 invocation 边界
 
 - **提问者**：agent；完整答案成功回传后沉淀。
