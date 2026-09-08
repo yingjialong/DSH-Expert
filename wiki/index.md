@@ -111,6 +111,8 @@ updated: 2026-09-08
 
 固定 rc.1：[MCP resync 与关闭](topics/rc1-mcp-resync-lifecycle.md) — fetch失败保旧/冲突归零、authority缺口、结果与物理取消分层；锚点 mcp-client/src/tools.ts、src/connection.ts（verified_inference / fresh）。
 
+固定 rc.1：[pi-ai0.84.4三wire边界](topics/rc1-piai0844-wire-boundaries.md) — 本地model/cap调整、图片replay降级与HTTP拦截分层；锚点 llm-pi-ai/src/adapter.ts（verified_inference / fresh）。
+
 ## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解
 
 | 包组 | 一行摘要 | 稳定性 | 包数 | 锚点 |

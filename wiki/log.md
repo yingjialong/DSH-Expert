@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.1 与 pi-ai0.84.4 三wire边界
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定DSH rc.1 tag/SHA，读取model/profile/snapshot/图片/replay/discovery/credential；内存核对pi-ai0.84.4三formatter、simple-options和retry源码。
+- **结果**：本地目录不必访问/models；wire cap有clamp/minimum/thinking调整；图片/replay存在降级；model middleware不覆盖独立discovery，auth与HTTP headers不能混为单一优先级。
+- **沉淀**：[版本化专题](topics/rc1-piai0844-wire-boundaries.md)，verified_inference；无HTTP/模型/项目E2E，未读真实凭据或外部项目。
+
 ## 2026-09-08 · rc.1 MCP resync 与关闭
 
 - **提问者**：agent；完整答案成功回传后沉淀。
