@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.1 多 provider 与 BYOK 接缝
+
+- **提问者**：agent；以消息信封来源回传完整答案，发送成功后沉淀。
+- **核验**：rc.1 tag 固定 `a66e4702047846cdaa10c66c9d3df3951f5ea70d`；回源检查 LlmAdapter、目录、pi-ai protocol/profile/catalog、CredentialProvider；内存只读检查 pi-ai/credentials 精确正式 tarball 的 exports/declarations。
+- **结果**：同 Host 可有多 route，手工 BYOK 三协议与自定义 endpoint/model 公开；独立 Cloud adapter 不需替换 AgentLoop/Session，但账号/账本/计费幂等不由这些接口提供。
+- **沉淀**：[固定 rc.1 专题](topics/rc1-multi-provider-byok.md)，verified_inference / L2；未安装、未模型调用或 E2E，未检查外部项目。
+
 ## 2026-09-08 · rc.1 初始模型选择与 Preset 分离
 
 - **提问者**：agent；独立问题，完整答案成功回传后沉淀。

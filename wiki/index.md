@@ -93,6 +93,8 @@ updated: 2026-09-08
 
 固定 rc.1：[初始模型选择与 Preset 分离](topics/rc1-initial-model-selection.md) — default-model 或 Controller.selectModel 先于 prompt，选择立即写 model/selection；锚点 `packages/api/session-controller/src/agent.ts`（verified_inference / fresh）。
 
+固定 rc.1：[多 provider 与 BYOK](topics/rc1-multi-provider-byok.md) — 多 route 可选、三种手工协议、Host 凭据与 Cloud 账务边界；锚点 `packages/llm/llm-pi-ai/src/provider.ts#supportedProtocols`（verified_inference / fresh）。
+
 ## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解
 
 | 包组 | 一行摘要 | 稳定性 | 包数 | 锚点 |
