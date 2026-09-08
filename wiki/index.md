@@ -3,7 +3,7 @@ title: DSH 知识库索引
 description: 按版本与主题定位 DSH 知识条目及治理文件。
 type: index
 status: active
-updated: 2026-09-08
+updated: 2026-09-09
 ---
 
 # 知识库索引（index.md）
@@ -168,3 +168,5 @@ updated: 2026-09-08
 | [workflow](packages/workflow.md) [stale] | 模型自写编排脚本能力族：ctx.workflowEngine seam、worker-thread 引擎、workflow 与 ralph 两个工具消费者 | Product | 4 | 10 |
 | [webhook](packages/webhook.md) [stale] | 已认证外部事件的可信规则运行时：fire-and-forget 创建普通 Workspace Session，GitHub adapter 负责签名与有界 JSON intake | Product | 2 | 10 |
 | [workspace](packages/workspace.md) [stale] | workspace 实体单包：ctx.workspaceRegistry 管理目录、标题与有序会话归属；realpath 为身份权威，模型不可见 | Product | 1 | 8 |
+
+- [rc.1 Session 清单与 Preset 代际](topics/rc1-session-preset-enumeration.md)：清单跳过/失败、非原子边界与公开 livePresetMounts；锚点 `corpus.ts#listSessions` / `mount.ts#livePresetMounts`；verified_inference / fresh。

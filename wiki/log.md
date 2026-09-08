@@ -3,12 +3,19 @@ title: DSH 问答与学习日志
 description: 记录 DSH 咨询、核验、学习与知识沉淀的历史证据。
 type: reference
 status: active
-updated: 2026-09-08
+updated: 2026-09-09
 ---
 
 # 问答与学习日志
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
+
+## 2026-09-09 · rc.1 Session 清单与 Preset 代际
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定 rc.1 tag/SHA，读取 corpus、JSONL list/format、discovery/standing/mount；内存读取精确 npm Provider 元数据与 Preset types，未安装。
+- **结果**：无分页不等于完整原子快照；部分 header 被跳过；定义清单不枚举代际，但公开 livePresetMounts 覆盖仍安装的旧代际。
+- **沉淀**：[版本化专题](topics/rc1-session-preset-enumeration.md)，verified_inference；无运行时实测、模型调用或来源项目检查。
 
 ## 2026-09-08 · rc.1 与 pi-ai0.84.4 三wire边界
 
