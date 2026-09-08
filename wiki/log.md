@@ -10,6 +10,13 @@ updated: 2026-09-09
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-09 · rc.1 Web boot 与 required consumer
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定 rc.1 tag/SHA，读取 Web boot/page/renderer、模块装配、Cordis/Loader wait、ui-cordis/runner inject 与 shipped row；内存核对三个正式 rc.1 npm 包。
+- **结果**：稳定 PENDING 在 settle 后被 activation audit 拒绝；独立插件 DOM 可先存在；run fulfilled 包括失败呈现路径，不是 shell 成功 ACK；consumer 无 capability-off Config。
+- **沉淀**：补入[生命周期专题](topics/rc1-loader-client-lifecycle.md)，verified_inference；未运行应用/外部目标，未检查来源项目。
+
 ## 2026-09-09 · rc.1 Session 清单与 Preset 代际
 
 - **提问者**：agent；完整答案成功回传后沉淀。

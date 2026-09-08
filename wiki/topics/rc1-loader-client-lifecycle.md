@@ -16,13 +16,17 @@ anchors:
   - packages/client/modules/src/client/system.ts#ClientModuleSystem
   - packages/client/modules/tests/node-half.client.spec.ts
   - packages/client/hmr/src/client/index.ts
+  - packages/client/web/src/boot-page.ts#BootPage
+  - packages/client/ui-renderer/src/client/index.ts#UiRendererService
+  - packages/extensions/ui-cordis/src/client/index.ts#inject
+  - packages/extensions/cordis-client-runner/src/client/index.ts#apply
   - packages/client/web/src/boot.ts
   - packages/bundle/web-app/cordis.patch.yml
   - packages/preset/agent-presets/presets/cordis/agent.cordis.yml
   - packages/extensions/tool-cordis/src/index.ts
 commit: a66e4702047846cdaa10c66c9d3df3951f5ea70d
-verified_at: 2026-09-08
-updated: 2026-09-08
+verified_at: 2026-09-09
+updated: 2026-09-09
 asked_by: agent
 related:
   - "[[wiki/topics/rc1-connection-client-module-boundaries]]"
@@ -58,3 +62,30 @@ related:
 证据：[tree](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/vendor/loader/src/config/tree.ts#L25)、[disabled/import](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/vendor/loader/src/config/entry.ts#L61)、[fiber unload/await](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/vendor/cordis/src/fiber.ts#L675)、[Host registry](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/client/modules/src/index.ts#L738)、[HMR graph 忽略](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/client/hmr/src/client/index.ts#L103)、[自修改 preset](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/preset/agent-presets/presets/cordis/agent.cordis.yml#L241)。
 
 固定远端 tag 已核对，正式 Cordis4.0.2/Loader1.0.3 root declarations 在内存只读核对 create/update/remove/await/Fiber.dispose；Client 模块正式面复用同版既有核验并回源。未运行双侧 fixture，不报告完整 mount/dispose E2E 通过，不评价外部项目。
+
+
+## Web boot activation gate 与 required consumer
+
+固定同版源码新增核验，verified_inference；未运行应用。外部浏览器现象仅作为提问背景，不作为本地实测证据。
+
+`AppWebEntry` 构造器先画 BootPage；`run()` 等可选 `__DSH_BOOT_READY__.promise`，再经 facade.create 构建 ClientModuleSystem、预取 immediate tier、建 Context/Loader，并发 create 所有 manifest.plugins，await loader.await，最后 assertEntriesActive。仅审计通过才在依赖 fiber 中调用 uiRenderer.mount。bootstrap ready 是注入完成门，factory load 是注册，import/materialize、Cordis apply、renderer mount 各是独立阶段。
+
+稳定 PENDING 可以让 loader.await 返回，但随后的 activation audit 会拒绝该 entry，报 `web boot: N entry/entries did not activate` 和缺失服务。若其他 transport/apply 本身不 settle，审计尚不会到达。run catch 记录 console.error 并显示 `Failed to load plugins`，不自动 dispose/rollback 已执行插件，也不安排服务稍后出现后自动重跑 mount。因此独立插件 apply 已写入 DOM，可与官方 shell 尚未 mount 并存。
+
+`ui-cordis` Client 的 required inject 为 slots/locale/inputTriggers/remote/remote.dynamicCordisRunner/dynamicCordisRunner；apply(ctx) 无 config 参数或 capability-off 分支。Client runner 自己要求 remote.dynamicCordisRunner，并提供浏览器 dynamicCordisRunner。package manifest 的 inject 只安排图中已有依赖包的 factory arrival，不提供服务，也不使 service inject optional。
+
+shipped web-app Host patch row ID 为 `ui-cordis`，包为 `@deepseek-ai/dsh-client-ui-cordis`；runner rows 为 `cordis-host-runner`、`cordis-client-runner`。公开控制面为 Profile cordis.patch.yml / 后置 --patch 的 row 配置，EntryOptions 包含 disabled；不是 consumer 内部的 capability-off Config。Host 短 row ID 与 Client boot 的 package-name row 不可混用。
+
+可观察边界：
+
+- `__DSH_BOOT_READY__` fulfilled：注入门放行；不证明图 ACTIVE。
+- fiber.state / internal/status：该 fiber 当时状态；不证明整图或未来稳定。
+- loader.await fulfilled：当前 lifecycle settle；允许稳定 PENDING。
+- renderer ACTIVE/服务已提供：mount 方法可用；尚不等于已调用。
+- `run(): Promise<void>` fulfilled：可为 mount 路径，也可为捕获失败后显示失败页，无结构化成功值。
+- BootPage data-dsh-boot/data-dsh-boot-spinner、失败正文是可观察呈现；进度按曾 ACTIVE 集合单调累计，非成功 ACK。
+- 官方 uiRenderer.mount 被调用：此前 activation audit 通过、renderer 交接发生；hydrateRoot + BootHandoff/useLayoutEffect 有后续渲染，不能等同全部 UI/业务/远程读取完成。
+
+证据：[run/audit](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/client/web/src/boot.ts#L41)、[BootPage](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/client/web/src/boot-page.ts#L31)、[renderer](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/client/ui-renderer/src/client/index.ts#L25)、[consumer inject](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/extensions/ui-cordis/src/client/index.ts#L37)、[公开 row](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/bundle/web-app/cordis.patch.yml#L227)。固定镜像根经核实为 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness`，历史读取用 git show SHA:path。
+
+正式 rc.1 npm tarball 内存核对：dsh-client-web lib/types/boot.d.ts:24 为 run():Promise<void>，BootSeams 仅 loadBundle；ui-cordis ./client types 为 inject:string[]/apply(ctx):void，发布 JS 确认 required 名字；runner ./client types 也已核。未安装包。读取上游 boot.client.spec.ts 的 consumer→mount 顺序断言与 boot-page.client.spec.ts 的 pending 文本断言，未执行，不作为完整图 E2E 通过证据。

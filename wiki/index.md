@@ -103,7 +103,7 @@ updated: 2026-09-09
 
 固定 rc.2：[文件沙箱与执行环境](topics/rc2-sandbox-execution-worlds.md) — Seatbelt 文件效果、双能力工具接口、subprocess/same-world 边界；锚点 sandbox-local/src/profiles.ts（verified_inference / fresh）。
 
-固定 rc.1：[Loader 与 Client 生命周期](topics/rc1-loader-client-lifecycle.md) — settled/ACTIVE、导入、双侧卸载及保护政策归属；锚点 vendor/loader/src/config/tree.ts、client/hmr/src/client/index.ts（verified_inference / fresh）。
+固定 rc.1：[Loader 与 Client 生命周期](topics/rc1-loader-client-lifecycle.md) — settled/ACTIVE、Web boot activation gate、required consumer、双侧卸载及保护政策归属；锚点 vendor/loader/src/config/tree.ts、client/hmr/src/client/index.ts（verified_inference / fresh）。
 
 固定 rc.2：[todo 与问答归属](topics/rc2-todo-question-ownership.md) — todo turn reset、Host pending 与 Client 应答/loop 续步；锚点 tool-todo/src/index.ts、apiproxy/src/api-proxy.ts（verified_inference / fresh）。
 
