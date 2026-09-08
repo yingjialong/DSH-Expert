@@ -85,4 +85,14 @@ dsh-tools根正式导出validateJsonSchemaValue；签名validateJsonSchemaValue(
 - cancel signal 不销毁 scope、不自动禁 register；真正 disposed Agent ctx 拒绝新增 effect。标准 owned dispose 等维护/driver quiescence 后才卸 scope。先撤旧再装新没有 all-or-old 事务或自动恢复。
 - definition 仍在 body dispatch 时重查；call 初始捕获 finalizeContent/参数快照不 pin 整个 definition。维护只阻止该 Agent driver 同时运行，不锁整个 ToolRuntime，不阻止其他直接调用或独立后台任务。
 
+### 同日补充：agent/created 与显式 schema scope
+
+- `agent/created({agent}):void` 是同步 publication 特例：标准 factory 在 setup/commit、Session/Agent enter、session announcement 之后发它，再做 liveness check 和 session-start。此时同步注册/限制并读取工具 view 是公开能力，但已晚于 setup/import，不能当 pre-mount gate。
+- 同步 throw 传播并触发标准创建 rollback；返回 Promise 不被 await，rejection 仅报告。async callback 即使首个 await 前 throw 也是 Promise rejection，不能当同步 veto。
+- register/restrict/校验三次调用不自带共同事务；若自行吞掉错误，前面的贡献不自动消失。后续 listener/session-start/动态注册仍可改变 view。
+- `schemas(scope?:ScopeKey)` 省略参数是 global view，即使经 `agent.ctx.tools` 调用也如此；Agent 视图要显式 `schemas(agent)`。返回当前 schema 深拷贝，不含完整 definition，不锁定未来请求或注册对象。
+- own-only 名称不能用于 restrict；同名也有 inherited 项时可以列入，但只过滤 inherited、own shadow 仍可见。
+
+证据：[agent/created 合同](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent/src/runtime-types.ts#L147)、[announce 同步处理](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent/src/index.ts#L543)、[factory 顺序](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent-loop/src/index.ts#L550)、[schemas 参数](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/tools/src/index.ts#L1229)。本补充先回传来源任务再沉淀，仍为源码级 verified_inference。
+
 证据：[正式维护合同](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent/src/runtime-types.ts#L95)、[实现与 wake](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent-loop/src/agent.ts#L134)、[维护取消/replay 测试](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent-loop/tests/loop.spec.ts#L80)、[inherited/own view](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/tools/src/index.ts#L1130)、[祖先限制测试](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/tools/tests/scoped.spec.ts#L204)、[inactive ctx 测试](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent-loop/tests/scope-lifecycle.spec.ts#L902)。本次内存读取正式 dsh-agent@0.1.1-rc.2 的 runtime-types.d.ts，确认 runMaintenance；未运行 maintenance+工具更新组合，不把上述原语当成全系统安全更新证明。
