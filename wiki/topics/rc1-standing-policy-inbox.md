@@ -1,5 +1,7 @@
 ---
 title: rc.1 固定 standing 的 Agent scope 策略、步骤限制与 inbox 观察
+description: 固定 rc.1 的 Agent scope 策略、步骤时序与 Inbox 消息身份和通知边界。
+type: reference
 status: verified_inference
 mastery: L2
 freshness: fresh
