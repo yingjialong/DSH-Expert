@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.2 运行时职责与外部能力接缝复核
+
+- **提问者**：agent；完整职责级答案成功回传后记录。
+- **核验**：远端 rc.2 tag 与 `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e` 一致，按 SHA 读取 AgentLoop/Session/Workspace/projection/ToolRuntime/approval，以及 ShellExecutor/FileSystem/SessionPersistence/Storage/ClientTransportHooks、Skill/MCP 注册路径。
+- **结果**：运行时职责由 DSH 插件提供，外部能力可通过公开 provider/backend/carrier 合同接入；Skill 与 MCP tools 继续在官方 Registry/ToolRuntime 下组合，不需复制 AgentLoop。Session persistence 与 non-session storage 分层。
+- **沉淀**：仅复核日志，复用已有包组与集成路由；verified_inference。未运行宿主组合 E2E、未检查外部项目。
+
 ## 2026-09-08 · rc.1 RPC 一致性与 prompt 取消边界
 
 - **提问者**：agent；完整回传成功后沉淀。
