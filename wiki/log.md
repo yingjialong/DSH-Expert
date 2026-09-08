@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.2 Skill 资源与 parser
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定 rc.2 tag/SHA，读取 ResourceBase/renderer/provider/tool、filesystem parser 与测试；内存检查三个精确正式 tarball exports/declarations/JS。
+- **结果**：resourceBase 不执行资源操作；未知 license/compatibility/allowed-tools 不产生能力；description parser 无上限、目录另截断；无独立公开文本 parser 或完整文件树 manifest。
+- **沉淀**：[固定 rc.2 专题](topics/rc2-skill-resources-parser.md)，verified_inference；未运行资源部署/脚本/跨机器 E2E，未检查外部项目。
+
 ## 2026-09-08 · rc.2 标题异步与 prompt 投影
 
 - **提问者**：agent；完整答案成功回传后沉淀。

@@ -97,6 +97,8 @@ updated: 2026-09-08
 
 固定 rc.2：[自动标题与 prompt 投影](topics/rc2-title-system-prompt-publication.md) — 标题异步、system 的 adapter 映射、admission 与聊天/running 分层；锚点 session-title/src/index.ts、runtime/src/client/sessions/session.ts（verified_inference / fresh）。
 
+固定 rc.2：[Skill 资源与 parser](topics/rc2-skill-resources-parser.md) — resourceBase 是指引、未知 frontmatter 不授予能力、无独立公开 parser；锚点 skill-filesystem/src/index.ts（verified_inference / fresh）。
+
 ## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解
 
 | 包组 | 一行摘要 | 稳定性 | 包数 | 锚点 |
