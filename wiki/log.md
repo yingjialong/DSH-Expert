@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.1 Skill 读取与 invocation 边界
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定 rc.1 tag/SHA，读取 roots/watch/scan/get、Registry scope/cache、模型/user consumer 与 cold catalog；内存核对三个精确正式 Skill 包。
+- **结果**：isolated 只限本 Provider roots，invocation 不是访问控制；filesystem scan/用户 catalog 的 signal 边界和 cold fallback 阻止无条件一致性推断。
+- **沉淀**：[固定 rc.1 专题](topics/rc1-skill-read-authority.md)，verified_inference；未运行来源访问/E2E，未检查外部项目。
+
 ## 2026-09-08 · rc.2 todo 与 question 生命周期归属
 
 - **提问者**：agent；完整答案成功回传后沉淀。

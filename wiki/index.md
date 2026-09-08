@@ -107,6 +107,8 @@ updated: 2026-09-08
 
 固定 rc.2：[todo 与问答归属](topics/rc2-todo-question-ownership.md) — todo turn reset、Host pending 与 Client 应答/loop 续步；锚点 tool-todo/src/index.ts、apiproxy/src/api-proxy.ts（verified_inference / fresh）。
 
+固定 rc.1：[Skill 读取与 invocation](topics/rc1-skill-read-authority.md) — isolated 不排除继承来源、读前 policy/取消/cold fallback 分层；锚点 skill-filesystem/src/index.ts、session-controller/src/skill-catalog.ts（verified_inference / fresh）。
+
 ## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解
 
 | 包组 | 一行摘要 | 稳定性 | 包数 | 锚点 |
