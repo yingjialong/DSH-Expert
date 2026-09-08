@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.1 输入关联、assembly 与重建
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定 rc.1 tag/SHA，读取 create/adopt/cwd conflict、updateQueue、assembly 顺序、request capture、Session surface 与 reconstruction 测试。
+- **结果**：create canonical 边界不可过推；pre-step 晚于 assembly，assembly waterfall 也晚于同步 providers；日志重建依赖明确 dispatch prefix，不内建产品必要 context/authority 清单。
+- **沉淀**：补入[rc.1 输入专题](topics/rc1-input-authority-retry.md)，verified_inference；未运行演示/漏洞/项目测试，未检查外部项目。
+
 ## 2026-09-08 · rc.1 Loader 与双侧 Client 生命周期
 
 - **提问者**：agent；完整答案成功回传后沉淀。

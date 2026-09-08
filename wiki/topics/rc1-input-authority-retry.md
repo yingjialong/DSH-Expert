@@ -24,6 +24,11 @@ anchors:
   - packages/api/session-controller/src/index.ts
   - packages/api/session-controller/src/agent.ts
   - packages/attachment/attachment/src/admission.ts
+  - packages/core/system-prompt/src/index.ts#assemble
+  - packages/core/session/src/index.ts#deriveMessages
+  - packages/core/session/src/types.ts#SessionEventMap
+  - packages/core/agent-loop/src/runtime-context.ts
+  - packages/core/agent-loop/tests/request-reconstruction.spec.ts
 commit: a66e4702047846cdaa10c66c9d3df3951f5ea70d
 verified_at: 2026-09-06
 asked_by: agent
@@ -42,6 +47,20 @@ asked_by: agent
 - 相同 requestId 不去重；它只进入 source.rpcId，每次成功 admission 都 mint 新 MessageId。重复仍受独立准入条件约束，不能说必接受，也不能当成旧 receipt 重放。
 
 证据：[shared handler 与 mismatch](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/client/connection/src/rpc-host.ts#L115)、[同 helper 的 mismatch 测试](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/client/connection/tests/node-half.host.spec.ts#L400)、[prompt 入口](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/index.ts#L320)、[入箱前 await](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/commands.ts#L288)、[image admission queue](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/agent.ts#L363)、[文本/图片 admission](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/attachment/attachment/src/admission.ts#L57)。未运行取消竞态/重复请求 E2E；直接测试用 /rpc，/api 共享相同 helper 的结论来自实现交叉核验。
+
+## 同日补充：create、assembly 与 dispatch 前缀
+
+- create 可使用 caller sessionId，对同 id single-flight create/adopt 后检查每个调用者的 cwd/显式 effective preset。冲突分别为 session/conflict、agent-preset/conflict；workspaceId 与 cwd 互斥，workspace 缺失为 workspace/not-found。Workspace attach 在创建后，失败为 session/workspace-attach-failed，不代表 Session 未产生。
+- WorkspaceRegistry 对 Workspace 路径 realpath；Controller 任意 caller cwd 不因此统一 canonicalize，ensureSession 比较 header.cwd 字符串。create 无 model 字段，初始/待消费选择与 Preset 分开。
+- updateQueue 编辑仍 pending message 的 content，保留 id/source/role；非文本 edit 拒绝，非 pending 为 queue-item-not-found，steer 还要求 nextTurn/running。MessageId 不充当内容 revision；claimed 是同步 contained observation，不是 awaited veto。
+- 标准 assembly 先同步读 variables/sections/contexts/tool providers、clone/order schemas，再调用 awaited system-prompt/assemble。其后才 render context、agent/pre-step；因此两者均不能代表“任何 assembly provider 运行前的异步检查”。该 middleware context 也不自带 claimed message batch/产品 authority。
+- execution 的 tools/pre-execute 是可被外层改写的 awaited waterfall；guard 单调但同步且晚于 approval，body 检查只早于自身效果。restrict 仅 inherited，own 豁免，run_code 保留且在非 native scope 独立加入；schemas 要显式 Agent scope。
+- Session 没有每 attempt 单条完整 GenerateOptions.messages 事件。user/message、assistant/message、tool/result 通过 surfaceOp 构成历史；request/header 存 config/system/tools 而非 messages，request/context 是模型容量信息。runtime context 可由 plugin snapshot source.sections 保存归因。
+- assistant/message.sourceEventSeqs 指 chunk seq，tool/result 指 tool/call；surface replacement 使 shadowed nodes 不再进入当前 deriveMessages。sourceEventSeqs 是来源引用，不是产品 authority 或必要 context 清单。
+- 公开 Session/deriveMessages/foldRequestHeader 可从明确 dispatch 前缀重建；官方测试将重建结果与捕获 request.messages 比较。但 current final surface 不等历史 request，任意后置日志变更/重试/辅助调用需要准确 cutoff，不能默认一 turn/step 就唯一对应一次物理请求。
+- 必要 context 是否缺失须有该消费者定义的期望；标准日志只给已记录的内容、来源与结构约束，不自动携带外部 Action authority/资源完整性/语义必需性。
+
+证据：[create](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/commands.ts#L70)、[identity compare](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/agent.ts#L233)、[assembly](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/core/system-prompt/src/index.ts#L537)、[request capture](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/core/agent-loop/src/agent.ts#L341)、[重建直接测试](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/core/agent-loop/tests/request-reconstruction.spec.ts#L716)。asked_by: agent；先回传后沉淀，verified_inference，未运行新测试。
 
 固定dsh-v0.1.2-rc.1 / a66e4702047846cdaa10c66c9d3df3951f5ea70d，本次只读核对远端tag与本地对象一致。下列均按该完整SHA读取，不用rc.2/1.3补齐。认知状态统一VERIFIED_INFERENCE（源码/公开类型及控制流交叉核验，本库L1/L2封顶）；运行组合未验证之处为UNKNOWN。本次没有安装或runtime测试，没有检查调用方项目。
 

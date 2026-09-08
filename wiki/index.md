@@ -82,7 +82,7 @@ updated: 2026-09-08
 | [rc2-agent-request-attempt-schema.md](topics/rc2-agent-request-attempt-schema.md) | 固定rc.2：request/retry、pre-step、exact-one与额外输入校验；锚点 tools/src/json-schema.ts、tools/src/index.ts（verified_inference / fresh）。 | L2 | 17 |
 | [rc2-batch-cancel-value-validation.md](topics/rc2-batch-cancel-value-validation.md) | 固定rc.2：batch取消、runMaintenance及局部工具贡献；锚点 agent-loop/src/agent.ts、tools/src/index.ts（verified_inference / fresh）。 | L2 | 12 |
 | [rc1-standing-policy-inbox.md](topics/rc1-standing-policy-inbox.md) | 固定rc.1：standing工具限制、Skill双入口与Schedule own层、N+1步骤候选和inbox观察非veto（verified_inference / fresh）。 | L2 | 14 |
-| [rc1-input-authority-retry.md](topics/rc1-input-authority-retry.md) | 固定rc.1：输入身份/取消、RPC路径一致性、重试与授权；锚点 connection/src/rpc-host.ts、session-controller/src/commands.ts（verified_inference / fresh）。 | L2 | 17 |
+| [rc1-input-authority-retry.md](topics/rc1-input-authority-retry.md) | 固定rc.1：输入身份/取消、RPC一致性、assembly与dispatch前缀重建；锚点 session-controller/src/commands.ts、agent-loop/src/agent.ts（verified_inference / fresh）。 | L2 | 22 |
 | [alpha13-full-host-public-boundaries.md](topics/alpha13-full-host-public-boundaries.md) | 固定1.3-alpha.1对照1.2-rc.1：Host/Client、MCP/Skill、Team、attempt、handle及Web认证；发布状态需复查（verified_inference / fresh）。 | L2 | 36 |
 | [config-and-tools.md](topics/config-and-tools.md) [stale] | 配置与工具目录 — 非机密值六层覆盖梯子 + 凭据四层梯子 + 四种运行模式的真实定义（Creator mode 的目录 id 是 cordis）+ dsh --profile/bundle 补丁层 + tool-catalog 路由 + permission preset/approval。排错类问题的第一入口。 | L2 | 26 |
 | [rc1-question-delivery-lifecycle.md](topics/rc1-question-delivery-lifecycle.md) | 固定rc.1：live pending重投、delegate与signal终止、迟到结果和非持久草稿（verified_inference / fresh）。 | L2 | 10 |
