@@ -103,6 +103,8 @@ updated: 2026-09-08
 
 固定 rc.2：[文件沙箱与执行环境](topics/rc2-sandbox-execution-worlds.md) — Seatbelt 文件效果、双能力工具接口、subprocess/same-world 边界；锚点 sandbox-local/src/profiles.ts（verified_inference / fresh）。
 
+固定 rc.1：[Loader 与 Client 生命周期](topics/rc1-loader-client-lifecycle.md) — settled/ACTIVE、导入、双侧卸载及保护政策归属；锚点 vendor/loader/src/config/tree.ts、client/hmr/src/client/index.ts（verified_inference / fresh）。
+
 ## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解
 
 | 包组 | 一行摘要 | 稳定性 | 包数 | 锚点 |

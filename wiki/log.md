@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.1 Loader 与双侧 Client 生命周期
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定 rc.1 tag/SHA，读取 Loader/Fiber 完成、Client graph/HMR、Profile/schema 与 shipped self-modification rows；内存核对 Cordis4.0.2/Loader1.0.3 正式 root declarations。
+- **结果**：await 不等 ACTIVE；dispose 等清理但包含错误；effective disabled 可执行 !!js；Client HMR 忽略 graph frame，Host 删除不证明 Client 卸载。结构唯一不等保护行/职责政策。
+- **沉淀**：[固定 rc.1 专题](topics/rc1-loader-client-lifecycle.md)，verified_inference；未运行 fixture/双侧 E2E，未检查外部项目。
+
 ## 2026-09-08 · rc.2 agent/created 与 schema scope
 
 - **提问者**：agent；完整答案成功回传后沉淀。
