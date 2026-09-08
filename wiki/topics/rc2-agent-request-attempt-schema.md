@@ -1,5 +1,8 @@
 ---
 title: rc.2 agent/request 的 attempt 边界、occurrence 身份与工具 schema 子集
+description: 固定 rc.2 的请求控制流、工具 schema 子集与输入校验和审批顺序。
+type: reference
+updated: 2026-09-08
 status: verified_inference
 mastery: L2
 freshness: fresh
@@ -18,6 +21,9 @@ anchors:
   - packages/core/tools/src/index.ts#ToolDefinition
   - packages/core/tools/src/json-schema.ts#assertObjectJsonSchema
   - packages/core/tools/tests/json-schema.spec.ts
+  - packages/core/tools/src/schema.ts#defineTool
+  - packages/core/tools/tests/scoped.spec.ts
+  - packages/core/tools/tests/tools.spec.ts
 commit: b150a551b8d465e31e418e1b2eaf5e79bbb7d28e
 verified_at: 2026-09-06
 asked_by: agent
@@ -64,3 +70,18 @@ Native ToolSchema只含name/description/parameters，没有顶层title/metadata/
 校验用显式任务栈与seen集合拒绝对象环，允许sibling reuse；没有maxDepth/maxNodes/时间/AbortSignal预算参数。接受5000层的测试证明避免JS递归栈，不证明有执行资源预算。该路径无network/filesystem loader或ref resolver；但任意JS输入的getter/Proxy可在属性读取时执行自身代码，不能将普通JSON对象校验解释为JS沙箱。[遍历](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/tools/src/json-schema.ts#L226-L279) · [$ref拒绝](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/tools/tests/json-schema.spec.ts#L118-L128) · [5000层测试](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/tools/tests/json-schema.spec.ts#L279-L286)。
 
 未指定具体adapter/SDK时，内部HTTP重试/fallback配置与次数未知；外部健康观察如何失效及关联不属于DSH保证。本页不评价调用方项目。
+
+## 2026-09-08 · 互斥 union 与额外输入校验
+
+本节按同一固定 rc.2 SHA 复核，asked_by: agent，状态 verified_inference；上文未涉及部分不因此更改 verified_at。
+
+- `validateJsonSchemaValue` 对 oneOf 的通过条件为恰好一个分支零 violation。官方测试确认 number/integer 对 1 匹配两分支而拒绝，1.5 只匹配 number 则接受。
+- **条件性推论**：string（可带 type-correct enum）/null、boolean/null 两组值域互斥，保留全部分支约束时，anyOf→oneOf 的 JSON 值接受集合相同。不是内置 anyOf 支持或通用转换保证；number/integer 等重叠值域不能照搬。
+- oneOf 至少两分支，同节点不能带 type；object-root 消费者仍要求根 object，可在 property 放 union。minimum/anyOf 本身不属于该版支持子集。
+- 没有独立的 ToolDefinition.validate/refine 或扩展 schema keyword registry。公开输入准入面为工具自身 execute、同步 `ctx.tools.guard`、异步 `tools/pre-execute` waterfall。
+- 裸 ToolDefinition 的 parameters 不自动校验 value；官方 raw-tool 测试证实缺 required 字段仍进入 execute。defineTool 的 execute wrapper 才先验证支持子集，再调用户 body；自定义下限仍由工具检查，可用公开 ToolArgsError 表达 INVALID_ARGS。
+- 标准顺序是 arguments snapshot/freeze → pre-execute → 最终 ask 时 ApprovalService → allow 时 guards → around-dispatch → body 内参数验证/执行 → output/post/final。guard 在审批之后、body 之前；不能保证早于审批 UI/audit。execute 开头校验只能阻止自己的后续操作，不能撤销 earlier hooks 或日志。
+- pre-execute 最终 deny 在 runtime 标准 ask 前；一个 listener 的局部 deny 可被外层 waterfall 改写。guard 返回 string 为单调拒绝、undefined 为不干预；按 Context 决定全局或 Agent scope，可只匹配既有 tool name，无需新工具。它不是 ToolDefinition 上的成员，也不能返回 Promise。
+- integer 检查是 JSON number + Number.isInteger，不包含 >=1。额外下限检查可收紧 body 准入，但删除 minimum 仍扩大公布 schema 的值集合；不能宣称 schema 原义完整保留。不得以 coercion 把字符串变成 integer。
+
+证据：[exact-one 实现](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/tools/src/json-schema.ts#L486)、[重叠测试](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/tools/tests/json-schema.spec.ts#L384)、[gate→ask→guard](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/tools/src/index.ts#L1461)、[defineTool 验证](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/tools/src/schema.ts#L542)、[raw-tool 测试](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/tools/tests/tools.spec.ts#L2664)、[scoped guard 测试](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/tools/tests/scoped.spec.ts#L284)。未运行转换器/MCP/审批或实际副作用测试，不评价外部 schema 未提供部分。

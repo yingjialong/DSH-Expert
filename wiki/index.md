@@ -79,7 +79,7 @@ updated: 2026-09-08
 | [core-chain.md](topics/core-chain.md) [stale] | agent loop 函数级调用链、agent-loop 可替换性的三道机制保证、session 三层 derive 与持久化/projection seam、会话并发隔离 12 条「条件→结论」、preset standing mount 与 scope 父链、LlmAdapter 接入点、system-prompt/context 注入时机 | L2 | 27 |
 | [rc2-session-binding-create-preset.md](topics/rc2-session-binding-create-preset.md) | 固定rc.2：SessionFace命令不随current改目标；create非落盘回执；无原子abandon但有同id blank preset select（verified_inference / fresh）。 | L2 | 16 |
 | [rc2-tool-result-drain-credentials.md](topics/rc2-tool-result-drain-credentials.md) | 固定rc.2：result observer不等待Promise；adapter drain与Agent idle分离；per-operation credential与opaque ref边界（verified_inference / fresh）。 | L2 | 12 |
-| [rc2-agent-request-attempt-schema.md](topics/rc2-agent-request-attempt-schema.md) | 固定rc.2：request/retry分层、pre-step reject的blocked日志与短路、occurrence及schema子集（verified_inference / fresh）。 | L2 | 14 |
+| [rc2-agent-request-attempt-schema.md](topics/rc2-agent-request-attempt-schema.md) | 固定rc.2：request/retry、pre-step、exact-one与额外输入校验；锚点 tools/src/json-schema.ts、tools/src/index.ts（verified_inference / fresh）。 | L2 | 17 |
 | [rc2-batch-cancel-value-validation.md](topics/rc2-batch-cancel-value-validation.md) | 固定rc.2：batch取消的started/pending区分、零lookup不保证、cancel非永久admission锁、value校验无预算（verified_inference / fresh）。 | L2 | 9 |
 | [rc1-standing-policy-inbox.md](topics/rc1-standing-policy-inbox.md) | 固定rc.1：standing工具限制、Skill双入口与Schedule own层、N+1步骤候选和inbox观察非veto（verified_inference / fresh）。 | L2 | 14 |
 | [rc1-input-authority-retry.md](topics/rc1-input-authority-retry.md) | 固定rc.1：requestId/MessageId与queue edit、plugin来源非授权、逻辑重试不同body及unary/mux策略范围（verified_inference / fresh）。 | L2 | 12 |

@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.2 oneOf 与附加输入校验
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：远端 rc.2 tag 与 `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e` 一致；固定源码检查 exact-one、integer、defineTool、pre/ask/guard/body 顺序与官方测试断言。
+- **结果**：互斥 string/null 与 boolean/null 转换仅在值域上等价；guard 晚于审批；body 可附加 minimum，但不能宣称删去 keyword 后 schema 原义完整保留。
+- **沉淀**：复用[rc.2 请求与 schema 专题](topics/rc2-agent-request-attempt-schema.md)，新增本次分节及证据，verified_inference；未运行外部 MCP/转换器/实际效果。
+
 ## 2026-09-08 · rc.1 多 provider 与 BYOK 接缝
 
 - **提问者**：agent；以消息信封来源回传完整答案，发送成功后沉淀。
