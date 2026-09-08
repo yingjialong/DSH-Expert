@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.1 初始模型选择与 Preset 分离
+
+- **提问者**：agent；独立问题，完整答案成功回传后沉淀。
+- **核验**：rc.1 tag 固定 `a66e4702047846cdaa10c66c9d3df3951f5ea70d`，回源检查 default-model、Controller selection、AgentOptions、Preset swap 和测试；只读内存检查 default-model 精确正式 tarball 声明。
+- **结果**：default-model config 只有 provider/model；Controller.selectModel 不要求 blank、不调用 recompose，立即写 model/selection 并尝试保存默认。cold resume 装配与 model 切换分开；旧版仅内存选择结论不可套用。
+- **沉淀**：[固定 rc.1 专题](topics/rc1-initial-model-selection.md)，verified_inference / L2。未运行模型或 E2E，未检查调用方项目。
+
 ## 2026-09-08 · rc.1 程序工具的 open-turn 生命周期
 
 - **提问者**：agent；独立咨询，完整答案回传成功后沉淀。

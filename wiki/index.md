@@ -91,6 +91,8 @@ updated: 2026-09-08
 
 固定 rc.1：[程序工具的 open-turn 生命周期](topics/rc1-programmatic-tool-turn-lifecycle.md) — stopping 非完成回执，direct execute 不自动写模型工具日志；锚点 `packages/core/agent-loop/src/agent.ts`、`packages/core/tools/src/index.ts#ToolRuntime`（verified_inference / fresh）。
 
+固定 rc.1：[初始模型选择与 Preset 分离](topics/rc1-initial-model-selection.md) — default-model 或 Controller.selectModel 先于 prompt，选择立即写 model/selection；锚点 `packages/api/session-controller/src/agent.ts`（verified_inference / fresh）。
+
 ## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解
 
 | 包组 | 一行摘要 | 稳定性 | 包数 | 锚点 |
