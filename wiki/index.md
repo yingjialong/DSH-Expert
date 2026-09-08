@@ -77,7 +77,7 @@ updated: 2026-09-08
 | [版本变更-0.1.2-alpha.5-到-0.1.3-alpha.1.md](topics/版本变更-0.1.2-alpha.5-到-0.1.3-alpha.1.md) | 默认 rc.1、最新 alpha 与旧 rc.2 的 SHA 路由；create/handle/format v2 断点及发布边界（verified_inference / fresh）。 | L2 | 13 |
 | [plugin-development.md](topics/plugin-development.md) [stale] | 插件开发全路径：从零写 dsh-plugin 的步骤路由、四种插件形态骨架、依赖纪律（Service Definition 而非 Provider）、Config/schema、事件与扩展点选择、skill provider registry、bundle/profile 发布与八条陷阱 | L2 | 35 |
 | [core-chain.md](topics/core-chain.md) [stale] | agent loop 函数级调用链、agent-loop 可替换性的三道机制保证、session 三层 derive 与持久化/projection seam、会话并发隔离 12 条「条件→结论」、preset standing mount 与 scope 父链、LlmAdapter 接入点、system-prompt/context 注入时机 | L2 | 27 |
-| [rc2-session-binding-create-preset.md](topics/rc2-session-binding-create-preset.md) | 固定rc.2：SessionFace命令不随current改目标；create非落盘回执；无原子abandon但有同id blank preset select（verified_inference / fresh）。 | L2 | 16 |
+| [rc2-session-binding-create-preset.md](topics/rc2-session-binding-create-preset.md) | 固定rc.2：SessionFace寻址、create耐久、idle不等blank及Preset选择；锚点 apiproxy/src/api-proxy.ts、agent-presets/src/index.ts（verified_inference / fresh）。 | L2 | 16 |
 | [rc2-tool-result-drain-credentials.md](topics/rc2-tool-result-drain-credentials.md) | 固定rc.2：result observer不等待Promise；adapter drain与Agent idle分离；per-operation credential与opaque ref边界（verified_inference / fresh）。 | L2 | 12 |
 | [rc2-agent-request-attempt-schema.md](topics/rc2-agent-request-attempt-schema.md) | 固定rc.2：request/retry、pre-step、exact-one与额外输入校验；锚点 tools/src/json-schema.ts、tools/src/index.ts（verified_inference / fresh）。 | L2 | 17 |
 | [rc2-batch-cancel-value-validation.md](topics/rc2-batch-cancel-value-validation.md) | 固定rc.2：batch取消的started/pending区分、零lookup不保证、cancel非永久admission锁、value校验无预算（verified_inference / fresh）。 | L2 | 9 |

@@ -1,5 +1,8 @@
 ---
 title: rc.2 SessionFace 寻址、创建耐久性与 blank preset 切换边界
+description: 区分 Session 寻址、blank Preset 选择、idle 与历史会话迁移原语。
+type: reference
+updated: 2026-09-08
 status: verified_inference
 mastery: L2
 freshness: fresh
@@ -58,3 +61,19 @@ asked_by: agent
 ## 验证边界
 
 阅读一方 binding identity、blank preset select、JSONL lazy materialization 测试源码交叉核验，未执行测试或调用模型。具体部署的 backend、事件序列、落盘结果与故障后存活状态不在已验证范围，没有用未验证假设补齐条件。
+
+## 2026-09-08 · idle 不等于 blank，生命周期原语不是 Preset 迁移事务
+
+本节固定同一 rc.2 SHA 复验，asked_by: agent，verified_inference；不是外部项目迁移方案。
+
+- 精确 Host 业务面是 `ctx.apiProxy.agentPresets.select(RpcRequest<{sessionId,agentPreset}>)`；Client `IApiClient.agentPresets.select(payload,signal?)` 自动包装请求。wire 方法 `agentPreset.select`。正式 `dsh-host-apiproxy@0.1.1-rc.2` root、`/api`、`/api/agent-presets`、`/client` 可达相关声明，`/client` 实际指向 fetch/client 产物。不是 rc.1 新接口的 `AgentPresets.select(agent,id)`。
+- `sessionBlank` 遍历整个 Session.events，只要出现过 turn/start 就拒绝。已完成历史 turn 后的 idle 仍非 blank；whenIdle 不改变这个事实，也不关闭未来输入。已有 command/title 等独立事件不一定使 Session 非 blank。
+- select 不 cancel、不清 Inbox、不等待 drain/idle；它只串行同 Session 的 select。blank 检查与 await recompose 不形成和 prompt 共用的 reservation。
+- 公开 `recompose(agentCtx,id)` 文档明确要求调用者确认尚未产出内容；它本身不读 Session history。不做检查不等于允许非 blank 使用，更不保证在途 call pin 住旧 definition。该版工具在审批后 body dispatch 仍会按 name/scope 解析。
+- 成功 blank switch 保留同一 Agent/Session、创建 header 和已有历史，scope 仅 rebind 到新 standing；stock switch 不清模型选择。但新 preset 插件是否改变下一请求配置不能由此保证。旧 standing 留存不等于所有调用继续用旧 scope。
+- durable `agent-preset/selected` Session event 提交后，owner 才发同名 Cordis 通知 `(sessionId,agentPreset)`，api-remotes 可转发；emit 通知不能代替写日志。`resolveSessionPreset` 取最后 selection，再 fallback 创建 header。
+- 公共 `AgentRegistry.create/resume` 返回 owned AgentHandle，get 只给裸 Agent；无通用 `ctx.agents.dispose(id)`。标准 handle.dispose 会 cancel(disposed)→whenIdle→scope.dispose→detach，不能当作“保留在途 call 的无影响迁移”。
+- 持久身份恢复用 resume，factory setup 是公开的 unpublished、composition-only mount 阶段。create 同 id 不是迁移原语，正常 Host 对不一致 effective preset 报 conflict。setup 能组合插件不证明换入另一 preset 后的历史/Inbox/模型选择/有效记录形成完整迁移事务。
+- content-addressed id 是外部制品规则；本版不校验其内容摘要，standing 的 stamp 为 composition 文件 mtime/size。它不豁免 blank 限制。
+
+证据：[blank 判据](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/host/apiproxy/src/api-proxy.ts#L440)、[started lock 测试](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/host/apiproxy/tests/api-proxy-agent-preset.spec.ts#L430)、[recompose 前置](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/preset/agent-presets/src/index.ts#L437)、[owned disposal](https://github.com/deepseek-ai/deepseek-harness/blob/b150a551b8d465e31e418e1b2eaf5e79bbb7d28e/packages/core/agent-loop/src/index.ts#L497)。本次只读内存检查 agent-presets/host-apiproxy 精确 rc.2 正式 tarball exports/root declarations，未运行迁移或在途调用测试；上文其他主题不因此刷新核验日期。

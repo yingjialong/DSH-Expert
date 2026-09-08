@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.2 Preset 选择的 idle/blank 边界
+
+- **提问者**：agent；独立咨询，完整答案成功回传后沉淀。
+- **核验**：固定 rc.2 tag/SHA，检查 ApiProxy select、sessionBlank、standing recompose、owned create/resume/dispose、effective preset fold 与直接测试；内存读取 agent-presets/host-apiproxy 精确正式 tarball。
+- **结果**：已有 turn 的 idle Session 仍被 select 锁定；底层 recompose 有 caller-owned blank 前置；owned 生命周期原语不构成历史 Preset 迁移事务。
+- **沉淀**：复用[rc.2 Session/Preset 专题](topics/rc2-session-binding-create-preset.md)新增分节，verified_inference；未实测迁移/在途调用，未检查外部项目。
+
 ## 2026-09-08 · rc.2 oneOf 与附加输入校验
 
 - **提问者**：agent；完整答案成功回传后沉淀。
