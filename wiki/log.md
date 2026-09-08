@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.1 RPC 一致性与 prompt 取消边界
+
+- **提问者**：agent；完整回传成功后沉淀。
+- **核验**：固定 rc.1 tag/SHA，检查 shared rpcFetchHandler、Controller 入口、commands await、image admission chain、附件 helper 与 mismatch 测试。
+- **结果**：路径与 envelope method 必须一致；prompt 只入口查 signal，后续 abort 不保证不入箱；requestId 重复不去重。
+- **沉淀**：复用[rc.1 输入专题](topics/rc1-input-authority-retry.md)，新增分节与锚点，verified_inference；未运行竞态/E2E，未检查外部项目。
+
 ## 2026-09-08 · rc.2 Skill 资源与 parser
 
 - **提问者**：agent；完整答案成功回传后沉淀。

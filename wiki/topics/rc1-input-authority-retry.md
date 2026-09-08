@@ -1,5 +1,8 @@
 ---
 title: rc.1 逻辑重试、输入身份与 Client Action 授权边界
+description: 固定 rc.1 的请求相关身份、RPC 一致性、输入取消边界与重试语义。
+type: reference
+updated: 2026-09-08
 status: verified_inference
 mastery: L2
 freshness: fresh
@@ -16,12 +19,29 @@ anchors:
   - packages/client/connection/src/rpc.ts
   - packages/api/gateway/src/types.ts
   - packages/api/gateway/src/index.ts
+  - packages/client/connection/src/rpc-host.ts
+  - packages/client/connection/tests/node-half.host.spec.ts
+  - packages/api/session-controller/src/index.ts
+  - packages/api/session-controller/src/agent.ts
+  - packages/attachment/attachment/src/admission.ts
 commit: a66e4702047846cdaa10c66c9d3df3951f5ea70d
 verified_at: 2026-09-06
 asked_by: agent
 ---
 
 条件：TS/JS · CLI/Profile Host与官方Client API · 同Session多attempt/队列编辑 · 持久Session日志 · 公开Gateway与Controller · 不用source字符串代替凭据授权 · 同进程及自定义carrier边界分别判断 · 固定rc.1。
+
+## 2026-09-08 · shared RPC 一致性与 prompt admission 取消
+
+本节按同一固定 SHA 复验，asked_by: agent，verified_inference；不刷新下方其他主题的原核验日期。
+
+- `createSharedFetchHandler('/api')` 从 URL.pathname 取 endpoint，选择 shared interceptor；stock exact Fetch route 只支持 GET/HEAD，不接管合法注册下的 POST。无匹配 interceptor 则先 404。
+- shared RPC helper 要求 POST/application-json/合法 clientRequestSchema，然后强制 `message.method===endpoint`。`/api/session/list` 与另一 method 不一致时，不调用 business handler，返回 `gateway/bad-request` 的 server-response。该业务错误用 Response.json 默认 HTTP 200，不是只看 2xx 就可判接受。
+- Controller.prompt 仅入口 `signal.throwIfAborted()`；随后 commands.prompt 不接这个 signal。主线 await 边界为 resolveAgent；图片路径还等 per-Agent image-admission Promise chain 与 resolveModelInfo；所有输入都 await admitPromptContent。纯文本 helper 不访问附件存储，但仍有调用方 await continuation；图片内部等 saveImages。
+- 完成这些等待后 createUserMessage，再 steer/followup，返回 accepted。中间没有对该 signal 的复查或下传。**条件性推论**：入口之后 abort、其他步骤仍成功时可以继续入箱，不是“取消后一定不再 admission”；该 signal 也不等于 Agent turn signal。
+- 相同 requestId 不去重；它只进入 source.rpcId，每次成功 admission 都 mint 新 MessageId。重复仍受独立准入条件约束，不能说必接受，也不能当成旧 receipt 重放。
+
+证据：[shared handler 与 mismatch](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/client/connection/src/rpc-host.ts#L115)、[同 helper 的 mismatch 测试](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/client/connection/tests/node-half.host.spec.ts#L400)、[prompt 入口](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/index.ts#L320)、[入箱前 await](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/commands.ts#L288)、[image admission queue](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/agent.ts#L363)、[文本/图片 admission](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/attachment/attachment/src/admission.ts#L57)。未运行取消竞态/重复请求 E2E；直接测试用 /rpc，/api 共享相同 helper 的结论来自实现交叉核验。
 
 固定dsh-v0.1.2-rc.1 / a66e4702047846cdaa10c66c9d3df3951f5ea70d，本次只读核对远端tag与本地对象一致。下列均按该完整SHA读取，不用rc.2/1.3补齐。认知状态统一VERIFIED_INFERENCE（源码/公开类型及控制流交叉核验，本库L1/L2封顶）；运行组合未验证之处为UNKNOWN。本次没有安装或runtime测试，没有检查调用方项目。
 
