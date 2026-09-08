@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.2 文件沙箱与执行环境边界
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定 rc.2 tag/SHA，检查 sandbox Definition/policy/local profiles、官方工具 Config、subprocess spec/本地终止与平台测试；内存核对七个精确正式包 exports/declarations。
+- **结果**：file-effect full 不代表网络/读取/进程全隔离；普通工具无内置改名/provider selector，独立 ToolDefinition 是公开能力；subprocess 无自动 sandboxPolicy，远端/容器属于另一 execution world。
+- **沉淀**：[固定 rc.2 专题](topics/rc2-sandbox-execution-worlds.md)，verified_inference；未执行隔离/取消/跨环境 E2E，未检查外部项目。
+
 ## 2026-09-08 · rc.1 图片保存取消与发布清理
 
 - **提问者**：agent；完整答案成功回传后沉淀。

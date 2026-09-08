@@ -101,6 +101,8 @@ updated: 2026-09-08
 
 固定 rc.1：[图片发布与取消](topics/rc1-attachment-publication-cancellation.md) — 保存无调用 signal、单对象原子发布不等 batch 事务、清理/保留分层；锚点 attachment-local/src/store.ts（verified_inference / fresh）。
 
+固定 rc.2：[文件沙箱与执行环境](topics/rc2-sandbox-execution-worlds.md) — Seatbelt 文件效果、双能力工具接口、subprocess/same-world 边界；锚点 sandbox-local/src/profiles.ts（verified_inference / fresh）。
+
 ## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解
 
 | 包组 | 一行摘要 | 稳定性 | 包数 | 锚点 |
