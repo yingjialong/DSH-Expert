@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.2 标题异步与 prompt 投影
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定 rc.2 tag/SHA，读取 title 调度/fallback、DeepSeek/pi-ai system 映射、SessionFace/Host prompt 与 Client mux/status/Notifier；按 tag lock 只读内存核对 pi-ai 0.82.1 formatter。
+- **结果**：automatic 标题不构成 admission/publication await gate；fallback 来自首条 human text；prompt 回 acceptance，消息/running/title 各经自身路径可见。
+- **沉淀**：[固定 rc.2 专题](topics/rc2-title-system-prompt-publication.md)，verified_inference；未运行模型、标题生成或 Host-Client E2E，未检查外部项目。
+
 ## 2026-09-08 · rc.2 runMaintenance 与局部工具动态贡献
 
 - **提问者**：agent；限定补充，完整回传成功后沉淀。

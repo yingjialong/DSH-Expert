@@ -95,6 +95,8 @@ updated: 2026-09-08
 
 固定 rc.1：[多 provider 与 BYOK](topics/rc1-multi-provider-byok.md) — 多 route 可选、三种手工协议、Host 凭据与 Cloud 账务边界；锚点 `packages/llm/llm-pi-ai/src/provider.ts#supportedProtocols`（verified_inference / fresh）。
 
+固定 rc.2：[自动标题与 prompt 投影](topics/rc2-title-system-prompt-publication.md) — 标题异步、system 的 adapter 映射、admission 与聊天/running 分层；锚点 session-title/src/index.ts、runtime/src/client/sessions/session.ts（verified_inference / fresh）。
+
 ## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解
 
 | 包组 | 一行摘要 | 稳定性 | 包数 | 锚点 |
