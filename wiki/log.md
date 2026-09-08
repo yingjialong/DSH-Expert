@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.2 todo 与 question 生命周期归属
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定 rc.2 tag/SHA，读取 todo tool/projection、UserQuestionService/provider、ApiProxy pending/respond、Client PendingWait 与 loop tool-result。
+- **结果**：todo 只记录整表，下一 turn 清 projection；问答 Host 持有 pending，UI respond 不拥有续步，草稿不是持久状态。
+- **沉淀**：[固定 rc.2 专题](topics/rc2-todo-question-ownership.md)，verified_inference；未运行 UI/E2E、未检查外部项目。
+
 ## 2026-09-08 · rc.1 输入关联、assembly 与重建
 
 - **提问者**：agent；完整答案成功回传后沉淀。

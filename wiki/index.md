@@ -105,6 +105,8 @@ updated: 2026-09-08
 
 固定 rc.1：[Loader 与 Client 生命周期](topics/rc1-loader-client-lifecycle.md) — settled/ACTIVE、导入、双侧卸载及保护政策归属；锚点 vendor/loader/src/config/tree.ts、client/hmr/src/client/index.ts（verified_inference / fresh）。
 
+固定 rc.2：[todo 与问答归属](topics/rc2-todo-question-ownership.md) — todo turn reset、Host pending 与 Client 应答/loop 续步；锚点 tool-todo/src/index.ts、apiproxy/src/api-proxy.ts（verified_inference / fresh）。
+
 ## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解
 
 | 包组 | 一行摘要 | 稳定性 | 包数 | 锚点 |
