@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.1 附件文件身份与 request-cache
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定 rc.1 tag/SHA，读取 normalized object 与 request-cache 的读写、身份字段/链接检查缺口、公开 byte helpers 与相关测试；重新内存核对正式 local root exports。
+- **结果**：digest/metadata 不证明 namespace/uid/mode/nlink；cache descriptor hash 不是 cache bytes digest；公开 prepare/projection 有输入前置，未提供 fd-based 既有 ref verifier。
+- **沉淀**：复用[rc.1 附件专题](topics/rc1-attachment-publication-cancellation.md)，新增分节与锚点，verified_inference；未运行路径攻击/权限竞态或 E2E，未检查外部项目。
+
 ## 2026-09-08 · rc.2 文件沙箱与执行环境边界
 
 - **提问者**：agent；完整答案成功回传后沉淀。

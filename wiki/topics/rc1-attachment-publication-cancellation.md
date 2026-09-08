@@ -20,6 +20,9 @@ anchors:
   - packages/attachment/attachment-local/tests/index.spec.ts
   - packages/attachment/attachment-local/README.md
   - packages/attachment/attachment-local/package.json
+  - packages/attachment/attachment-local/src/request-image.ts#readRequestImageFile
+  - packages/attachment/attachment-local/tests/request-image.spec.ts
+  - packages/attachment/attachment-local/src/normalization.ts#normalizeImage
 commit: a66e4702047846cdaa10c66c9d3df3951f5ea70d
 verified_at: 2026-09-08
 updated: 2026-09-08
@@ -59,3 +62,18 @@ AttachmentStore 是公开 Definition，可由第一方 Provider 实现 imageLimi
 [写入合同](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/attachment/attachment/src/index.ts#L40)、[local batch](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/attachment/attachment-local/src/index.ts#L196)、[prepare/commit](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/attachment/attachment-local/src/store.ts#L84)、[batch failure 测试](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/attachment/attachment/tests/index.spec.ts#L119)、[fsync 测试](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/attachment/attachment-local/tests/store.spec.ts#L77)、[保留限制](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/attachment/attachment-local/README.md#L133)。
 
 远端 tag 已核对；精确 attachment/attachment-local rc.1 tarball 在内存读取 manifest、root .d.ts、store.d.ts 与 root JS，确认 helpers 实际公开。未安装、未运行故障注入/取消/crash/Host-Client E2E，不评价外部项目。
+
+## 2026-09-08 · 内容完整性不等于文件身份
+
+本节同一固定 rc.1 SHA 复验，asked_by: agent，verified_inference。
+
+- readImageFile 直接 Node readFile(path,{signal})，然后 digest + probeImage header 核 mediaType/bytes/width/height。该版读取不是完整 raster decode；假设 digest 对应曾经通过 admission 的字节。
+- helper/LocalAttachmentStore 没有逐段 lstat/no-follow、dirfd、uid/mode/nlink/inode identity 检查；root 的 path.resolve 不是 filesystem 身份证明，也不经 ctx.fs。符合 ref 的字节不能证明由期望目录中的 owner-only 独占文件读取。
+- normal object 创建会使用目录0700、temp0600、exclusive link、target0400 与 fsync；这些实际创建/修改动作不审计所有既有祖先或链接。EEXIST 仍 readFile 既有 target 核 digest，未检查其 link/owner 身份；exclusive temp 不保护父目录链。
+- request-cache 的 hash 是 attachmentId+transform/policy descriptor 的摘要，不是 cache bytes digest。readCached 只按路径读取并 probe uchar/srgb/dimensions/alpha 等属性，不证明 cache 像素由该源图变换所得，也无 owner/link 检查。
+- cache 写为 mkdir(mode0700)→临时 wx/0600→rename final→finally rm temp；不纠正所有已存在目录权限，无正常对象 fsync 链或最终0400。rename 替换 final entry 不等于跟随 final symlink 写 target，但父路径仍未固定。
+- 若依赖可信根、无非预期 link、owner-only、目录不可被替换等性质，外层存储 owner 必须建立并维持；一次路径预检后让 helper 重新 open 仍无 DSH 提供的竞态闭环。
+
+公开复用范围：AttachmentStore Provider 可拥有安全读取机制并保留官方 consumer；prepareImageFile/validateImageFile 接受已读取 bytes，可继续官方 admission/normalization，但可能改变 bytes/ref，不是既有 normalized ref 的保持 identity 验证器。readRequestImageFile 接受已验证 StoredImageAttachment，仍会按 root 访问自身 cache。没有公开 fd/FileHandle/reader 注入版 readImageFile 或 verifyStoredImageBytes(ref,data)。probeImage/detectImage/cache helpers 未从 root 导出；normalizeImage 需要已取得的 detected metadata。imageHostPath 是定位不是安全打开；normalizedImagePath 未从 root 导出，不推荐私有导入。
+
+证据：[normalized read](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/attachment/attachment-local/src/store.ts#L272)、[cache read/write](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/attachment/attachment-local/src/request-image.ts#L116)、[verified source 前置](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/attachment/attachment-local/src/request-image.ts#L176)、[Local source/read 组合](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/attachment/attachment-local/src/index.ts#L235)、[缓存属性测试](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/attachment/attachment-local/tests/request-image.spec.ts#L83)。重新核对正式 attachment-local root .d.ts/JS exports，无 src/；未运行 symlink/hardlink/权限竞态或 E2E，内容拒绝测试不当作路径安全证明。

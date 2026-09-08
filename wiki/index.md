@@ -99,7 +99,7 @@ updated: 2026-09-08
 
 固定 rc.2：[Skill 资源与 parser](topics/rc2-skill-resources-parser.md) — resourceBase 是指引、未知 frontmatter 不授予能力、无独立公开 parser；锚点 skill-filesystem/src/index.ts（verified_inference / fresh）。
 
-固定 rc.1：[图片发布与取消](topics/rc1-attachment-publication-cancellation.md) — 保存无调用 signal、单对象原子发布不等 batch 事务、清理/保留分层；锚点 attachment-local/src/store.ts（verified_inference / fresh）。
+固定 rc.1：[图片发布与取消](topics/rc1-attachment-publication-cancellation.md) — 保存取消、单对象发布/清理、内容完整性与文件/cache身份分离；锚点 attachment-local/src/store.ts、src/request-image.ts（verified_inference / fresh）。
 
 固定 rc.2：[文件沙箱与执行环境](topics/rc2-sandbox-execution-worlds.md) — Seatbelt 文件效果、双能力工具接口、subprocess/same-world 边界；锚点 sandbox-local/src/profiles.ts（verified_inference / fresh）。
 
