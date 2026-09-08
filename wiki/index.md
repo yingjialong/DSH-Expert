@@ -99,6 +99,8 @@ updated: 2026-09-08
 
 固定 rc.2：[Skill 资源与 parser](topics/rc2-skill-resources-parser.md) — resourceBase 是指引、未知 frontmatter 不授予能力、无独立公开 parser；锚点 skill-filesystem/src/index.ts（verified_inference / fresh）。
 
+固定 rc.1：[图片发布与取消](topics/rc1-attachment-publication-cancellation.md) — 保存无调用 signal、单对象原子发布不等 batch 事务、清理/保留分层；锚点 attachment-local/src/store.ts（verified_inference / fresh）。
+
 ## 包组（packages/）—— 既有 51 组历史路由，包数按页内版本理解
 
 | 包组 | 一行摘要 | 稳定性 | 包数 | 锚点 |

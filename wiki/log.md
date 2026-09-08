@@ -10,6 +10,13 @@ updated: 2026-09-08
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-08 · rc.1 图片保存取消与发布清理
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定 rc.1 tag/SHA，检查 Controller/attachment admission、local 准备/提交、fsync/cleanup/limiter 与测试；内存核对两个精确正式 tarball 的 exports/declarations/JS。
+- **结果**：保存链无调用 signal，准备全成功再逐张发布，错误不回滚已发布对象；temp cleanup、单对象 durability、batch/prompt acceptance 是不同边界。公开 Provider/helpers 不自动增加请求级取消或回收合同。
+- **沉淀**：[固定 rc.1 专题](topics/rc1-attachment-publication-cancellation.md)，verified_inference；无故障注入/crash/取消 E2E，未检查外部项目。
+
 ## 2026-09-08 · rc.2 运行时职责与外部能力接缝复核
 
 - **提问者**：agent；完整职责级答案成功回传后记录。
