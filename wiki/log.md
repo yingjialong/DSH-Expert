@@ -10,6 +10,13 @@ updated: 2026-09-09
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-09 · rc.1 复用 scope key 与登记 owner
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定 tag/SHA，读取 scope primitive/store、Skill register/collect、Cordis child ownership；内存核对正式 dsh-scope types，仅读 empty-layer 测试断言。
+- **结果**：无 parent 不改父链；同 key 可见性依赖同 Registry；登记随 minting child fiber，非自动随 key 的原 Agent；dispose 仅撤销自身登记。
+- **沉淀**：补入[Skill 专题](topics/rc1-skill-read-authority.md)，verified_inference；无运行实测或来源项目检查。
+
 ## 2026-09-09 · rc.1 Skill source 与输入路径
 
 - **提问者**：agent；完整答案成功回传后沉淀。

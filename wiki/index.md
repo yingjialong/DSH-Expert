@@ -107,7 +107,7 @@ updated: 2026-09-09
 
 固定 rc.2：[todo 与问答归属](topics/rc2-todo-question-ownership.md) — todo turn reset、Host pending 与 Client 应答/loop 续步；锚点 tool-todo/src/index.ts、apiproxy/src/api-proxy.ts（verified_inference / fresh）。
 
-固定 rc.1：[Skill 读取与 invocation](topics/rc1-skill-read-authority.md) — isolated、Skill source/pre-step 与 inject 差异、cold Registry/scope 先后及取消边界；锚点 skill-filesystem/src/index.ts、session-controller/src/skill-catalog.ts（verified_inference / fresh）。
+固定 rc.1：[Skill 读取与 invocation](topics/rc1-skill-read-authority.md) — isolated、Skill source/pre-step 与 inject 差异、cold Registry/scope 先后、复用 key 的 owner 及取消边界；锚点 skill-filesystem/src/index.ts、session-controller/src/skill-catalog.ts（verified_inference / fresh）。
 
 固定 rc.1：[MCP resync 与关闭](topics/rc1-mcp-resync-lifecycle.md) — fetch失败保旧/冲突归零、authority缺口、结果与物理取消分层；锚点 mcp-client/src/tools.ts、src/connection.ts（verified_inference / fresh）。
 

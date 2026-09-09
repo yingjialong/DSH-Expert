@@ -6,6 +6,9 @@ status: verified_inference
 mastery: L2
 freshness: fresh
 anchors:
+  - packages/core/scope/src/index.ts#createScope
+  - packages/core/scope/src/store.ts#ScopedLayers
+  - vendor/cordis/src/fiber.ts#Fiber
   - packages/core/agent-loop/src/agent.ts#send
   - packages/core/session/src/invariant.ts
   - packages/llm/llm/src/message.ts#createUserMessage
@@ -91,3 +94,18 @@ Session invariant 的 user/message 分支本身不要求 open step；“默认 d
 证据：[官方 listeners](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/skill/tool-skill/src/index.ts#L163)、[source 类型](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/skill/skill/src/index.ts#L142)、[catalog 类型](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/skill/tool-skill/src/index.ts#L28)、[输入与 driver](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/core/agent-loop/src/agent.ts#L122)、[cold 顺序](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/skill-catalog.ts#L35)。本地镜像根 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness`，历史证据以 git show 固定 SHA 读取。
 
 正式 rc.1 tarball 内存核验 dsh-skill root types:123/131、dsh-tool-skill root types:16/28 的导出与增广；无安装，不引用发布包未包含的 src 作为公开导入。
+
+
+## 复用已有 scope key：路由、实例与 owner 分离
+
+条件：同进程、同 scope 模块与同一底层 SkillRegistry，minting Context 有 skills dependency API，持有已有 Agent 的真实对象 key；固定本页 rc.1。静态核验，verified_inference，未验证外部上下文或运行组合。
+
+`createScope(mintingCtx,existingKey)` 不传 parent 时不调用 bindScopeParent，不检查 key 首次使用，也不自动从 mintingCtx scope 推导 parent；既有父链保持。新 ctx 继承 minting Context 的 dependency API，并标记 existingKey。原 Agent.ctx 不因此获得缺失 API；scope 父链也不是 Cordis dependency 链。显式再次 bind 已有 parent 的 key 会失败，只有原 binding 可 rebind。
+
+正常通过新 scope.ctx.skills.registerProvider 登记时，ScopedLayers.effect 用调用 ctx 的 scopeOf 决定 exact-key layer，用 ctx.effect 决定 owner。同一 Registry 上以相同对象 key lookup 会包含该层；不同 Registry 实例各有独立 Map，不会仅因 key 相同共享。Provider 同层名字冲突仍拒绝，list/get 输出与优先级决定实际结果；不要把其他 ctx 取得的 service 或脱离上下文的调用当成同样的 scoped 登记。
+
+新 scope fiber 由 minting fiber 的 ctx.plugin effect 持有，key 指向 Agent 不改变 ownership。scope.dispose 等该 fiber/inertia 收敛；registerProvider undo 撤销其 exact insertion、abort control.signal 并 invalidate cache；ScopedLayers 仅在 layer 全空时删除 key 映射。其他同 key fiber 登记、原 Agent 和原父链均不被成批删除。可见目录可因解除遮蔽而变化，abort 不证明不合作的外部异步工作停止。
+
+若 minting owner 位于 Agent 子树，父子 ownership 自然清理；若 owner 会跨 Agent 存活，则 Agent disposed 不自动释放这个同 key scope，需要已有明确 owner/释放连接才能宣称同寿命。功能 off 也不是 createScope 自带条件。agent/disposed 是非 awaited 通知，异步 cleanup 不因收到该事件就获得完成 barrier。
+
+证据：[scope primitive](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/core/scope/src/index.ts#L143)、[层 effect/undo](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/core/scope/src/store.ts#L230)、[Provider 登记](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/skill/skill/src/index.ts#L380)、[parent-owned fiber](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/vendor/cordis/src/fiber.ts#L233)。正式 dsh-scope rc.1 root types:43/63/68/78/84 在内存复核公开 bind/dispose/optional parent/createScope/scopeOf；未安装。store.spec.ts:130–172 的 empty-only reclaim 断言仅读未运行。
