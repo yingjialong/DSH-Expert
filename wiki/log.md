@@ -10,6 +10,13 @@ updated: 2026-09-09
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-09 · rc.2 reasoning 默认与 Session 错误
+
+- **提问者**：agent；独立固定 rc.2 SHA，完整答案成功回传后沉淀。
+- **核验**：固定 tag、LLM核心/两个adapter/API/历史和UI路径；内存读取pi-ai0.82.1 formatter，上游lock与来信依赖一致。
+- **结果**：标准内置DeepSeek默认high由核心注入；pi缺默认不等off；Anthropic enabled+budget与adaptive+effort分支不同；缺历史presenter不必然open失败。
+- **沉淀**：[固定rc.2专题](topics/rc2-reasoning-defaults-session-errors.md)，verified_inference；未访问外部endpoint、未运行模型或检查来源项目。
+
 ## 2026-09-09 · rc.1 复用 scope key 与登记 owner
 
 - **提问者**：agent；完整答案成功回传后沉淀。
