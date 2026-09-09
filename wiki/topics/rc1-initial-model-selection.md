@@ -6,6 +6,9 @@ status: verified_inference
 mastery: L2
 freshness: fresh
 anchors:
+  - packages/core/agent-loop/src/agent.ts#buildRequest
+  - packages/core/session/src/index.ts#snapshotEvents
+  - packages/llm/llm/src/index.ts#prepareCall
   - packages/core/agent-default-model/src/index.ts#AgentDefaultModelConfig
   - packages/core/agent-default-model/package.json
   - packages/bundle/base/cordis.patch.yml
@@ -21,8 +24,8 @@ anchors:
   - packages/preset/agent-presets/src/preset.ts#Config
   - packages/preset/agent-presets/src/index.ts#AgentPresets
 commit: a66e4702047846cdaa10c66c9d3df3951f5ea70d
-verified_at: 2026-09-08
-updated: 2026-09-08
+verified_at: 2026-09-09
+updated: 2026-09-09
 asked_by: agent
 related:
   - "[[wiki/topics/rc1-input-authority-retry]]"
@@ -59,3 +62,28 @@ modelSelection projection 保存 lastUsed/pending，匹配的 request/header 消
 [默认服务](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/core/agent-default-model/src/index.ts#L21)、[选择优先级与立即 append](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/agent.ts#L276)、[selectModel](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/commands.ts#L119)、[modelSelection projection](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/model-selection-projection.ts#L38)、[Preset 切换](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/preset/agent-presets/src/index.ts#L693)。
 
 本次核对远端固定 tag。default-model 正式 rc.1 tarball 的 manifest/root `.d.ts` 在内存检查，确认 class/Config/settings schema/currentSelection/saveSelection 可达；Controller/Agent/Loop/LLM 正式公开面复用本系列同版本核验。内部 selectionFor/projection/commands 仅是实现证据，不作私有导入建议。上游 session-models 的保存失败、unroutable prompt 与 unlisted model 测试只读断言，未运行；未验证具体部署的并发 prompt、adapter 接受性或存储结果。
+
+
+## pending 消费与临时 request override
+
+同版源码/正式types复验，verified_inference；无模型或外部middleware实测。
+
+Controller在session/event的request/header通知上，只对同一live Agent/Session消费与picked的provider/model/reasoningEffort精确匹配的选择。projection同步更新lastUsed，并仅匹配时清pending。不是turn结束或模型成功才消费，header在stream前记录，后续provider失败不回滚。pending缺省effort与最终补出effort不相等；不能假定任何同route header都消费它。
+
+pending已消费后current读最新request/header。因此临时override若最终写成B的header，随后无新pending时B可成为默认；DSH不另保留永久“最后用户选择A”变量。若A仍pending而B不匹配，A继续优先。assembly入口捕获current，默认request listener复用assembled；中途新选择通常到后续assembly才生效。
+
+默认driver新实例先以AgentOptions route为seed，已记录header后读requestProposal，去掉adapter-defaulted effort/maxTokens；Controller middleware再覆盖provider/model/effort。after-next本身不保证全局最终获胜，外层listener仍可改写；最终值经prepareCall校验后才记录header。
+
+## model/selection 记录与 after-next 读取边界
+
+公开Controller root与./types增广SessionEventMap：model/selection data为provider/model/可选reasoningEffort。标准event envelope带seq/time，非UserMessage，没有MessageId、调用者身份或临时/永久字段。snapshotEvents默认从0返回冻结快照、包含fork继承前缀；不会随后append自动增长。事件log-only，不进入deriveMessages。
+
+resume后selectionFor恢复projection.pending；已消费的旧selection不会自动复活。wire modelSelection.next=pending??lastUsed，不能当作最后显式选择。无此事件的旧Session无法仅凭事件读取还原用户选择；fork继承是否属于本Session用户意图由使用方定义。
+
+selectModel先resolveCallConfig，可能把用户省略effort规范化为当时adapter default并记录；所以event记录不总能区分原始明确effort与默认解析。缺席effort表示adapter默认，不是off；只换provider/model而继承旧effort会改变含义，官方installModelSelection先删除旧effort。prepareCall之后的adapterDefaults标记当前请求是否由核心填充。
+
+每request读取最新selection并返回与官方默认政策不同：可在assembly之后提前应用新选择，不重算已收集system/tools。retry重新buildRequest并走agent/request，但复用本步assembly，不重跑assembly hook；payload没有独立attempt字段。历史选择不固定旧adapter能力，当前prepareCall可拒绝；没有snapshot→dispatch的选择锁或expected-seq CAS。
+
+证据：[current/consume](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/agent.ts#L276)、[header listener](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/index.ts#L149)、[retry](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/core/agent-loop/src/agent.ts#L340)、[final header](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/core/agent-loop/src/agent.ts#L447)、[事件类型](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/types.ts#L35)。镜像根经确认 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness`，历史按固定SHA读取。
+
+正式Controller rc.1 tarball root type export与./types中的事件/选择声明内存核对；agent.host.spec.ts:267–296、session-projections.host.spec.ts:167–194的exact-match消费断言仅读未运行。

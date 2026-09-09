@@ -91,7 +91,7 @@ updated: 2026-09-09
 
 固定 rc.1：[程序工具的 open-turn 生命周期](topics/rc1-programmatic-tool-turn-lifecycle.md) — stopping 非完成回执，direct execute 不自动写模型工具日志；锚点 `packages/core/agent-loop/src/agent.ts`、`packages/core/tools/src/index.ts#ToolRuntime`（verified_inference / fresh）。
 
-固定 rc.1：[初始模型选择与 Preset 分离](topics/rc1-initial-model-selection.md) — default-model 或 Controller.selectModel 先于 prompt，选择立即写 model/selection；锚点 `packages/api/session-controller/src/agent.ts`（verified_inference / fresh）。
+固定 rc.1：[初始模型选择与 Preset 分离](topics/rc1-initial-model-selection.md) — default-model/selectModel、pending精确消费与临时header后续默认，model/selection/retry分层；锚点 `packages/api/session-controller/src/agent.ts`（verified_inference / fresh）。
 
 固定 rc.1：[多 provider 与 BYOK](topics/rc1-multi-provider-byok.md) — 多 route 可选、三种手工协议、Host 凭据与 Cloud 账务边界；锚点 `packages/llm/llm-pi-ai/src/provider.ts#supportedProtocols`（verified_inference / fresh）。
 

@@ -10,6 +10,13 @@ updated: 2026-09-09
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-09 · rc.1 pending 选择与临时 request override
+
+- **提问者**：agent；固定rc.1完整答案成功回传后沉淀。
+- **核验**：tag/SHA、Controller选择与header消费、projection、Agent assembly/request/retry、Session快照、LLM默认标记；正式Controller types内存复核。
+- **结果**：pending精确匹配header才消费，之后读最近header；last-selection不是默认永久值；retry重走request但复用assembly；缺effort不等off。
+- **沉淀**：补入[模型选择专题](topics/rc1-initial-model-selection.md)，verified_inference；无运行/模型测试或外部项目检查。
+
 ## 2026-09-09 · rc.2 History 页与响应大小
 
 - **提问者**：agent；完整答案成功回传后沉淀。
