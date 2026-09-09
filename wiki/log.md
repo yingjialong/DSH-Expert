@@ -10,6 +10,13 @@ updated: 2026-09-09
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-09 · rc.1 Skill source 与输入路径
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定 tag/SHA，复核 Agent send/claim/record、Skill source 增广、官方 pre-step/UI consumer 与 cold catalog；内存核对 Skill/tool-skill/session 正式 types。
+- **结果**：inject 不 wake，不等同即时 user/message；官方两类 Skill 注入均改写 pre-step decision；cold 先选 Host Registry 再解析 standing scope，不传 caller signal。
+- **沉淀**：补入[Skill 专题](topics/rc1-skill-read-authority.md)，verified_inference；无模型/应用实测或外部项目检查。
+
 ## 2026-09-09 · rc.1 prompt 与 inserted 关联
 
 - **提问者**：agent；完整答案成功回传后沉淀。

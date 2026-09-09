@@ -6,6 +6,9 @@ status: verified_inference
 mastery: L2
 freshness: fresh
 anchors:
+  - packages/core/agent-loop/src/agent.ts#send
+  - packages/core/session/src/invariant.ts
+  - packages/llm/llm/src/message.ts#createUserMessage
   - packages/skill/skill/src/index.ts#SkillRegistry
   - packages/skill/skill-filesystem/src/index.ts#FileSystemSkillProvider
   - packages/skill/skill-filesystem/tests/skill-filesystem.spec.ts
@@ -17,8 +20,8 @@ anchors:
   - packages/skill/skill-filesystem/package.json
   - packages/skill/tool-skill/package.json
 commit: a66e4702047846cdaa10c66c9d3df3951f5ea70d
-verified_at: 2026-09-08
-updated: 2026-09-08
+verified_at: 2026-09-09
+updated: 2026-09-09
 asked_by: agent
 related:
   - "[[wiki/packages/skill]]"
@@ -56,3 +59,35 @@ related:
 证据：[roots/list/get](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/skill/skill-filesystem/src/index.ts#L181)、[无 signal discovery](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/skill/skill-filesystem/src/index.ts#L719)、[Registry cache/collect](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/skill/skill/src/index.ts#L518)、[Consumer 策略顺序](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/skill/tool-skill/src/index.ts#L125)、[用户目录](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/skill-catalog.ts#L35)、[cold fallback](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/skill-catalog.ts#L92)。
 
 固定 tag 已核对，skill/filesystem/tool-skill 精确 rc.1 tarball 在内存检查 root types 与 exports；三包为 root、./src/*、./package.json 且无 src 文件，未公开 parser helper。只读 isolated/invocation 测试断言，未运行访问/失效竞态，不评价外部项目。
+
+
+## Skill source、官方 pre-step 与 Agent 输入路径
+
+同版源码/正式 types 复验，verified_inference；无应用实测。`createUserMessage` 自己生成 MessageId（参数不接受 id），可先创建再传 Agent；身份不等于 SessionSeq。
+
+- `send(message,target,wakeup)` 同步写 inbox splice，按 wakeup 决定唤醒；abort 后 waking 输入有改投 next-turn/收敛规则。
+- `followup` 是 next-turn/true；`inject` 是 next-step/false。inject 在 idle 只留 pending，运行时也可能错过本次 claim；不等于立刻写 model-visible user/message。
+- claim 先全部 next-step，再按 target 取一条 next-turn；assembly/pre-step 接受后，driver 才在 step/start 后将 decision.messages 逐条追加为 user/message。取消、清除、pre-step reject/改写可使已入 inbox 的消息不成为模型输入。文本入队本身不经过 ToolRuntime；后续真实工具调用才进入工具执行路径。
+
+公开增广分别来自：
+
+| source | 正式 root package | 必需字段 |
+| --- | --- | --- |
+| SkillInvocationSource | @deepseek-ai/dsh-skill | kind:skill-invocation、name:string、form:instructions |
+| SkillCatalogSource | @deepseek-ai/dsh-tool-skill | kind:skill-catalog、form:catalog、entries:{name,description}[]；update?:true |
+
+二者增广 dsh-llm.MessageSourceMap，可作为 UserMessage 经公开 Agent.inject 送入标准输入链；不要求为了加载 TypeScript 增广先激活 plugin fiber。Agent 不替 consumer 查询 Registry/验证 invocation policy/确保 body 与 entries 一致。Controller.prompt 自造 user source，不接受这两种自定义 source；直接 Agent 方法要求 live Agent，不向 cold Session/standing key 发送。source 不携带 standing generation 或 expected seq，Registry read 与 append 没有事务。
+
+官方 slash 与模型 catalog **均不调用 Agent.inject/send/followup**：ui-skill onPick 返回普通 /name 文本；Host tool-skill pre-step listener 对 claimed user 文本 get 后检查 userInvocable，创建 instructions 并扩展 decision.messages。另一 pre-step listener 在 exact skillTool 可见时 snapshot/filter modelInvocable，完整目录变化后扩展/替换 decision.messages。二者由 driver 在当前接受的 step 记录；在 pre-step 另调用 inject 则已晚于当前 claim，不自动补进当前 decision。
+
+Session invariant 的 user/message 分支本身不要求 open step；“默认 driver 在 step/start 后写入”是路径事实，不可升格成直接 Session.append 的普遍约束。直接 append 仍受 identified message、JSON、surface/provenance/序列等规则约束。
+
+## 冷 catalog 的 Registry 选择先于 standing scope
+
+精确顺序是 observeSession→取 cwd/preset→live 可取 presets.serviceFor(live,skills)，否则选 Host ctx.get(skills)→缺 Registry 立即失败→scopeFor→Registry.list。冷读不会先挂 standing 再从其 serviceFor 取一个独立 Registry。scopeFor 成功用 standingKeyFor（可 compose plugins、无 Agent/turn），失败或无 roster 则 undefined/global。live 则用 Agent scope。
+
+该方法明确 void caller signal，observeSession/standingKeyFor/list 均未转交；Registry Provider 虽收 lookup options，但这里不含 caller signal。先 list 后 filter userInvocable，Provider discovery 可以已经读源文件。
+
+证据：[官方 listeners](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/skill/tool-skill/src/index.ts#L163)、[source 类型](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/skill/skill/src/index.ts#L142)、[catalog 类型](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/skill/tool-skill/src/index.ts#L28)、[输入与 driver](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/core/agent-loop/src/agent.ts#L122)、[cold 顺序](https://github.com/deepseek-ai/deepseek-harness/blob/a66e4702047846cdaa10c66c9d3df3951f5ea70d/packages/api/session-controller/src/skill-catalog.ts#L35)。本地镜像根 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness`，历史证据以 git show 固定 SHA 读取。
+
+正式 rc.1 tarball 内存核验 dsh-skill root types:123/131、dsh-tool-skill root types:16/28 的导出与增广；无安装，不引用发布包未包含的 src 作为公开导入。
