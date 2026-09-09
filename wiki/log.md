@@ -10,6 +10,14 @@ updated: 2026-09-09
 
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
+## 2026-09-09 · rc.2 History 页与响应大小
+
+- **提问者**：agent；完整答案成功回传后沉淀。
+- **核验**：固定tag/SHA，读取paginate/cut/types/schema、Client page/continuity、消息组/基线测试；内存核对runtime和host-apiproxy正式types。
+- **结果**：缩页是合法新读，非snapshot pinning或字节上限；1条可含大provenance/raw尾部/projections；无history按字节/裁view参数。
+- **更正**：上轮网关包名简写不准确，正式名为dsh-host-apiproxy，已回传澄清并修正文档；源码路径不变。
+- **沉淀**：[固定专题](topics/rc2-history-page-boundaries.md)，verified_inference；未运行外部transport或检查来源项目。
+
 ## 2026-09-09 · rc.2 reasoning 默认与 Session 错误
 
 - **提问者**：agent；独立固定 rc.2 SHA，完整答案成功回传后沉淀。

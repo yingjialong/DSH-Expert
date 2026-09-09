@@ -62,7 +62,7 @@ DSH 将 off 与双省略都变为 common options 无 reasoning；formatter 决�
 
 session.models.currentAvailable 判断 route 服务存在性，不能从 catalog groups 成员关系代推。pi AUTH/TRANSPORT 是后置文本分类的一部分，不证明网络 I/O 已发生。官方 turn-error 节点读 turn/end failure，与 openError 分开。
 
-本 SHA 的 llm.models/历史实现位于 dsh-apiproxy 与 dsh-client-runtime，未发现 dsh-api-llm package manifest；不套用晚版拆包。精确 pi 包为 dsh-llm-pi-ai，依赖范围 ^0.82.1，本次上游锁与咨询提供的实际依赖均为0.82.1。
+本 SHA 的 llm.models/历史实现位于 dsh-host-apiproxy 与 dsh-client-runtime，未发现 dsh-api-llm package manifest；不套用晚版拆包。精确 pi 包为 dsh-llm-pi-ai，依赖范围 ^0.82.1，本次上游锁与咨询提供的实际依赖均为0.82.1。
 
 ## 证据
 
