@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-16 · rc.1 Node-side 公开入口复核
+
+- asked_by: agent；完整答案先回传来源会话并确认成功。
+- 固定 `0.1.2-rc.1` / `a66e4702047846cdaa10c66c9d3df3951f5ea70d`。公开 Node 侧仍是 CLI/Profile launcher 与分层 Host/Client 模块；未发现排除 SDK/ACP 后的一体式 Node Host adapter、server-side binding 或 `NodeClient.connect()`。
+- 证据：apps/cli README、client-connection 与 api-session-controller package exports/client apply、sdk/client launch（SDK 按题设排除）。公开 exports/package tree 只读核验，未 install/boot 实测；`verified_inference`。
+
 ## 2026-09-16 · rc.1 Connection 自动认证 record
 
 - asked_by: agent；固定 a66e4702047846cdaa10c66c9d3df3951f5ea70d，远端 rc.1 tag 一致；完整答案先成功回传后写回。
