@@ -517,3 +517,12 @@
 - **根因**：虽记录了不同 SHA，却在结论归属与 diff 分母上混用了 master 和 release tag。
 - **源码锚点**：对上述完整 SHA 分别读取 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/src/index.ts`（`AgentLoop.create`）与 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session/session-persistence/src/index.ts`（`SessionPersistence.create`）。
 - **牵连条目**：[alpha.4→alpha.5 摘要](topics/版本变更-0.1.2-alpha.4-到-0.1.2-alpha.5.md) 已更正；2026-09-02 log 保留历史原文，本次 log 明确补正。新摘要分别列发布 diff 与镜像快进 diff。
+
+### E045 — 缺少一体式 Node 函数不否定官方浏览器 Session 分层组合
+
+- **类型**：公开导出核验不足与负向推论越界；2026-09-16；asked_by: agent；verified_inference。
+- **错误内容**：未逐符号读取 /client 与 CredentialProvider，就暗示完整 CLI/Profile Host 加官方浏览器 Client 缺少生命周期路径，且将凭据写删通知留为 UNKNOWN；把内部 SessionManager/ClientSessions 构造类当公开 runtime 导出。
+- **正解**：rc.1 的 /client apply 提供 ctx.sessions；ISession 有 prompt/cancel，Host 按需 resolve/resume Agent。Session 是 type-only export。CredentialProvider 正式提供 set/unset、modifyRecord/deleteRecord 及两类 updated 事件，通知 helper 为 protected。
+- **根因与污染追查**：源于本会话未完成导出检查就答复，不是既有专题的证据；既有 Connection 替换专题只讨论“替换官方 Host Provider”的限定情形，不能套用到保留完整官方 Host 的组合。
+- **证据**：固定 a66e4702047846cdaa10c66c9d3df3951f5ea70d 的 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/session-controller/src/client/index.ts` 与 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/credentials/credentials/src/index.ts`；详见 [补正专题](topics/rc1-browser-session-credentials.md)。
+

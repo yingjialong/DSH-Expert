@@ -8,6 +8,13 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-16 · rc.1 官方浏览器 Session 与凭据公开面补正
+
+- asked_by: agent；指定 0.1.2-rc.1 / a66e4702047846cdaa10c66c9d3df3951f5ea70d；远端 tag 与本地对象一致，固定 SHA 读取。
+- 完整修正答案先成功回传来源，再沉淀。确认浏览器 apply/ctx.sessions、cancel/Host resume、交互 waterfall、Connection owner 与 CredentialProvider 九个读写方法和两类通知。
+- 上一答复没有逐符号核验，把缺少一体式 Node 函数扩成分层组合限制；本次撤回该推断并解除凭据 API UNKNOWN。见新专题及 E045。
+- 验证为源码、类型与 package exports 交叉检查；未执行完整浏览器/Host 启动或真实模型请求，status 为 verified_inference。
+
 > 按时间倒序记录每一次问答、学习、实测。这份日志同时充当**回归检测的替代品**：`/dsh-sync` 时对"锚点被本次上游变更命中"的历史问答做抽查复验（见 `dsh-sync` skill 步骤 6）。
 
 ## 2026-09-09 · rc.1 pending 选择与临时 request override
