@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-16 · rc.1 Attachment 与 Session 图片输入 seam
+
+- asked_by: agent；完整答案已先回传来源会话。
+- 固定 `0.1.2-rc.1` / `a66e4702047846cdaa10c66c9d3df3951f5ea70d`；核实 AttachmentStore、LocalAttachmentStore、ISession 图片输入，未找到通用 InputRef/InputStore 或 picker/import API。
+- 新增固定专题与索引；只读源码/类型检查，未运行端到端浏览器或模型测试，`verified_inference`。
+
 ## 2026-09-16 · rc.1 Node-side 公开入口复核
 
 - asked_by: agent；完整答案先回传来源会话并确认成功。

@@ -8,6 +8,8 @@ updated: 2026-09-09
 
 # 知识库索引（index.md）
 
+- [rc.1 Attachment 与 Session 图片输入](topics/rc1-attachment-input-seam.md)：AttachmentStore、官方 Client 图片输入及无 picker/InputStore 边界；`verified_inference / fresh`。
+
 - [rc.1 浏览器 Session 与凭据](topics/rc1-browser-session-credentials.md)：公开 apply/类型边界、取消恢复、CredentialProvider 写删通知；锚点 session-controller/src/client/index.ts#apply、credentials/src/index.ts#CredentialProvider（verified_inference / fresh）。
 
 - [rc2-reasoning-defaults-session-errors.md](topics/rc2-reasoning-defaults-session-errors.md)：rc.2 pi-ai reasoningEfforts、compat 协议字段与无 probing/精确 selector 边界；`verified_inference`，`fresh`。
