@@ -1047,3 +1047,9 @@ updated: 2026-09-09
 - **版本**：`0.1.1-rc.2` / `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`；当前上游 HEAD 与目标版本不同，未混用。
 - **结论**：exact model reasoningEfforts/compat 可声明并映射 wire；unsupported effort 请求前拒绝；无私有 endpoint 在线 probing，预设只能作为部署声明。
 - **证据**：`llm-pi-ai` README、catalog/adapter 类型与实现、adapter/serialize 测试源码；`verified_inference`，`asked_by: agent`。
+## 2026-09-15 · 跨会话核验：rc.2 hand-declared model identity
+
+- **提问者**：agent；完整答案已回传后沉淀。
+- **版本**：`0.1.1-rc.2` / `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`。
+- **结论**：hand-declared `models[].id` 原样作为 provider model ID；无 alias registry/remote discovery；reasoning 与 compat 仅做本地声明和序列化校验，远端不兼容由 provider 报错。
+- **状态**：`verified_inference`，`asked_by: agent`。
