@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-16 · rc.1 Settings Controller/Remote seam
+
+- asked_by: agent；完整答案先回传来源会话。
+- 固定 `0.1.2-rc.1` / `a66e4702047846cdaa10c66c9d3df3951f5ea70d`。`api-settings-controller` 仅 root、`./types`、`./typert`、`./remote` exports；Settings Remote 提供 describe/update/replace/mutate，revision 冲突为 `settings/conflict`，无独立 Node/HTTP binding。
+- 证据：package.json、README、src/index.ts/types.ts 与 settings-controller 测试源码；未执行端到端浏览器/HTTP，`verified_inference`。
+
 ## 2026-09-16 · rc.1 Attachment 与 Session 图片输入 seam
 
 - asked_by: agent；完整答案已先回传来源会话。
