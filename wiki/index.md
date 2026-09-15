@@ -91,7 +91,7 @@ updated: 2026-09-09
 | [config-and-tools.md](topics/config-and-tools.md) [stale] | 配置与工具目录 — 非机密值六层覆盖梯子 + 凭据四层梯子 + 四种运行模式的真实定义（Creator mode 的目录 id 是 cordis）+ dsh --profile/bundle 补丁层 + tool-catalog 路由 + permission preset/approval。排错类问题的第一入口。 | L2 | 26 |
 | [rc1-question-delivery-lifecycle.md](topics/rc1-question-delivery-lifecycle.md) | 固定rc.1：live pending重投、delegate与signal终止、迟到结果和非持久草稿（verified_inference / fresh）。 | L2 | 10 |
 
-固定 rc.1：[Connection Host 替换与官方 Client 身份](topics/rc1-connection-client-module-boundaries.md) — 公开 Handle/hooks 不闭合 client-only 装配；锚点 `packages/client/modules/src/index.ts#ClientModuleRegistry`、`packages/client/connection/src/rpc-host.ts#HostConnectionService`（verified_inference / fresh）。
+固定 rc.1：[Connection Host 替换与官方 Client 身份](topics/rc1-connection-client-module-boundaries.md) — Handle/hooks 装配边界、自动浏览器认证 record 与 activation 缓存；锚点 `packages/client/modules/src/index.ts#ClientModuleRegistry`、`packages/client/connection/src/browser-auth.ts#BrowserAuth`（verified_inference / fresh）。
 
 固定 rc.1：[程序工具的 open-turn 生命周期](topics/rc1-programmatic-tool-turn-lifecycle.md) — stopping 非完成回执，direct execute 不自动写模型工具日志；锚点 `packages/core/agent-loop/src/agent.ts`、`packages/core/tools/src/index.ts#ToolRuntime`（verified_inference / fresh）。
 

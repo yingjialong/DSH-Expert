@@ -22,7 +22,7 @@ anchors:
   - vendor/loader/src/config/entry.ts#EntryOptions
 commit: a66e4702047846cdaa10c66c9d3df3951f5ea70d
 verified_at: 2026-09-08
-updated: 2026-09-08
+updated: 2026-09-16
 asked_by: agent
 related:
   - "[[wiki/packages/client]]"
@@ -43,6 +43,18 @@ related:
 - rc.1 `WebBootEntry.inject` 是 package-name factory-arrival edges，`external` 是精确 module requests；Cordis service inject 另行决定激活。不能套用旧版“manifest inject 仅展示”的描述。
 
 ## 公开构造函数不等于公开可构造闭包
+
+### 官方 Connection 激活与浏览器认证 record（2026-09-16 复核）
+
+固定本页 rc.1 SHA，保留官方 Host Connection row、替换 CredentialProvider 的条件下：apply 在配置与图片 body capacity 检查通过后，无条件 await BrowserAuth.create → initializeSecret → modifyRecord(credentialKey('client-connection','browser-session'), mutate)，成功后才注册 /api。它不依赖业务 Session 或 LLM provider 创建。
+
+不存在的 record 写为 `kind: grant`、`payload: {version:1, secret:<32字节随机值的base64url>}`；现有合法 record 校验后 mutate 返回 undefined，表示保留，不是删除或每次旋转。错误格式直接失败，不覆盖。Provider 丢弃写入且返回 undefined 时，初始化报 `browser-session credential record was not created`。
+
+该 record 属于 Connection cookie 签名认证，不是用户模型凭据播种；process launch token 另由 root-owner WeakMap 管理。公开 ConnectionConfig 仅 trustedHosts/cookieMaxAgeDays/maxRequestBodyBytes，无关闭认证、跳过 record 或替换 BrowserAuth factory 的配置；loopback 不豁免初始化。
+
+BrowserAuth 每 activation 加载一次 secret，后续验证使用内存值；删除 record 不立即撤销当前 activation 的 cookie，下一次 activation 才重建并拒绝旧 cookie。这是该 consumer 的特定行为，不把通用凭据 per-operation resolve 要求泛化成 BrowserAuth 已实现热旋转。
+
+证据：固定 SHA 的 [apply/config](/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/connection/src/index.ts) 66–127 行；[initializeSecret/BrowserAuth](/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/connection/src/browser-auth.ts) 161–216 行；[一方测试](/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/connection/tests/browser-auth.host.spec.ts) 210–252 行明确验证 modifies 次数、删除与下次 activation。此次只读源码及测试，未运行完整 Host 或模型请求；verified_inference。具体自定义 Provider 的持久化实现未知。
 
 - `HostConnectionService` 从正式 root 导出，但构造参数 `browserAuth: BrowserAuth` 引用非公开导出的 nominal class；后者有 private 状态与 private constructor。内部 `.d.ts` 存在不等于提供合法 runtime import。
 - 默认 `apply` 注入 `webServer` 与 `credentials`，调用内部 `BrowserAuth.create` 再构造 service。公开 `ConnectionConfig` 只有 `trustedHosts`、`cookieMaxAgeDays`、`maxRequestBodyBytes`，无认证适配入口。

@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-16 · rc.1 Connection 自动认证 record
+
+- asked_by: agent；固定 a66e4702047846cdaa10c66c9d3df3951f5ea70d，远端 rc.1 tag 一致；完整答案先成功回传后写回。
+- 官方 Connection 激活必经 modifyRecord(client-connection/browser-session)，仅缺失时写 grant 签名秘密；无保留官方 apply 同时关闭初始化的公开配置。删除 record 只在下一次 activation 更换已缓存 secret。
+- 补既有 Connection 专题及索引；读取 apply、BrowserAuth 与一方 activation/invalid-record 测试源码，未执行测试或模型调用，verified_inference。
+
 ## 2026-09-16 · rc.1 官方浏览器 Session 与凭据公开面补正
 
 - asked_by: agent；指定 0.1.2-rc.1 / a66e4702047846cdaa10c66c9d3df3951f5ea70d；远端 tag 与本地对象一致，固定 SHA 读取。
