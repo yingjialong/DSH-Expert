@@ -1,3 +1,11 @@
+---
+title: DSH 错误本
+description: 记录 DSH 问答中的错误结论、失效边界与纠正证据。
+type: reference
+status: active
+updated: 2026-09-16
+---
+
 # 错误本（Error Book）
 
 > 记录**负面知识**：答错并被纠正的结论、走过的死路、上游改动导致失效的旧答案、"看起来对其实是坑"的东西、以及 T1 源码与 T2 文档不符之处。
@@ -525,4 +533,3 @@
 - **正解**：rc.1 的 /client apply 提供 ctx.sessions；ISession 有 prompt/cancel，Host 按需 resolve/resume Agent。Session 是 type-only export。CredentialProvider 正式提供 set/unset、modifyRecord/deleteRecord 及两类 updated 事件，通知 helper 为 protected。
 - **根因与污染追查**：源于本会话未完成导出检查就答复，不是既有专题的证据；既有 Connection 替换专题只讨论“替换官方 Host Provider”的限定情形，不能套用到保留完整官方 Host 的组合。
 - **证据**：固定 a66e4702047846cdaa10c66c9d3df3951f5ea70d 的 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/session-controller/src/client/index.ts` 与 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/credentials/credentials/src/index.ts`；详见 [补正专题](topics/rc1-browser-session-credentials.md)。
-
