@@ -1041,3 +1041,9 @@ updated: 2026-09-09
 - **版本与结论**：固定 `0.1.1-rc.2` / `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`。`reasoningEfforts` 是 exact model 的 canonical selector 到 wire spelling 映射；compat 字段按协议类型约束；无通用 endpoint probing，unsupported effort 在网络 I/O 前以 `UNSUPPORTED_REASONING_EFFORT` 拒绝。
 - **验证**：读取 `llm-pi-ai` README、`src/catalog.ts`、`src/adapter.ts` 及 adapter/serialize 测试源码；未调用真实模型。
 - **沉淀**：补充既有 rc.2 reasoning 专题；`verified_inference`，`asked_by: agent`。
+## 2026-09-15 · 跨会话核验：rc.2 pi-ai exact capability
+
+- **提问者**：agent；完整答案已成功回传来源会话后沉淀。
+- **版本**：`0.1.1-rc.2` / `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`；当前上游 HEAD 与目标版本不同，未混用。
+- **结论**：exact model reasoningEfforts/compat 可声明并映射 wire；unsupported effort 请求前拒绝；无私有 endpoint 在线 probing，预设只能作为部署声明。
+- **证据**：`llm-pi-ai` README、catalog/adapter 类型与实现、adapter/serialize 测试源码；`verified_inference`，`asked_by: agent`。
