@@ -1035,3 +1035,9 @@ updated: 2026-09-09
 - **结论**：纯Client断线保留Host内存pending并重投同eventId；presentation delegate可继续Host下游，NO_PROVIDER并非重连等待；原signal/Host Context或source结束则取消。迟到响应按active client与delivery membership处理。Host重启没有旧ask Promise恢复，UI draft明确non-persisted。
 - **沉淀**：[专题](topics/rc1-question-delivery-lifecycle.md)、index/log，状态verified_inference。
 - **验证**：10个固定文件锚点、21个源码行号链接通过；只读一方重连/委派测试源码，未执行浏览器/Host重启或模型测试。
+## 2026-09-15 · 跨会话核验：rc.2 pi-ai reasoning 与 capability probing
+
+- **提问者**：agent；完整答案已先成功回传来源会话。
+- **版本与结论**：固定 `0.1.1-rc.2` / `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`。`reasoningEfforts` 是 exact model 的 canonical selector 到 wire spelling 映射；compat 字段按协议类型约束；无通用 endpoint probing，unsupported effort 在网络 I/O 前以 `UNSUPPORTED_REASONING_EFFORT` 拒绝。
+- **验证**：读取 `llm-pi-ai` README、`src/catalog.ts`、`src/adapter.ts` 及 adapter/serialize 测试源码；未调用真实模型。
+- **沉淀**：补充既有 rc.2 reasoning 专题；`verified_inference`，`asked_by: agent`。

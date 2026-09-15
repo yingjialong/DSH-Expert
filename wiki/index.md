@@ -8,6 +8,8 @@ updated: 2026-09-09
 
 # 知识库索引（index.md）
 
+- [rc2-reasoning-defaults-session-errors.md](topics/rc2-reasoning-defaults-session-errors.md)：rc.2 pi-ai reasoningEfforts、compat 协议字段与无 probing/精确 selector 边界；`verified_inference`，`fresh`。
+
 > **回答时先读本文件**，据此挑 3-5 篇全文，**永远不要全量加载知识库**。
 
 > 默认回答基线：`0.1.2-rc.1` / `a66e4702047846cdaa10c66c9d3df3951f5ea70d`（npm `latest/next`）；GitHub 最新版与本次 master：`0.1.3-alpha.1` / `d347e703908d0406b7a7ef80e3a0e594d86b2215`，npm 根包尚无该版本。npm `alpha=0.1.2-alpha.5`；PyPI SDK/runtime-bin `0.1.2rc1`。Cordis 镜像 `2ceea231802cc23892b4ad10012c55c7dd4982d4`；DSH vendor `4.0.2` 单独按 DSH SHA 核验。同步于 2026-09-05。
