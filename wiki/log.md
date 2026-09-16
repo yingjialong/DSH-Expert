@@ -8,6 +8,11 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-16 · rc.1 图片输入与 submission 失败
+
+- asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d，完整答案先回传成功再沉淀。
+- 入口signal检查不覆盖Host异步admission，abandon只是echo；图片paste/drop未按inputModalities隐藏，text-only由Host准入拒绝。补图片专题，未执行真实上传/模型/浏览器竞态测试，verified_inference。
+
 ## 2026-09-16 · rc.2 FileSystem 全文与窗口
 
 - asked_by: agent；固定b150a551b8d465e31e418e1b2eaf5e79bbb7d28e，tag一致；完整答案已成功回传再沉淀。
