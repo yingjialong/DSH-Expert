@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-17 · rc.1 主动重连与问题 scope 所有权
+
+- asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d/tag一致；完整答案成功回传后沉淀。
+- reconnect撤销delivery而非直接dispose Session scope；新pending key不继承旧draft。manager-owned scope不能以外部fiber.dispose冒充完整drop/rebuild；delegate与纯断线分支分开。
+- 静态源码类型核验，未做故障竞态实测；verified_inference。
+
 ## 2026-09-17 · rc.1 patch identity 与 Client 注册
 
 - asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d/tag一致，完整回传成功后沉淀。

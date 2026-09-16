@@ -2,7 +2,7 @@
 title: rc.1 user-questions 的 pending、展示委派与重连边界
 description: 固定rc.1下问答请求与展示投递的生命周期证据
 type: reference
-updated: 2026-09-07
+updated: 2026-09-17
 status: verified_inference
 mastery: L2
 freshness: fresh
@@ -23,6 +23,16 @@ asked_by: agent
 ---
 
 条件：TS/JS · 官方Host/Remote与Client问答UI · root Agent pending ask · Session存储 · tool-ask-user · 无真实模型调用 · live Host重连与进程重启分开 · 固定rc.1。
+
+## 主动 reconnect 与 scope 所有权补充
+
+ConnectionHandle.reconnect主动发connecting并abort当前generation/retry delay；没有运行owner时无操作。Remote永久listener/Session scope不因此直接dispose，但当前delivery signal结束，旧PendingQuestion以ASK_ABORTED结束；重投生成新question:N对象。QuestionComposer仅requestKey===pending.key时恢复draft，所以scope/store尚存也不保证重投后草稿继承。connected不证明原Host pending仍存活。
+
+ISessions.scope(id)返回manager-owned AgentContext视图，不是createScope返回的owned AgentScopeHandle。直接ctx.fiber.dispose在语言层可触达，但不运行manager的scopes删除、session.unbindScope、manager.drop、scopeDrops/deferred维护；公开ISessions无reset/disposeScope接口，不能承诺重新open修复旧缓存。scope被官方owner prune/drop后重新eligible才可lazy重建；open/clear不是销毁命令。
+
+scope teardown若仍有活跃delivery，pending interaction的delegate可让单answerer Host waterfall继续到NO_PROVIDER；若generation先abort则不返next，原Host pending可以保留。两者不能互代。同durable Session重开只保证其既有历史路径，不复活已结束的question Promise。
+
+证据：固定SHA的 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/connection/src/client/connection.ts:125`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/session-controller/src/client/sessions/service.ts:650`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-user-questions/src/client/QuestionComposer.tsx:143`。2026-09-17只读复核，未执行浏览器竞态测试。
 
 固定0.1.2-rc.1 / a66e4702047846cdaa10c66c9d3df3951f5ea70d。本次远端tag与本地对象一致，按完整SHA读取。以下为源码/类型/一方测试源码交叉核验VERIFIED_INFERENCE（本库L1/L2封顶，不标runtime FACT）；未运行完整浏览器/Host重启测试，不检查调用方项目。
 
