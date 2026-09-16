@@ -35,6 +35,18 @@ related:
 
 ## 可复用结论
 
+### transport 首读与 Fetch/stream 合同（固定 rc.1 补充）
+
+Client apply 在创建 rpc 前读取 globalThis.__DSH_TRANSPORT__；fetch/openStream 被闭包捕获，必须在首次 apply 前设置，且 fixture 模式优先 fixtureRpc。Web boot 在 boot-ready 后、moduleLoader.create 前读取 loadBundle；显式 BootSeams 优先，先前的 HTML/bootstrap 脚本不由该 hook 追溯接管。
+
+fetch 接收 URL/RequestInit，返回标准 Response；官方 caller 继续拥有 rpcId/envelope 校验。openStream 接收 endpoint/payload/signal，返回 AsyncIterable 逻辑值；Host Gateway wireStream.open 返回 Promise<AsyncIterable>，failure 归一化错误。未提供 openStream 仍走默认 WebSocket。
+
+Host createSharedFetchHandler('/api').fetch(Request) 仅负责 dispatch 已认证请求，不执行 requestRejection。官方 HTTP path 先认证再进入内部 http-bridge；bridge 不是 root export。该内部实现按 body cap 构造 Request、附 AbortSignal、转发 Response 并处理背压；异常 res close（!writableEnded）abort，而非用 IncomingMessage close。本地 carrier 的取消仍须传递 signal/iterator teardown。
+
+默认 module loader 使用 script.src，未见统一拒绝非 http scheme；RPC origin 为 null 时 fallback http://dsh.internal，默认 stream 将 scheme 转为 ws/wss。因此 hook 可替换载体不等于 WK 自定义 scheme 已验证兼容。WKURLSchemeHandler 的完整 HTML/CSP/origin/cookie 行为未实测，保留 UNKNOWN。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/connection/src/client/index.ts`、`src/client/rpc.ts`、`src/rpc.ts`、`src/http-bridge.ts`；`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/src/types.ts`、`src/index.ts`；`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/web/src/boot.ts` 与 `packages/client/modules/src/client/system.ts`。以上简称路径均相对其明确包目录，按固定 SHA 读取；无原生端到端实测。
+
 - `HostConnectionHandle` 是公开可实现的服务形状；满足它只解决 Host DI，不会自动登记官方 Connection Client module。
 - 官方 `ClientModuleRegistry` 从有 fiber 且非 disabled 的 Host Loader entries 扫描，以实际解析模块所属 manifest.name 为 Client 身份，读取该包 `dsh.client` 和 `./client`。官方 Host row 停用且无其他有效官方包来源时，不会因另一个 Provider 提供 `ctx.connection` 而恢复官方 Client row。
 - `EntryOptions` 无 client-only/host-alias 字段；Profile 提供 bundle/patch 组合，仍落到 Host entries。Connection 正式包没有独立 Definition-only/no-op Host export。类型声明可见不构成可挂载模块。

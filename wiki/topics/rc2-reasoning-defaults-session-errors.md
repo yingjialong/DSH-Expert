@@ -34,7 +34,7 @@ pi-ai reasoningEfforts 是 exact model 支持与 wire mapping，非默认声明�
 
 `reasoningEfforts` 的键来自 pi-ai canonical levels（off/minimal/low/medium/high/xhigh/max），值是 provider wire spelling；DSH 不替换或猜测 wire 值。`compat` 可在 route/model 设置，model 覆盖 route；公开字段按 compat type 分配给 `openai-completions`、Responses 三协议共享类型及 `anthropic-messages`。私有 endpoint 的 URL 不构成能力证明，未知 endpoint 会按 pi-ai 的 OpenAI detection 处理。
 
-DSH/pi-ai 没有通用 endpoint capability probing 或常见模型目录来验证远端 reasoning 档位。`listModels` 与 `resolveModelInfo` 反映安装 catalog 和 profile 声明；宿主应按 exact provider/model metadata 限制 selector。请求使用不支持的档位时，在网络 I/O 前以 `UNSUPPORTED_REASONING_EFFORT` 失败；不会自动 clamp。该结论为源码交叉核验后的 `verified_inference`。
+DSH/pi-ai 没有验证远端 reasoning 档位真实性的通用 capability probing；但有安装 catalog，以及 `ctx.llm.discoverModels` 对未知 OpenAI-compatible route 的 `/models` listing，不能说完全没有 remote discovery。`listModels` 与 `resolveModelInfo` 反映安装 catalog 和 profile 声明；宿主应按 exact provider/model metadata 限制 selector。请求使用不支持的档位时，在网络 I/O 前以 `UNSUPPORTED_REASONING_EFFORT` 失败；不会自动 clamp。详见 [草稿调用与 discovery](rc2-llm-draft-one-shot.md)。该结论为源码交叉核验后的 `verified_inference`。
 
 内置 DeepSeek 未配默认时公布 high，故标准普通调用会注入 high，发送 thinking enabled + reasoning_effort high。thinking disabled 公布 off-only/default off；off wire 为 thinking disabled、不发 reasoning_effort off。显式 low/high/max 为 enabled+相应 effort，disabled 部署拒绝非 off。session-title 特例 disabled。绕过 LlmRuntime 直接 adapter.stream 的双省略 serializer 可不写这些字段，不等同标准 Session 行为。
 

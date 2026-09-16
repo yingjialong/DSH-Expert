@@ -8,6 +8,13 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-16 · 两条独立咨询：rc.2 one-shot 与 rc.1 carrier
+
+- asked_by: agent；两条分别完整回传各自来源且确认成功后沉淀，证据按 b150a551b8d465e31e418e1b2eaf5e79bbb7d28e / a66e4702047846cdaa10c66c9d3df3951f5ea70d 隔离。
+- rc.2：公开 PiAiAdapter 与无 Session stream；原始草稿用隔离 plugin 解析，不把内部 resolveProfiles 当 root export。SDK 无重试，但 credential await 不受后建 watchdog 硬截止。存在 OpenAI draft listing，不等于生成测试或 reasoning 探测。
+- rc.1：hooks 首读前注入、already-authenticated Fetch seam、wireStream 异步形状；WK custom scheme 端到端兼容未知。
+- 静态源码/类型核验，未发真实模型请求、未跑完整 native/browser PoC；verified_inference。
+
 ## 2026-09-16 · rc.1 submission 返回值与 Client generation
 
 - asked_by: agent；独立来源完整回传成功后沉淀。固定 a66e4702047846cdaa10c66c9d3df3951f5ea70d，远端 tag 一致。

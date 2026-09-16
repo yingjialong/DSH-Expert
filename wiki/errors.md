@@ -8,6 +8,12 @@ updated: 2026-09-16
 
 # 错误本（Error Book）
 
+### E046 — 无 reasoning 探测不等于无远端模型 listing
+
+- **类型**：负向结论越界；2026-09-16；asked_by: agent；verified_inference。
+- **正解**：rc.2 LlmRuntime.discoverModels 公开接收草稿；llm-pi-ai 为未知 OpenAI-compatible route 查询 /models，为已知 provider 返回 catalog。该结果不验证生成请求或 reasoning 档位，不自动写设置。
+- **根因**：此前将“没有 reasoning capability probing”扩成“没有 remote discovery”；本次由固定 b150a551b8d465e31e418e1b2eaf5e79bbb7d28e 的 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/llm/llm-pi-ai/src/discovery.ts` 与 llm/src/index.ts#discoverModels 纠正。历史 log 保留为历史，rc.2 reasoning 专题已澄清。
+
 > 记录**负面知识**：答错并被纠正的结论、走过的死路、上游改动导致失效的旧答案、"看起来对其实是坑"的东西、以及 T1 源码与 T2 文档不符之处。
 >
 > **每次回答前必须扫一遍本文件**（`CLAUDE.md` 第 3 条）。在"越问越聪明"这件事上，错误本比正面知识更值钱——它防的是重复犯同一个错。

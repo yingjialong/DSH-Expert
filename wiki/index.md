@@ -8,6 +8,8 @@ updated: 2026-09-09
 
 # 知识库索引（index.md）
 
+- [rc.2 无 Session 草稿单次调用](topics/rc2-llm-draft-one-shot.md)：PiAiAdapter 公开构造、隔离 plugin 组合、deadline 与 discovery 区别；锚点 llm-pi-ai/src/adapter.ts#PiAiAdapter（verified_inference / fresh）。
+
 - [rc.1 Attachment 与 Session 图片输入](topics/rc1-attachment-input-seam.md)：AttachmentStore、官方 Client 图片输入及无 picker/InputStore 边界；`verified_inference / fresh`。
 
 - [rc.1 浏览器 Session 与凭据](topics/rc1-browser-session-credentials.md)：公开 apply/类型边界、取消恢复、CredentialProvider 写删通知；锚点 session-controller/src/client/index.ts#apply、credentials/src/index.ts#CredentialProvider（verified_inference / fresh）。
