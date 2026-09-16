@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-16 · rc.1 submission 返回值与 Client generation
+
+- asked_by: agent；独立来源完整回传成功后沉淀。固定 a66e4702047846cdaa10c66c9d3df3951f5ea70d，远端 tag 一致。
+- 复核 beginSubmission 的同步 handle、prompt/cancel 的 RemoteResult、公开 list/current/binding/open；补 generationId 在 apply 内局部递增的源码依据。
+- 静态类型/实现核验，测试只定位未运行；verified_inference。没有项目审查或端到端完成断言。
+
 ## 2026-09-16 · rc.1 Session 状态与 cancel 可调用性
 
 - asked_by: agent；固定 a66e4702047846cdaa10c66c9d3df3951f5ea70d，远端 tag 一致；完整答案已成功回传后沉淀。

@@ -28,6 +28,10 @@ anchors:
 
 ## Session 公共面
 
+`beginSubmission({mode,text,images,onRetire?})` 同步返回 `{requestId, abandon()}`，不是 RemoteResult。它登记本地 echo，observed 退场对应 durable user/message 或 queue occurrence，不是执行完成；abandon 不是取消 Host turn。prompt/cancel 成功形状为 `{ok:true,value:{accepted:true}}`，失败为 `{ok:false,error}`。
+
+Connection 的 apply 内 `generationId=0`，onConnected 使用 `++generationId`（固定 SHA 的 connection/src/client/index.ts:192、268）。因此 generation.id 是 Client 实例局部计数，不是持久 Host epoch、跨 Client 身份或授权 CAS；采样不锁住后续 RPC 连接代。
+
 `dsh-api-session-controller/client` 的运行时 `apply(ctx)` 创建内部 ClientSessions 并提供 `ctx.sessions`。`ISessions`、`ISession`、`SessionFace`、`Session` 是 type exports；ClientSessions/SessionManager 不是该 barrel 的 runtime exports。不能把内部源码中 export class 等同于正式包入口可导入构造函数。
 
 ISessions 提供 `create(opts?)`、`open(id)`、`refresh()`、`scope(id)`、`sessionOf(ctx)`、`binding(id)` 等。create 返回 Promise<SessionId>；open 返回 void，仅选择已知 Session。ISession 提供 `prompt(content, mode, signal?, requestId?)`、`cancel()`、`beginSubmission(input)`、`command(line)` 等；SessionFace 另有 getSnapshot/subscribe，可观察 openState。prompt 的 accepted 是 admission，不是完成。
