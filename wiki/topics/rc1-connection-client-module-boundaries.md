@@ -37,6 +37,12 @@ related:
 
 ### transport 首读与 Fetch/stream 合同（固定 rc.1 补充）
 
+hooks 本身使用页面 global，不要求另建 Client module 注册；但官方 Connection Client 模块必须已装配。“index inject 后”不充分，必须确认早于其 apply 首读。直接 wireStream.open 不自动应用浏览器认证。
+
+JSON-lines 可作为自定义 carrier 的条件性 framing，而非官方已认证 transport：须保持实际 wire 值、顺序、正常结束、错误与取消区别；Host open 返回 Promise<AsyncIterable>，Client hook 返回 AsyncIterable。不能把异常包装为普通业务 yield，也不能将 unknown 类型解释为任意 JS 对象皆可 JSON 无损转换。本次未运行 JSONL PoC。
+
+requestRejection 先 Host/Origin trust（403）后 cookie auth（401）；authorizeIndex 拥有 token exchange/redirect/401，true 才继续 index。二者不是可插拔 predicate 参数，不替代 Gateway 参数/context 或业务权限校验。自定义载体策略不因调用公开 handler 而自动等价于官方认证。
+
 Client apply 在创建 rpc 前读取 globalThis.__DSH_TRANSPORT__；fetch/openStream 被闭包捕获，必须在首次 apply 前设置，且 fixture 模式优先 fixtureRpc。Web boot 在 boot-ready 后、moduleLoader.create 前读取 loadBundle；显式 BootSeams 优先，先前的 HTML/bootstrap 脚本不由该 hook 追溯接管。
 
 fetch 接收 URL/RequestInit，返回标准 Response；官方 caller 继续拥有 rpcId/envelope 校验。openStream 接收 endpoint/payload/signal，返回 AsyncIterable 逻辑值；Host Gateway wireStream.open 返回 Promise<AsyncIterable>，failure 归一化错误。未提供 openStream 仍走默认 WebSocket。

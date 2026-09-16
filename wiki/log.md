@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-16 · rc.1 carrier framing 与认证职责
+
+- asked_by: agent；独立来源完整答案先回传成功后沉淀；固定 a66e4702047846cdaa10c66c9d3df3951f5ea70d、远端 tag 一致。
+- 补 hooks global 首读、JSON-lines 条件性 framing、wireStream 取消/错误、requestRejection 与 authorizeIndex 职责区别；不存在公开 predicate injection 的等价替换保证。
+- 源码/类型静态核验，JSONL/native transport 未实测；verified_inference。
+
 ## 2026-09-16 · 两条独立咨询：rc.2 one-shot 与 rc.1 carrier
 
 - asked_by: agent；两条分别完整回传各自来源且确认成功后沉淀，证据按 b150a551b8d465e31e418e1b2eaf5e79bbb7d28e / a66e4702047846cdaa10c66c9d3df3951f5ea70d 隔离。
