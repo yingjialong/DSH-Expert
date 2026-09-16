@@ -28,6 +28,14 @@ anchors:
 
 ## Session 公共面
 
+### tools/execute wrapper 的取消等待边界
+
+固定rc.1中dispatchScheduledExecution直接await tools/execute waterfall；wrapper在await next完成body后继续await外部结算，则dispatch/ToolRuntime.execute仍未完成。标准AgentLoop工具scheduler等待inFlight dispatch（失败路径也allSettled），上层step/turn结束与driver idle因此等待该wrapper。cancel/Controller ACK本身只请求abort，不等drain。
+
+该保证限标准driver实际拥有的等待链；detached工作、外部ctx.tools.execute即使传agent也不自动被whenIdle追踪。wrapper永不settle则whenIdle可一直等，没有hard-kill；wrapper内等待同一whenIdle可能自等待。最终ABORTED可出现在body已产生效果之后，不能当物理未执行证明。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/tools/src/index.ts:1333`、`:1564`；`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/src/tool-calls.ts:152`及agent.ts:432。静态源码核验，未运行wrapper实验。
+
 ### public Controller override 的 Remote 分派
 
 固定rc.1：SessionController可从root导入并正常继承。TypertRemoteService绑定实际this；Gateway.prepareInvocation从receiverContext.get(service)获取有效实例，再Reflect.get(receiver, implementation)并Reflect.apply。故public prompt/updateQueue override在实例/Remote定义匹配条件下会被调用，不是固绑定base prototype；super调用不需要访问private commands。Remote初始化器把方法名marker写到实际实例prototype，SRC仍受参数反射与strict-definition生命周期约束。没有执行完整发布包继承PoC。

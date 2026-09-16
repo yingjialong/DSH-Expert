@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-17 · rc.1 wrapper 后置结算与 idle
+
+- asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d/tag一致；完整答案回传后沉淀。
+- body完成不等于execute完成，标准driver等待tools/execute wrapper剩余Promise；cancel ACK不等drain，外部/detached调用不自动纳入whenIdle。
+- 静态类型/调用链核验，未运行实验，verified_inference。
+
 ## 2026-09-17 · rc.1 主动重连与问题 scope 所有权
 
 - asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d/tag一致；完整答案成功回传后沉淀。
