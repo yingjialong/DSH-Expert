@@ -26,6 +26,16 @@ asked_by: agent
 
 ## 主动 reconnect 与 scope 所有权补充
 
+### 新代 ready 与 pending 清理 identity
+
+Remote pump先解析ready并通知Connection，再处理后续question invocation，故connected不是pending UI全部重投完成的屏障。answerer fiber存在也不证明某次delivery已scope resolve并发布。
+
+uiSession PendingInteractionDomain以interaction.key登记；remove只用一次性active保护和values.delete(key)，并无interaction对象引用比较。官方PendingQuestion每次新建递增question:N，因此同活跃模块中新旧key不同，旧remove不按sessionId删新pending。domain.release则清整个domain，须与单条remove区分。
+
+uiSession scope binding清理另有bindings.get(sessionId)===record与currentBinding===value检查，这是binding对象guard，不是pending domain guard。pendingInteractions是按Session/precedence折叠的有效Map，不是Host pending全集。
+
+公开观察点为connection generation/state/reset、uiSession.pendingInteractions快照/订阅、sessions.scopeOf/binding/list及remote.$on问答waterfall。后者不是passive observer，必须保留next语义；raw delivery可在既有公开transport carrier观察，但不能把UI本地key等同Host eventId。Host工具日志计数不等价Gateway pending/重投receipt。静态依据：ui-session/src/client/index.ts:34-102、304-395；gateway/src/client/remote-events.ts:121-246，均为本页固定SHA。
+
 ConnectionHandle.reconnect主动发connecting并abort当前generation/retry delay；没有运行owner时无操作。Remote永久listener/Session scope不因此直接dispose，但当前delivery signal结束，旧PendingQuestion以ASK_ABORTED结束；重投生成新question:N对象。QuestionComposer仅requestKey===pending.key时恢复draft，所以scope/store尚存也不保证重投后草稿继承。connected不证明原Host pending仍存活。
 
 ISessions.scope(id)返回manager-owned AgentContext视图，不是createScope返回的owned AgentScopeHandle。直接ctx.fiber.dispose在语言层可触达，但不运行manager的scopes删除、session.unbindScope、manager.drop、scopeDrops/deferred维护；公开ISessions无reset/disposeScope接口，不能承诺重新open修复旧缓存。scope被官方owner prune/drop后重新eligible才可lazy重建；open/clear不是销毁命令。

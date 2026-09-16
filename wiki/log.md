@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-17 · rc.1 问答 delivery 与 pending identity
+
+- asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d；完整答案回传后沉淀。
+- connected早于后续问答展示；pending按本地key删除、scope binding另有对象guard，不能混同。列明公开observer限制，不用工具日志计数推断Host是否重投。
+- 静态源码核验，未复现外部现象；verified_inference。
+
 ## 2026-09-17 · rc.1 wrapper 后置结算与 idle
 
 - asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d/tag一致；完整答案回传后沉淀。
