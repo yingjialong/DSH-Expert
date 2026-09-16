@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-17 · rc.1 零 provider 与默认标签
+
+- asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d，远端tag一致，完整回传成功后沉淀。
+- 默认选择与provider registry分离；空catalog仍可显示默认/历史provider-model并blocked，不激活adapter。区分Host catalog读RPC与上游模型请求。
+- 静态调用链核验，未跑Client或读取外部项目，verified_inference。
+
 ## 2026-09-16 · rc.1 图片输入与 submission 失败
 
 - asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d，完整答案先回传成功再沉淀。

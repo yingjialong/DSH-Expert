@@ -28,6 +28,12 @@ anchors:
 
 ## Session 公共面
 
+### 零 provider 的默认模型标签
+
+base composition独立声明agent-default-model为deepseek-official/deepseek-v4-flash；它只是选择配置。Host buildModelCatalog在providers为空时仍返回default，routableProviders/groups为空；Client current取projection.next或default，routable=false使composer blocked，ModelSelect没有catalog匹配时显示provider/model字符串。标签不注册provider、不加载adapter、不读模型credential、不发上游生成；但Client确有session.modelCatalog的Host读RPC，不能表述为零网络。历史选择或配置改变可改变标签。
+
+证据：固定本页SHA的 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/session-controller/src/catalog.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-model-selection/src/client/directory.ts` 与 `ModelSelect.tsx`；base/cordis.patch.yml的agent-default-model条目。只读核验，不由标签判定整个Profile的其他插件行为。
+
 `beginSubmission({mode,text,images,onRetire?})` 同步返回 `{requestId, abandon()}`，不是 RemoteResult。它登记本地 echo，observed 退场对应 durable user/message 或 queue occurrence，不是执行完成；abandon 不是取消 Host turn。prompt/cancel 成功形状为 `{ok:true,value:{accepted:true}}`，失败为 `{ok:false,error}`。
 
 Connection 的 apply 内 `generationId=0`，onConnected 使用 `++generationId`（固定 SHA 的 connection/src/client/index.ts:192、268）。因此 generation.id 是 Client 实例局部计数，不是持久 Host epoch、跨 Client 身份或授权 CAS；采样不锁住后续 RPC 连接代。
