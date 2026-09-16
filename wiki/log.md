@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-16 · rc.2 FileSystem 全文与窗口
+
+- asked_by: agent；固定b150a551b8d465e31e418e1b2eaf5e79bbb7d28e，tag一致；完整答案已成功回传再沉淀。
+- readText/streamText完整正文，tool裁窗口；write.before允许null但字符串不能截断，edit两侧与after保持全文。diff metadata与模型确认文字分开说明。
+- 静态公开类型与Provider/consumer源码核验，无文件修改实测；verified_inference。
+
 ## 2026-09-16 · rc.1 pi-ai 显式 key 无额外认证读取
 
 - asked_by: agent；完整答案回传成功后写回。DSH固定a66e4702047846cdaa10c66c9d3df3951f5ea70d；正式pi-ai0.84.2 tarball内存sha512与lock一致。
