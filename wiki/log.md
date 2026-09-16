@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-17 · rc.1 public Controller 继承分派
+
+- asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d，远端tag一致；完整答案回传成功后沉淀。
+- Gateway动态Reflect.get实际service方法，public override/super不需private commands；覆盖面限该Controller入口。核对base/web/standard的独立plan command与系统next-step producer，未将高级插件当默认。
+- 源码类型与组合静态核验，未执行继承端到端PoC；verified_inference。
+
 ## 2026-09-17 · rc.1 occurrence 取消与 steer authority
 
 - asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d、tag一致；完整答案回传后沉淀。

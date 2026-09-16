@@ -28,6 +28,14 @@ anchors:
 
 ## Session 公共面
 
+### public Controller override 的 Remote 分派
+
+固定rc.1：SessionController可从root导入并正常继承。TypertRemoteService绑定实际this；Gateway.prepareInvocation从receiverContext.get(service)获取有效实例，再Reflect.get(receiver, implementation)并Reflect.apply。故public prompt/updateQueue override在实例/Remote定义匹配条件下会被调用，不是固绑定base prototype；super调用不需要访问private commands。Remote初始化器把方法名marker写到实际实例prototype，SRC仍受参数反射与strict-definition生命周期约束。没有执行完整发布包继承PoC。
+
+该路径不覆盖独立producer：默认base+web+standard下commands.execute→plan handler可直接Agent.steer；subagent交付/结算、goal-round-driver、tool-jobs、agent-instructions、user-approval及AgentLoop additionalContexts可直写steer/inject/next-step。web禁用了部分host行但standard preset重新装配；不可把未创建Session的Host与已挂standard Session混同。hooks-*、cordis-host-runner/cordis preset、experimental team须另核显式装配，非默认standard自动开启。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/typert/protocol/src/index.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/src/index.ts:600`；`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/interaction/commands/src/index.ts:333` 与 plan-mode/src/index.ts:253。是公开调用链条件性事实，不作外部项目授权/合规判决。
+
 ### Host occurrence 与 awaited hook 边界
 
 固定rc.1公开事件为agent/inbox/claimed({agent,message,turn})而非session/input-claimed；它是contained emit观察。Agent.cancel(cause,{keepInbox?})无expected-turn/input/seq CAS，whenIdle跟随whole-agent activity而非某个MessageId。旧观察跨await后再cancel不能自动绑定旧turn。
