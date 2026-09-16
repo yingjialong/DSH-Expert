@@ -26,6 +26,12 @@ asked_by: agent
 
 ## 主动 reconnect 与 scope 所有权补充
 
+### 连续多代 replay 没有一次限制
+
+每次openRemoteEvents都会遍历当时pendingRemoteEvents并deliver同一个frame/eventId，无首次/后续区别或重投计数。owner为Gateway实例Map，原Host request signal与Context在startRemoteEvent首次绑定，不因replay改绑Client signal。纯流结束只移除client/delivery，即使delivery集合归零也不settle；有效next回复令最后delivery归零才settle-next，result/rejected和原owner/source结束也删除pending。
+
+因此可连续重投的条件是同Gateway/source与原pending仍存活，不是“tool尚无result”。ready先yield、queued waterfall随后消费，新connected不证明所有问题已交付。上游gateway-stream.host.spec.ts:809只测试一次replacement；多次可重投为固定实现控制流推论，不冒充多代运行实测。
+
 ### 新代 ready 与 pending 清理 identity
 
 Remote pump先解析ready并通知Connection，再处理后续question invocation，故connected不是pending UI全部重投完成的屏障。answerer fiber存在也不证明某次delivery已scope resolve并发布。

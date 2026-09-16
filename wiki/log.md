@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-17 · rc.1 连续事件重投
+
+- asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d，完整答案回传后沉淀。
+- 每次open遍历仍pending的Map，无仅重投一次分支；区分断线delivery归零与有效next结算。工具未完成日志不证明Gateway pending仍存活。
+- 静态实现与一方单次replacement测试源码复核，未运行多代重连；verified_inference。
+
 ## 2026-09-17 · rc.1 问答 delivery 与 pending identity
 
 - asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d；完整答案回传后沉淀。
