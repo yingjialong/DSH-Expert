@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-17 · rc.1 occurrence 取消与 steer authority
+
+- asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d、tag一致；完整答案回传后沉淀。
+- 区分inbox claimed观察、awaited pre-step/request/turn-stopping与无expected-occurrence参数的cancel；不存在所核公开面的统一pre-steer veto。复核问题pending sessionId、本地key与非持久draft。
+- 静态源码类型核验，未执行并发/浏览器故障测试；verified_inference。
+
 ## 2026-09-17 · rc.1 零 provider 与默认标签
 
 - asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d，远端tag一致，完整回传成功后沉淀。

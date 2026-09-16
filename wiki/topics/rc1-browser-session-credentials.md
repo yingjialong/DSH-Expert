@@ -28,6 +28,16 @@ anchors:
 
 ## Session 公共面
 
+### Host occurrence 与 awaited hook 边界
+
+固定rc.1公开事件为agent/inbox/claimed({agent,message,turn})而非session/input-claimed；它是contained emit观察。Agent.cancel(cause,{keepInbox?})无expected-turn/input/seq CAS，whenIdle跟随whole-agent activity而非某个MessageId。旧观察跨await后再cancel不能自动绑定旧turn。
+
+agent/pre-step是awaited waterfall，可reject拟议step；agent/request修改调用配置；agent/request-error处理恢复；agent/turn-stopping是awaited serial停止边界。pre-step已经过claim和assembly，不能替代入箱授权。同步Host检查与立即决策仅在相应live上下文/无异步间隙条件下成立，不升级成跨进程原子取消合同。loop hook内await自己的whenIdle可能自等待。
+
+steer/inject/followup/Inbox存在多个入口；Controller/Remote检查不覆盖in-process。没有核验到统一pre-steer awaited veto；inbox观察/Session commit事件不能veto既定入箱。问题PendingQuestion有sessionId与本地question:N key，type-only公开；draft非持久，连接代重投不等于reload/Host重启恢复草稿。
+
+证据：本页固定SHA的 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent/src/runtime-types.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/src/agent.ts`；问答详见 [rc.1生命周期专题](rc1-question-delivery-lifecycle.md)。未跑并发或浏览器故障实测。
+
 ### 零 provider 的默认模型标签
 
 base composition独立声明agent-default-model为deepseek-official/deepseek-v4-flash；它只是选择配置。Host buildModelCatalog在providers为空时仍返回default，routableProviders/groups为空；Client current取projection.next或default，routable=false使composer blocked，ModelSelect没有catalog匹配时显示provider/model字符串。标签不注册provider、不加载adapter、不读模型credential、不发上游生成；但Client确有session.modelCatalog的Host读RPC，不能表述为零网络。历史选择或配置改变可改变标签。
