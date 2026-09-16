@@ -60,6 +60,12 @@ Connection /client 的 apply 提供 ConnectionHandle：`reconnect()`、generatio
 
 ## 凭据公共面
 
+ApiKeyRecord 的 key-only/env-only/key+env/二者缺席均合法；二者缺席是 owner 确认 ambient auth，不等于无 record。env 为 provider 环境配置，不自动写 process.env。官方 credentials-local 校验存在的 key 非空、env 名 POSIX且值非空；空 env map 允许，HTTP key 合法性由 adapter 另验。GrantRecord.payload 必须可存 JSON，但内容归 owner 解释，不通用限定 OAuth token 或 BrowserAuth 格式。
+
+llm-pi-ai 的公开 providers[route].apiKeyEnv 经 credentialRef 验证，Host 每 stream 调 ctx.credentials.resolve，显式引用 miss 不回退 ambient；无 credentials 服务时才读 launch environment，省略 ref 才允许 provider 自身发现。recordKeyFor(provider) 属于另一 record key 空间，不能当 apiKeyEnv。Host 消费位置不证明秘密永不经过单独的浏览器凭据写入 API，也不是 Host plugin 的隔离沙箱。
+
+本段按同 SHA 的 credentials/src/types.ts、credentials-local/src/index.ts#parseRecord、llm-pi-ai/src/config.ts 与 src/index.ts#apply 核验；未调用真实模型或读取用户秘密。通知是提交后 void fan-out，普通 listener 异常被记录、同步 INVARIANT 可重抛，不构成所有订阅者完成屏障。
+
 `dsh-credentials` root 运行时导出 abstract CredentialProvider（兼 default）与 credentialRef/credentialKey 等函数；/types 是浏览器安全类型和事件声明。
 
 - reference：`resolve`、`describe`、`set(ref,value)`、`unset(ref)`。每 operation 重解引用；旋转使用 set，没有独立 rotate。只读层覆盖时拒绝写入；空值使用 unset。

@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-16 · rc.1 credential record 合法形状与 Host 引用消费
+
+- asked_by: agent；完整答案回传成功后沉淀。固定 a66e4702047846cdaa10c66c9d3df3951f5ea70d，远端 tag 一致。
+- 明确 ApiKeyRecord 四种 key/env 组合、GrantRecord JSON/owner 约束、分离通知轴，以及 apiKeyEnv/recordKeyFor 的不同键空间；Host 消费不等于全路径不经过 Client。
+- 只读官方类型、local provider parser、adapter resolver；未调用模型，verified_inference。
+
 ## 2026-09-16 · rc.1 carrier framing 与认证职责
 
 - asked_by: agent；独立来源完整答案先回传成功后沉淀；固定 a66e4702047846cdaa10c66c9d3df3951f5ea70d、远端 tag 一致。
