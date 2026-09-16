@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-17 · Settings publish/persist 补正
+
+- asked_by: agent；固定rc.1/a66e4702047846cdaa10c66c9d3df3951f5ea70d；完整纠正已回传后沉淀。
+- 正式protected publish非publishDocument；区分namespace候选persist、file reconcile先缓存后publish、invalid namespace last-good与跨进程revision范围。
+- 正式types与源码核验，未执行子类PoC；verified_inference，错误本E047。
+
 ## 2026-09-17 · rc.1 Settings校验与Client staging原语
 
 - asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d/tag一致，完整答案回传后沉淀。

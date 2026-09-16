@@ -8,6 +8,12 @@ updated: 2026-09-16
 
 # 错误本（Error Book）
 
+### E047 — SettingsProvider 的发布扩展面叫 publish
+
+- 2026-09-17，asked_by: agent，verified_inference。此前误称protected publishDocument；rc.1正式types与源码只有protected publish(doc,source?)，没有检出publishDocument。
+- FileSettingsProvider在publish前已更新text缓存；不能把override拒绝视为整个storage reconcile事务回滚。普通write经persist后直接commit，不经publish。
+- 固定a66e4702047846cdaa10c66c9d3df3951f5ea70d证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/settings/settings/src/index.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/settings/settings-file/src/index.ts`及正式lib/types/index.d.ts。前答为命名错误，非新增API。
+
 ### E046 — 无 reasoning 探测不等于无远端模型 listing
 
 - **类型**：负向结论越界；2026-09-16；asked_by: agent；verified_inference。

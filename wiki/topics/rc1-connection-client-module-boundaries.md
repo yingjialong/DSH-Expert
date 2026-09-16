@@ -37,6 +37,12 @@ related:
 
 ### Settings policy 与 Loader/Client staging 边界
 
+补正：SettingsProvider正式protected方法名为publish(doc,source?)，非publishDocument；后者是此前答复误称。FileSettingsProvider子类可override protected persist/publish并super，无需private import。persist收到完整namespace raw user候选（非全doc、非含base/default的resolved值），普通write在persist前校验revision/schema，成功后直接document/commit，并不调用publish。
+
+File super.persist文件队列/锁内先reconcileFromDisk再写候选，未在该reconcile后对原候选重做revision CAS/合并。reconcile与initial load先更新private text cache再调用publish；子类拒绝publish能阻止基类发布，但不自动回滚text缓存，相同text下次可能skip。super.publish先替raw document，再逐namespace解析，失败namespace保留旧resolved值而不bump其revision；不是全doc回滚。owner在persist中被替换后的resync源码有TODO，不作更强保证。
+
+依据：固定SHA的 settings/src/index.ts#publish/write 与 settings-file/src/index.ts#load/persist/reconcileFromDisk；正式两包lib/types/index.d.ts已核对protected签名。未运行子类/存储竞争PoC。
+
 rc.1 SettingsProvider.register的validate(value):void为namespace owner同步resolved-value校验，update/replace/mutate统一队列在persist前调用；它不携caller/原始ops/授权receipt，重复ns注册拒绝。Controller限制不覆盖in-process Provider/namespace scope写。revision在队首比较，readonly约束同样覆盖in-process；更新通知是提交后观察。
 
 公开Include/EntryTree支持独立path子树，挂到entry.subtree后Loader.entries递归可见。ClientModuleRegistry收集该Loader全部active非disabled的web Client包，不按isolate或path过滤；graph()无context/entry筛选。服务隔离不是无副作用staging或graph quarantine。
