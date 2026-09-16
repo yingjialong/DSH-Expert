@@ -40,6 +40,16 @@ ISessions 提供 `create(opts?)`、`open(id)`、`refresh()`、`scope(id)`、`ses
 
 ## 问答、审批和重连
 
+### Session 可调用性与保留 binding（同 SHA 补充核验）
+
+`OpenState = cold | loading | open | error` 仅表示历史窗口。Session.prompt/cancel 不检查 openState、removed、running、list.current 或 connection generation；prompt 明确支持导航前 first-send。因此不存在以 open/running/current 组合定义的统一 API 前置条件。Host 普通 cancel 仅查 live Agent，未 attached 返回 session/not-found；prompt 则可按需 resume。
+
+仅切换 current、原 Session 仍列出且 Client 生命周期有效时，public binding(id).session 可继续 cancel 原 Session：方法使用自身 sessionId/address，不取 current。旧引用不是有效性 lease；scope prune/dispose 或 removed 后不能由引用仍存在推断可调用成功。普通 removed 来自 removal 事件，与断线或磁盘历史删除不同；durable subagent removal 特判为 running=false，并可保留 parent address。
+
+Connection generation ready 只说明 source 已挂增量 listeners，不代表所有 Session 历史/control baseline 完成，更不锁定后续 RPC 的 Host epoch。断线时 generation 缺失，Session snapshot 可保留；冷历史、移除、断线三者不能互推。cancel ok 仅为请求接受，非 running=false 或物理停止；pending inbox 保留，后续仍可运行。
+
+证据：固定 SHA 下 session-controller 的 `src/client/contract/snapshot.ts:55`、`src/client/sessions/session.ts:225/312/551`、`src/client/sessions/service.ts:503`、`src/client/sessions/manager.ts:732`、`src/commands.ts:434`；Connection `src/client/connection.ts:56` 和 `src/client/index.ts`。均位于上文确认的本地上游仓库路径；本次只读源码，未执行 transport 竞态实测。
+
 官方 ui-user-questions/client 与 ui-approval/client 的 apply 分别监听 remote 的 user-questions/request、approval/request waterfall。实际 pending carrier 的 `answer(QuestionAnswer)` 或 `answer('allowed-once'|'rejected')` 完成返答。PendingQuestion.cancel 是取消问题，不是取消 turn；PendingQuestion/PendingApproval 从各自 /client 仅 type-export，不应外部 new。
 
 Connection /client 的 apply 提供 ConnectionHandle：`reconnect()`、generation/state 的 getSnapshot/subscribe 公开。API Gateway 唯一拥有 connection loop；不要另调 start 创建第二个 owner。Session apply 建 control stream 并监听 connection/reset；历史流另管 resume/baseline。连接重建不承诺恢复旧 Host 内存 pending Promise。

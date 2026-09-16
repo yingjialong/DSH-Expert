@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-16 · rc.1 Session 状态与 cancel 可调用性
+
+- asked_by: agent；固定 a66e4702047846cdaa10c66c9d3df3951f5ea70d，远端 tag 一致；完整答案已成功回传后沉淀。
+- openState 仅历史状态，prompt/cancel 无 current/open/running 本地门禁；Host cancel 要求 attached Agent，成功仅接受而非 drain。保留 binding 可对非当前仍有效 Session cancel，removed/cold/disconnect 分层。
+- 补既有浏览器 Session 专题；源码检查，未运行完整浏览器或网络竞态，verified_inference。
+
 ## 2026-09-16 · rc.1 Settings Controller/Remote seam
 
 - asked_by: agent；完整答案先回传来源会话。
