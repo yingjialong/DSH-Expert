@@ -35,6 +35,14 @@ related:
 
 ## 可复用结论
 
+### patch 身份与 Client factory 到达分层
+
+rc.1 composeEntries调用vendor/include的applyEntryPatches：name是匹配断言，mismatch整项warn/skip，不写入target.name；patch无delete/remove操作。disabled旧row+insert不同唯一id的新row可表达停用/新增，不是删除后同id替换；Loader.update也排除id/name。不能把未知delete字段视为生效。
+
+ClientBundleRegistration公开{id,factory}与window.__ModuleLoader__.load是浏览器factory到达机制，不创建Host graph row，也不直接激活Client plugin。Host扫描active非disabled的实际package身份；新包子类提供同service不能自动保留原npm Client row。没有公开Host registerClientRow/host-alias字段。public bootstrap原语存在，故“未找到标准扫描下自动映射”不等于自有bootstrap不可能；完整唯一Host子类+官方Client闭包未经本次PoC验证。
+
+依据固定SHA的 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/vendor/include/src/index.ts:58`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/boot/app-boot/src/profile.ts:854`、ClientModules公开manifest与system源码。对SessionController与Connection的Host身份问题同样须按实际包逐项核对。
+
 ### transport 首读与 Fetch/stream 合同（固定 rc.1 补充）
 
 hooks 本身使用页面 global，不要求另建 Client module 注册；但官方 Connection Client 模块必须已装配。“index inject 后”不充分，必须确认早于其 apply 首读。直接 wireStream.open 不自动应用浏览器认证。

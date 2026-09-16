@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-17 · rc.1 patch identity 与 Client 注册
+
+- asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d/tag一致，完整回传成功后沉淀。
+- name仅匹配非重命名，无delete patch；ClientBundleRegistration只管factory到达，非Host client-row插入。唯一Controller子类+原Client完整bootstrap闭包未实测，不作不可能性判定。
+- 静态源码/manifest核验，verified_inference。
+
 ## 2026-09-17 · rc.1 public Controller 继承分派
 
 - asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d，远端tag一致；完整答案回传成功后沉淀。
