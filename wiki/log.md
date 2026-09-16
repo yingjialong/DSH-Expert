@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-17 · rc.1 Settings校验与Client staging原语
+
+- asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d/tag一致，完整答案回传后沉淀。
+- resolved-value validator不等于caller授权；Include path/isolate不从递归Client graph排除；prefetch/import/invalidate与Cordis ACTIVE/dispose分层。
+- 静态源码公开类型核验，独立staging闭包未实测；verified_inference。
+
 ## 2026-09-17 · rc.1 连续事件重投
 
 - asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d，完整答案回传后沉淀。

@@ -35,6 +35,16 @@ related:
 
 ## 可复用结论
 
+### Settings policy 与 Loader/Client staging 边界
+
+rc.1 SettingsProvider.register的validate(value):void为namespace owner同步resolved-value校验，update/replace/mutate统一队列在persist前调用；它不携caller/原始ops/授权receipt，重复ns注册拒绝。Controller限制不覆盖in-process Provider/namespace scope写。revision在队首比较，readonly约束同样覆盖in-process；更新通知是提交后观察。
+
+公开Include/EntryTree支持独立path子树，挂到entry.subtree后Loader.entries递归可见。ClientModuleRegistry收集该Loader全部active非disabled的web Client包，不按isolate或path过滤；graph()无context/entry筛选。服务隔离不是无副作用staging或graph quarantine。
+
+ClientModuleSystem的prefetch是factory arrival，import才materialize，invalidate仅清factory/cache，不dispose已运行Cordis fiber。public bootstrap原语可构造Client系统，但没有现成stage/validate/activate事务来保证试装不进入活跃UI/Session；完整独立闭包未实测，不说任意独立Context不可能。
+
+证据：固定SHA的 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/settings/settings/src/index.ts:48`、`:632`；`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/vendor/loader/src/config/tree.ts:16`；`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/modules/src/index.ts:598` 与客户端system.ts:240。
+
 ### patch 身份与 Client factory 到达分层
 
 rc.1 composeEntries调用vendor/include的applyEntryPatches：name是匹配断言，mismatch整项warn/skip，不写入target.name；patch无delete/remove操作。disabled旧row+insert不同唯一id的新row可表达停用/新增，不是删除后同id替换；Loader.update也排除id/name。不能把未知delete字段视为生效。
