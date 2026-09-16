@@ -60,6 +60,16 @@ Connection /client 的 apply 提供 ConnectionHandle：`reconnect()`、generatio
 
 ## 凭据公共面
 
+### 手工 pi-ai route 的显式 key 优先级
+
+固定 rc.1 lock 的 pi-ai 为 0.84.2。真正未命中 catalog 的 provider id 使用 DSH harnessApiKeyAuth，仅消费传入 credential.key。streamWithSnapshot 先 await resolveApiKey，再调用 models.streamSimple；显式 ref miss/空值在 SDK auth 前 MISSING_CREDENTIAL，格式校验可 INVALID_CREDENTIAL。
+
+pi-ai resolveProviderAuthWithSignal 在 overrides.apiKey 非 undefined 且 provider.auth.apiKey 存在时直接走该 resolver，跳过 CredentialStore.read 和 ambient 分支；手工 resolver 不读取 AuthContext.env/fileExists。Models 的构造、setProvider/getModel 不触发 auth。三协议 formatter 使用显式 key，不另找认证。
+
+结论仅限这次生成认证：catalog 同名 route 的 resolver、checkAuth/getAvailable/login/refresh、缺省而非缺失的 apiKeyEnv 是其他路径；非认证环境读取（如 cache retention）仍可能存在。自定义 CredentialProvider.resolve 的内部读取也不属于 pi-ai fallback。
+
+证据：本页 SHA 的 llm-pi-ai/src/provider.ts#harnessApiKeyAuth/routeAuth、src/index.ts#apply、src/adapter.ts#streamWithSnapshot；[官方 pi-ai 0.84.2 tarball](https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.84.2.tgz) 内 dist/models.js、dist/auth/resolve.js 及三协议 dist/api 文件。内存包 sha512 与固定 pnpm-lock 完全一致，未执行模型请求，verified_inference。
+
 ApiKeyRecord 的 key-only/env-only/key+env/二者缺席均合法；二者缺席是 owner 确认 ambient auth，不等于无 record。env 为 provider 环境配置，不自动写 process.env。官方 credentials-local 校验存在的 key 非空、env 名 POSIX且值非空；空 env map 允许，HTTP key 合法性由 adapter 另验。GrantRecord.payload 必须可存 JSON，但内容归 owner 解释，不通用限定 OAuth token 或 BrowserAuth 格式。
 
 llm-pi-ai 的公开 providers[route].apiKeyEnv 经 credentialRef 验证，Host 每 stream 调 ctx.credentials.resolve，显式引用 miss 不回退 ambient；无 credentials 服务时才读 launch environment，省略 ref 才允许 provider 自身发现。recordKeyFor(provider) 属于另一 record key 空间，不能当 apiKeyEnv。Host 消费位置不证明秘密永不经过单独的浏览器凭据写入 API，也不是 Host plugin 的隔离沙箱。

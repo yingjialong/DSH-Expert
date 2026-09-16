@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-16 · rc.1 pi-ai 显式 key 无额外认证读取
+
+- asked_by: agent；完整答案回传成功后写回。DSH固定a66e4702047846cdaa10c66c9d3df3951f5ea70d；正式pi-ai0.84.2 tarball内存sha512与lock一致。
+- hand-declared route用harnessApiKeyAuth；显式key让pi-ai跳过CredentialStore和ambient读取；显式ref miss在streamSimple之前失败。仅生成认证路径，不扩成整个进程零环境读取。
+- 静态调用链及正式包校验，未执行模型或凭据调用；verified_inference。
+
 ## 2026-09-16 · rc.1 credential record 合法形状与 Host 引用消费
 
 - asked_by: agent；完整答案回传成功后沉淀。固定 a66e4702047846cdaa10c66c9d3df3951f5ea70d，远端 tag 一致。
