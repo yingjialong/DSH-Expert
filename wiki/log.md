@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-17 · rc.1 non-waking next-turn notice
+
+- asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d/tag一致；完整回传后沉淀。
+- false不主动wake但不禁止活跃driver自动下一turn；claim每次仅一个nextTurn，notice不会自动合并followup。区分入箱/claim/user-message和冷恢复/正常dispose。
+- 静态源码核验，未执行notice实验；verified_inference。
+
 ## 2026-09-17 · rc.1 ConversationController图片方法与装配
 
 - asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d；完整答案回传后沉淀。

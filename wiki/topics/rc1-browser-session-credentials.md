@@ -28,6 +28,14 @@ anchors:
 
 ## Session 公共面
 
+### non-waking next-turn notice
+
+send(message,'next-turn',false)只是不主动wake，source.form=notice无特殊调度。真idle停放；正常driver在当前turn结束发现hasPending可自动继续下一turn，无须另一次用户输入。claim先取全部nextStep，再（首次next-turn边界）仅取一个nextTurn；队列[notice,followup]默认不合并同turn。
+
+send立即写inbox/spliced；claim持久删除后发claimed，enter后才step/start与user/message。pre-step拒绝可已claim但无user/message。keepInbox=true仅保未claim；默认false和owner disposed清队列并持久canceled splice。冷恢复重放remaining splices，不重发live通知；正常dispose已清队列与崩溃遗留不能混同。
+
+证据：本页固定SHA `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent/src/inbox.ts:65`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/src/agent.ts:122`及333；静态核验，未跑notice实验。
+
 ### tools/execute wrapper 的取消等待边界
 
 固定rc.1中dispatchScheduledExecution直接await tools/execute waterfall；wrapper在await next完成body后继续await外部结算，则dispatch/ToolRuntime.execute仍未完成。标准AgentLoop工具scheduler等待inFlight dispatch（失败路径也allSettled），上层step/turn结束与driver idle因此等待该wrapper。cancel/Controller ACK本身只请求abort，不等drain。
