@@ -8,6 +8,13 @@ updated: 2026-09-17
 
 # 问答与学习日志
 
+## 2026-09-17 · 1.1-rc.2→1.5-rc.2公开嵌入及两项补充
+
+- asked_by: agent；来源与目标固定b150a551b8d465e31e418e1b2eaf5e79bbb7d28e / fb2c4b9e698e30edb738bca4cf0618587db7d203。主答复与补充各自完整回传，工具isError=false确认后才写入本条。
+- 首批47、补充13个正式npm包版本样本：urllib只读下载tarball、hashlib sha512比registry integrity、tarfile检查exports/声明/关键根JS导出；无npm install、无产品执行。临时检查目录为sandbox内本轮专用路径，收尾清理。
+- 回源核验重点：Coordinator/Backend删除、handle耐久、纯format迁移及V0拒绝、Question waterfall、Todo投影硬依赖、公开Client/Chat硬依赖；补充确认无persistence live路径、cold查看内存closers、export需provider、query-sqlite memory/never与deny能力边界。
+- 未对任意加密artifact、CAS、物理drain或精确UI装配作运行验收，不以源码证据假报兼容。新增rc15-public-embedding-migration专题，L2 / verified_inference；历史版本结论不覆盖。
+
 ## 2026-09-17 · 指定升级 0.1.5-rc.2，并累计比较 0.1.1-rc.2
 
 - asked_by: human。起始本库及两个上游工作区均干净；用户明确授权升级指定版本。执行 fetch tags 与 ff-only 到 fb2c4b9e698e30edb738bca4cf0618587db7d203；未追随远端 1.6-alpha.2，未升级独立 Cordis。

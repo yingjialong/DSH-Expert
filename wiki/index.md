@@ -8,6 +8,8 @@ updated: 2026-09-17
 
 # 知识库索引（index.md）
 
+- [1.5-rc.2公开嵌入与迁移](topics/rc15-public-embedding-migration.md)：boot/Remote、SessionHandle与纯V3迁移、无持久化及UI硬依赖；锚点 session-persistence/src/index.ts、session-format/src/types.ts（verified_inference / fresh）。
+
 - [rc.2 FileSystem 全文边界](topics/rc2-fs-full-text-boundary.md)：全文/流式与工具窗口分层、write.before=null例外及diff语义；锚点 fs/src/types.ts#FsWriteOutcome（verified_inference / fresh）。
 
 - [rc.2 无 Session 草稿单次调用](topics/rc2-llm-draft-one-shot.md)：PiAiAdapter 公开构造、隔离 plugin 组合、deadline 与 discovery 区别；锚点 llm-pi-ai/src/adapter.ts#PiAiAdapter（verified_inference / fresh）。

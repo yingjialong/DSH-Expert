@@ -1,3 +1,11 @@
+---
+title: DSH 悬而未决
+description: 记录版本相关的未知边界、已核验证据及后续验证入口。
+type: reference
+status: active
+updated: 2026-09-17
+---
+
 # 悬而未决（Open Questions）
 
 > 记录**我查了但没查到答案**的问题：上游文档没写、源码看不出、需要实测或需要问上游。
@@ -128,3 +136,5 @@
 | Q121 | `0.1.3-alpha.1发布闭包` | 2026-09-06 GitHub tag `d347e703` 已发布且assets为空；根及11个关键companion精确npm alpha.1均404，R前10个有tarball元数据。完整递归依赖/native/build/boot未知；下一步须先获得同版发布产物及明确安装/conformance授权，不能用R包或其他SHA补成A闭包。详见[固定专题](topics/alpha13-full-host-public-boundaries.md)。 |
 | Q122 | `0.1.3-alpha.1确定性工具日志` | `d347e703`公开tools.execute可由插件调用但不自动写Session tool pair；ApprovalService要求open turn，commands使用独立日志。没有取得无模型决定的final→deterministic tool→标准Session/approval完整同形一方验收证据；下一步先寻找公开编排/recording合同或正式例子，再在授权后实测，不用伪造model tool-call代替证据。 |
 | Q123 | `0.1.3-alpha.1 WKWebView` | `d347e703`有公开ClientTransportHooks与Web组合，未找到WKWebView专门兼容承诺或一方测试；cookie持久化、custom scheme、WebSocket、文件上传与native bridge组合未实测。下一步需要明确WebKit/系统版本及运行时授权，不由通用Web能力推出桌面壳已验收。 |
+
+| Q124 | `1.5-rc.2公开精确组合` | `fb2c4b9e698e30edb738bca4cf0618587db7d203`公开面支持无Session persistence的live运行、AttachmentStore拒绝、空Commands/Subagent registry和nativeOpen:false；但保留官方Session/Workspace/Conversation/Chat并关闭这些产品能力的完整组合未运行验证。已确认Client还需fileUpload、remote.commands/subagents及sidebarRight等，不能从可替换类型直接证明整图成立。下一步为目标版本公开组合的Loader/文本交互/Question/Todo/history/重连及副作用验收；不扩大为调用方项目评审。见[专题](topics/rc15-public-embedding-migration.md)。 |
