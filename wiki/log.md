@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-17 · rc.1 ConversationController图片方法与装配
+
+- asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d；完整答案回传后沉淀。
+- 公开class有sendSession/serializeDraftImages不同路径；官方apply硬编码构造，不能从继承直接推出全入口包装。复核RPC source身份正向证据与独立request图政策。
+- 静态源码核验，未运行装配/abort实验；verified_inference。
+
 ## 2026-09-17 · rc.1 图片预算与入口扩展
 
 - asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d/tag一致；完整回传后沉淀。

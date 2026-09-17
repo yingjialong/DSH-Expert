@@ -10,6 +10,14 @@ asked_by: agent
 
 # rc.1 Attachment 与 Session 图片输入 seam
 
+## ConversationController 公开类与装配限制
+
+rc.1/client公开runtime ConversationController；sendSession与serializeDraftImages是不同异步公共class方法，官方InputHub分别用于普通prompt与command携图。createDraftImages同步，sendSession开始时draft/File/blob已存在。覆盖sendSession不覆盖command序列化或所有输入前同意时点。
+
+官方apply内部创建InputHub/blocks并硬编码ctx.plugin(ConversationController)，无controller factory参数；公开类可继承不等于整套apply可注入子类。有效替代service的普通虚调用会命中override，但唯一service+不复制editor的完整装配未验证。InputBar/InputHub不由barrel作为runtime组件导出，composer.bar类型/标准状态可用不等于原editor实现公开可重用。
+
+依据：固定SHA ui-conversation/src/client/index.ts、service.ts:147-310、apply.ts:366、input/hub.ts:94/183。只读核验，不作项目组合判断。
+
 ## 固定默认限制与入口扩展
 
 LocalAttachmentStore只接受PNG/JPEG/WebP/GIF，源限制默认20MiB/图、20图/消息、200MiB总bytes、64,000,000像素、每边8192；公开Config可改数值，MIME集合不在该Config。normalizedImageMaxPixels=2048²、normalizedImageMaxDimension=8192、normalizedImageMaxBytes=4MiB是归一化策略，byte target非必达硬cap；压缩并发默认2最大8。pi-ai请求另有20MiB base64预算、2048²像素、1MiB派生raw目标，不等同admission。
