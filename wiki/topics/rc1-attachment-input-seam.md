@@ -10,6 +10,14 @@ asked_by: agent
 
 # rc.1 Attachment 与 Session 图片输入 seam
 
+## 固定默认限制与入口扩展
+
+LocalAttachmentStore只接受PNG/JPEG/WebP/GIF，源限制默认20MiB/图、20图/消息、200MiB总bytes、64,000,000像素、每边8192；公开Config可改数值，MIME集合不在该Config。normalizedImageMaxPixels=2048²、normalizedImageMaxDimension=8192、normalizedImageMaxBytes=4MiB是归一化策略，byte target非必达硬cap；压缩并发默认2最大8。pi-ai请求另有20MiB base64预算、2048²像素、1MiB派生raw目标，不等同admission。
+
+图片inline base64随prompt发，非先上传取得InputRef/uploadId；没有核验到通用文件/全盘quota/低磁盘预留/字节上传progress合同。公开conversation.input.attachments可换rail/drop并拿onAddImages，但不替换InputBar独立paste；left/right可加说明，composer.bar可整体替换，IConversation.blocks为整input gate。没有通用awaited before-image-intake consent hook，slot存在不保证所有图片入口都被前置拦截。
+
+证据：固定SHA attachment-local/src/index.ts:27-79、143-178，llm-pi-ai/src/config.ts:54-58，ui-conversation/src/client/contract/slots.ts:38-50、132-146；这些路径均位于下文已确认的上游仓库。静态核验，未作磁盘故障或浏览器实测。
+
 ## submission、取消与图片入口补充核验
 
 固定同SHA：SessionController.prompt仅在入口signal.throwIfAborted，之后commands.prompt不接收signal。异步模型/图片准入已经开始后，Client abort或传输失败不证明Host未接受；没有按SessionRequestId回滚已接收prompt的公开接口。cancel仅按Session/当前turn请求取消并keepInbox，updateQueue另以pending MessageId寻址。

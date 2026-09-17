@@ -8,6 +8,12 @@ updated: 2026-09-09
 
 # 问答与学习日志
 
+## 2026-09-17 · rc.1 图片预算与入口扩展
+
+- asked_by: agent；固定a66e4702047846cdaa10c66c9d3df3951f5ea70d/tag一致；完整回传后沉淀。
+- 区分源admission、normalized图和pi-ai请求三层预算；公开drop slot不覆盖paste，未发现统一async consent hook。清理不等于Host request回滚。
+- 静态类型/实现核验，未跑文件故障/浏览器/模型，verified_inference。
+
 ## 2026-09-17 · Settings publish/persist 补正
 
 - asked_by: agent；固定rc.1/a66e4702047846cdaa10c66c9d3df3951f5ea70d；完整纠正已回传后沉淀。
