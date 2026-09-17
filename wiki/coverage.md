@@ -1,3 +1,11 @@
+---
+title: DSH 覆盖度地图
+description: 按领域和版本记录知识掌握等级及验证边界。
+type: index
+status: active
+updated: 2026-09-17
+---
+
 # 覆盖度地图（coverage.md）
 
 > **对内是学习者**的仪表盘。它既是能力体检表，也是学习待办清单。
@@ -6,6 +14,10 @@
 
 > 2026-09-05 同步：默认 npm `latest/next` 为 `0.1.2-rc.1`（`a66e4702`）；GitHub 最新版/master 为 `0.1.3-alpha.1`（`d347e703`），npm 根包尚无该版本；PyPI SDK `0.1.2rc1`。Cordis 镜像 `2ceea231`。完整 SHA 见 index；新旧版本分别核验，69 篇原有 stale 页仅作路由。
 
+
+## 2026-09-17 指定版本升级
+
+默认源码咨询基线改为 `0.1.5-rc.2` / `fb2c4b9e698e30edb738bca4cf0618587db7d203`。累计对比见[版本摘要](topics/版本变更-0.1.1-rc.2-到-0.1.5-rc.2.md)，L2 / verified_inference；identity 通用页复验至目标，L1→L2。69 篇原 stale 页保留，历史专题的旧 SHA 不变。未执行 runtime、模型或 GUI 测试，不提升任何领域至 L3。下方历史统计按原版本理解。
 
 ## 掌握等级定义
 
@@ -74,7 +86,7 @@
 | [guard](packages/guard.md) | L2 | Product | 2 | 14 | 8 | 10 | 2 |
 | [hooks](packages/hooks.md) | L1 | Product | 3 | 13 | 17 | 13 | 3 |
 | [host](packages/host.md) | L2 | Product | 7 | 27 | 16 | 15 | 3 |
-| [identity](packages/identity.md) | L1 | Product | 1 | 5 | 4 | 4 | 2 |
+| [identity](packages/identity.md) | L2 | Product | 1 | 5 | 4 | 4 | 2 |
 | [interaction](packages/interaction.md) | L2 | Product | 5 | 15 | 9 | 10 | 2 |
 | [jobs](packages/jobs.md) | L1 | Product | 3 | 10 | 7 | 10 | 2 |
 | [llm](packages/llm.md) | L2 | Product | 7 | 42 | 10 | 16 | 3 |

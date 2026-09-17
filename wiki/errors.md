@@ -3,10 +3,16 @@ title: DSH 错误本
 description: 记录 DSH 问答中的错误结论、失效边界与纠正证据。
 type: reference
 status: active
-updated: 2026-09-16
+updated: 2026-09-17
 ---
 
 # 错误本（Error Book）
+
+### E048 — identity 旧通用页不能原样用于 1.5-rc.2
+
+- 2026-09-17，asked_by: human；verified_inference。旧页把空 invariant companion 与 DSH_TELEMETRY_DISABLED 描述为当前通用合同。
+- 目标 `fb2c4b9e698e30edb738bca4cf0618587db7d203` 已无该 invariant.ts；默认 base 配置使用 DSH_TELEMETRY_MODE，默认 FEEDBACK_ONLY，DISABLED 关闭 OTLP，不移除 DeepSeek 的匿名 header。原历史版本结论不因此整体推翻，通用 identity 页已更新至目标基线。
+- 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/identity/anonymous-user-id/README.md`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/bundle/base/cordis.patch.yml:187`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session/session-telemetry-otel/src/index.ts`。固定目标 SHA 读取。
 
 ### E047 — SettingsProvider 的发布扩展面叫 publish
 

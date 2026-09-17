@@ -3,7 +3,7 @@ title: DSH 知识库索引
 description: 按版本与主题定位 DSH 知识条目及治理文件。
 type: index
 status: active
-updated: 2026-09-09
+updated: 2026-09-17
 ---
 
 # 知识库索引（index.md）
@@ -20,9 +20,11 @@ updated: 2026-09-09
 
 > **回答时先读本文件**，据此挑 3-5 篇全文，**永远不要全量加载知识库**。
 
-> 默认回答基线：`0.1.2-rc.1` / `a66e4702047846cdaa10c66c9d3df3951f5ea70d`（npm `latest/next`）；GitHub 最新版与本次 master：`0.1.3-alpha.1` / `d347e703908d0406b7a7ef80e3a0e594d86b2215`，npm 根包尚无该版本。npm `alpha=0.1.2-alpha.5`；PyPI SDK/runtime-bin `0.1.2rc1`。Cordis 镜像 `2ceea231802cc23892b4ad10012c55c7dd4982d4`；DSH vendor `4.0.2` 单独按 DSH SHA 核验。同步于 2026-09-05。
+> 默认回答基线与本地镜像：`0.1.5-rc.2` / `fb2c4b9e698e30edb738bca4cf0618587db7d203`。2026-09-17 npm `latest/next` 同版；GitHub 最新 release、远端 master 与 npm alpha 为 `0.1.6-alpha.2` / `ddefc45fbc7f8e46dd73185e68295696d1297887`，本次不升级到 alpha。PyPI SDK/runtime-bin 为 `0.1.5rc1`。Cordis 独立镜像保持 `2ceea231802cc23892b4ad10012c55c7dd4982d4`，DSH vendor 单独按目标 SHA 核验。
 >
-> 旧版入口：rc.2 固定 `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`；alpha.5 固定 `db6bdc3576c2d4e7c965e8e3ed0c2a731eed87f5`。11 个历史发布 tag 已核对并保留；每次咨询独立固定 SHA，不切换共享工作目录。
+> 旧版入口：`0.1.1-rc.2` / `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`；`0.1.2-rc.1` / `a66e4702047846cdaa10c66c9d3df3951f5ea70d`。每条咨询固定 SHA，不来回切换共享工作树。
+>
+> 2026-09-17 定向升级：镜像 `d347e703` → `fb2c4b9e`，1,162 提交、6,935 文件（no-renames）；新增[1.1-rc.2 → 1.5-rc.2 累计对比](topics/版本变更-0.1.1-rc.2-到-0.1.5-rc.2.md)（verified_inference / fresh）。原 69 页 stale 保持；28 页命中 diff 的历史专题保留各自版本；identity 通用页复验更新，E048 记录旧表述失效。只完成源码/知识基线升级，未做产品安装、boot 或用户数据迁移。
 >
 > 2026-09-05 同步：DSH `49a606bc` → `d347e703`（292 提交、1780 文件），Cordis 前进 2 提交。141 个锚点路径命中 54 页：52 页原已 stale；固定 rc.2 专题保留；alpha.5 摘要复验发布 tag 后纠正 master/release 混用（E044）。新增[最新版本对照](topics/版本变更-0.1.2-alpha.5-到-0.1.3-alpha.1.md)，三个基线并发源码读取及缺失文件负对照通过；原 69 篇 stale 页未冒充已复验。
 >

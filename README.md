@@ -1,3 +1,11 @@
+---
+title: DSH-Expert
+description: 基于固定版本源码和可复验知识的 DSH 专家库。
+type: guide
+status: active
+updated: 2026-09-17
+---
+
 # DSH-Expert
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -107,17 +115,18 @@ dsh-expert/
 └── docs/Module/             # Docs for this repo's own modules
 ```
 
-### Key facts (as of 2026-09-05)
+### Key facts (as of 2026-09-17)
 
 | Item | Value |
 | --- | --- |
-| Default answer baseline | **0.1.2-rc.1**, npm `latest/next`, fixed SHA `a66e4702047846cdaa10c66c9d3df3951f5ea70d` |
-| Latest GitHub prerelease / mirror HEAD | **0.1.3-alpha.1**, both at `d347e703908d0406b7a7ef80e3a0e594d86b2215`; the npm root package has not published this version at the check time |
-| Historical answers | Explicit versions take precedence; rc.2 remains at `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`, alpha.5 at `db6bdc3576c2d4e7c965e8e3ed0c2a731eed87f5` (npm `alpha`). All 11 release tags passed SHA/manifest checks |
-| Python SDK / Cordis | PyPI SDK/runtime-bin `0.1.2rc1`; Cordis mirror `2ceea231802cc23892b4ad10012c55c7dd4982d4`, distinct from the DSH-vendored `4.0.2` source snapshot |
-| Verification boundary | Fixed-SHA source consultation verified across default/latest/old versions; no runtime install/boot, native-helper, or complete companion-package validation |
-| ⚠️ Trap | The PyPI package `deepseek-harness` (0.2.0) is an **unrelated third-party package**; the official one is `deepseek-harness-sdk` |
-| Breaking changes rc.8 → 0.1.1-rc.2 | See `wiki/topics/版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md` |
+| Default answer baseline / local DSH mirror | **0.1.5-rc.2**, `fb2c4b9e698e30edb738bca4cf0618587db7d203`; npm `latest/next` match |
+| Latest remote release / master | `0.1.6-alpha.2`, `ddefc45fbc7f8e46dd73185e68295696d1297887`; npm `alpha` matches; not the selected upgrade target |
+| Historical answers | Keep fixed tags, including `0.1.1-rc.2` at `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`; read by SHA |
+| Python / Cordis | PyPI SDK/runtime-bin `0.1.5rc1`; independent Cordis mirror unchanged at `2ceea231802cc23892b4ad10012c55c7dd4982d4`; DSH vendor read at the selected DSH SHA |
+| Verification boundary | Source mirror and knowledge baseline upgraded; no global CLI/Desktop install, complete dependency/boot test, or user-session migration |
+| Knowledge freshness | 69 existing stale pages remain routing only; fixed historical pages retain their versions; identity reverified |
+
+Cumulative changes, breaking interfaces and evidence: [0.1.1-rc.2 → 0.1.5-rc.2](wiki/topics/版本变更-0.1.1-rc.2-到-0.1.5-rc.2.md).
 
 ### Contributing & License
 
@@ -224,19 +233,18 @@ dsh-expert/
 └── docs/Module/             # 本仓库自身模块的文档
 ```
 
-### 关键事实（截至 2026-09-05）
+### 关键事实（截至 2026-09-17）
 
 | 项 | 值 |
 | --- | --- |
-| 默认回答基线 | **0.1.2-rc.1**，npm `latest/next`，固定 SHA `a66e4702047846cdaa10c66c9d3df3951f5ea70d` |
-| GitHub 最新预发布 / 镜像 HEAD | **0.1.3-alpha.1**，本次均为 `d347e703908d0406b7a7ef80e3a0e594d86b2215`；查询时 npm 根包尚未发布此版本 |
-| 历史版本咨询 | 显式指定版本优先；rc.2 保留 `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`，alpha.5 保留 `db6bdc3576c2d4e7c965e8e3ed0c2a731eed87f5`（npm `alpha`）；11 个发布 tag 的 SHA / manifest 检查通过 |
-| Python SDK / Cordis | PyPI SDK/runtime-bin `0.1.2rc1`；Cordis 镜像 `2ceea231802cc23892b4ad10012c55c7dd4982d4`，与 DSH vendor `4.0.2` 的源码快照分别核验 |
-| 验证边界 | 默认版、最新版、旧版的固定 SHA 源码咨询路径已验证；未做 runtime install/boot、native helper 或全部 companion package 验证 |
-| ⚠️ 陷阱 | PyPI 上的 `deepseek-harness`（0.2.0）是**无关第三方包**，官方包是 `deepseek-harness-sdk` |
-| rc.8 → 0.1.1-rc.2 破坏性变更 | 见 `wiki/topics/版本变更-0.1.0-rc.8-到-0.1.1-rc.2.md` |
+| 默认回答基线 / 本地 DSH 镜像 | **0.1.5-rc.2**，`fb2c4b9e698e30edb738bca4cf0618587db7d203`；npm `latest/next` 同版 |
+| 最新远端 release / master | `0.1.6-alpha.2`，`ddefc45fbc7f8e46dd73185e68295696d1297887`；npm `alpha` 同版，本次未选为升级目标 |
+| 历史版本咨询 | 保留历史 tag，包括 `0.1.1-rc.2` / `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`；按 SHA 读取 |
+| Python / Cordis | PyPI SDK/runtime-bin `0.1.5rc1`；独立 Cordis 镜像保持 `2ceea231802cc23892b4ad10012c55c7dd4982d4`；DSH vendor 按目标 DSH SHA 核验 |
+| 验证边界 | 已升级源码镜像与知识基线；未安装全局 CLI/桌面应用、未验证完整依赖安装/boot、未迁移用户 Session |
+| 知识新鲜度 | 原 69 页 stale 仍仅作路由；历史专题保留其版本归属；identity 已复验 |
 
-最新版本的接口对照、历史版本入口及升级边界见 [alpha.5 → 0.1.3-alpha.1](wiki/topics/版本变更-0.1.2-alpha.5-到-0.1.3-alpha.1.md)。同步镜像与既有知识的掌握度分别报告；未完成整页复验的旧通用页继续标为 stale，咨询时回目标 SHA 核验。
+累计变化、接口断点与证据见 [0.1.1-rc.2 → 0.1.5-rc.2](wiki/topics/版本变更-0.1.1-rc.2-到-0.1.5-rc.2.md)。本次主要涉及 Remote/controllers、异步 Agent 创建、SessionHandle、V3 日志及文件/Sidebar 能力。
 
 ### 贡献与许可
 

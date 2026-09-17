@@ -203,13 +203,13 @@ DSH 于 **2026-08-13** 首次发布，我的训练数据截止早于该日期。
 
 | 项 | 值 |
 | --- | --- |
-| **默认回答基线** | **0.1.2-rc.1**（npm `latest` / `next`）；固定 SHA `a66e4702047846cdaa10c66c9d3df3951f5ea70d` |
-| GitHub 最新版与 master | **0.1.3-alpha.1**；本次两者均为 `d347e703908d0406b7a7ef80e3a0e594d86b2215`；2026-09-05 查询时 npm 根包尚无该版本 |
-| 旧版本咨询 | 显式指定版本优先；`0.1.1-rc.2` 固定 `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`，`0.1.2-alpha.5` 固定 `db6bdc3576c2d4e7c965e8e3ed0c2a731eed87f5`；其他历史 tag 仍可解析后按 SHA 查证 |
-| 发布渠道与 Cordis | npm `alpha=0.1.2-alpha.5`；PyPI SDK/runtime-bin `0.1.2rc1`；Cordis 镜像 `2ceea231802cc23892b4ad10012c55c7dd4982d4`，DSH vendor 包标识仍为 `4.0.2`，两者不可互代 |
-| 基线变更方式 | 仅在用户明确指令并实际完成同步或升级后，更新本节与 `wiki/index.md` |
+| **默认回答基线 / 本地 DSH 镜像** | **0.1.5-rc.2**；固定 SHA `fb2c4b9e698e30edb738bca4cf0618587db7d203`；2026-09-17 npm `latest/next` 同版 |
+| GitHub 最新 release / 远端 master | `0.1.6-alpha.2` / `ddefc45fbc7f8e46dd73185e68295696d1297887`（2026-09-17 只读快照）；npm `alpha` 同版，未切换为默认基线 |
+| 旧版本咨询 | 显式指定版本优先；`0.1.1-rc.2` 固定 `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`；`0.1.2-rc.1` 固定 `a66e4702047846cdaa10c66c9d3df3951f5ea70d`；其他历史 tag 保留，按 SHA 查证 |
+| Python / Cordis | PyPI SDK/runtime-bin `0.1.5rc1`，不能当作 npm rc.2；独立 Cordis 镜像保留 `2ceea231802cc23892b4ad10012c55c7dd4982d4`，本次未升级。目标 DSH vendor 包标识 `4.0.2`，源码按 DSH SHA 核验 |
+| 基线变更方式 | 用户明确指令后同步到指定版本；不因远端出现更新版本而越过目标版本 |
 
-以上为 2026-09-05 的同步快照。“最新版”咨询使用最新 GitHub release 的固定 SHA；未指定版本使用默认回答基线，不能把 npm dist-tag、release tag 与 master 混为一谈。回答涉及目标版本与新版的行为差异时，分别列明版本、SHA 与升级影响。新旧咨询入口、实查接口差异和发布边界见 `wiki/topics/版本变更-0.1.2-alpha.5-到-0.1.3-alpha.1.md`；历史升级摘要继续保留。此次只同步源码与知识，不代表各版本正式包完整 install/boot、native helper 或第三方依赖闭包已通过实测。
+以上为 2026-09-17 快照。本次仅升级 DSH-Expert 源码镜像与知识基线，未安装全局 CLI/桌面应用、未迁移用户 Session 数据、未验证正式包完整 install/boot。累计比较见 `wiki/topics/版本变更-0.1.1-rc.2-到-0.1.5-rc.2.md`。历史专题只对其固定 SHA 有效；旧通用 stale 页仍须回源复验。
 
 ---
 

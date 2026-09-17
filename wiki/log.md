@@ -3,10 +3,21 @@ title: DSH 问答与学习日志
 description: 记录 DSH 咨询、核验、学习与知识沉淀的历史证据。
 type: reference
 status: active
-updated: 2026-09-09
+updated: 2026-09-17
 ---
 
 # 问答与学习日志
+
+## 2026-09-17 · 指定升级 0.1.5-rc.2，并累计比较 0.1.1-rc.2
+
+- asked_by: human。起始本库及两个上游工作区均干净；用户明确授权升级指定版本。执行 fetch tags 与 ff-only 到 fb2c4b9e698e30edb738bca4cf0618587db7d203；未追随远端 1.6-alpha.2，未升级独立 Cordis。
+- 本地镜像 d347e703→fb2c4b9e：1,162 提交、6,935 文件；对比 b150a551→fb2c4b9e：3,225 提交、11,427 文件、+618339/-248238（git diff --no-renames，包含 merge/文档/测试/生成物）。初次默认 diff 的 rename 检测触及限制，故报告统一使用 no-renames 口径。
+- 固定 tag 远端与本地 SHA/manifest 一致；旧版同步 AgentLoop.create 与新版 async create、SessionHandle、V3 migration、Inbox、persona、SubprocessHandle、MCP cursor 和代理例外已回源核验。最新 alpha 只验证源码路由，不改目标基线。
+- 锚点审计扫描 frontmatter anchors 字段，未把 related 链接算作源码锚点：原69页stale中68页命中；原30页fresh中29页命中；426条唯一路径命中；30页共395条固定历史锚点存在。28个命中历史专题保留原SHA；唯一通用fresh页identity临时失效后复验更新，E048登记两处旧表述。原stale页未全量复验。
+- npm根包及8个关键companion的0.1.5-rc.2元数据/tarball URL可用，controller包名从目标manifest取api前缀；初次猜测无api前缀产生404，不作为发布缺失证据。PyPI SDK/runtime-bin均0.1.5rc1。GitHub目标release assets为空，未声称桌面安装包已验收。
+- 悬而未决复查：Q107继续区分旧版未知与新版写租约源码证据；Q117–Q120未发现足以关闭其完整合同问题的证据；本轮关闭0项。不运行无关领域实验。
+- 产出：新增累计对比，更新AGENTS默认基线、保留CLAUDE软链接；更新index、README双语、coverage、上游模块说明、identity与errors。本轮无模型/GUI/runtime调用，无用户Session迁移，认知等级最高L2 / verified_inference。
+- 验证：固定SHA manifest/接口/历史缺失文件负对照、关键路径与专题锚点存在性、Markdown头部和git diff --check。完整结果见本轮交付；命令为git show/cat-file/diff/rev-list与只读registry/API查询。
 
 ## 2026-09-17 · rc.1 non-waking next-turn notice
 

@@ -1,3 +1,11 @@
+---
+title: 上游镜像模块
+description: DSH 与 Cordis 源码镜像、版本入口和验证边界。
+type: reference
+status: active
+updated: 2026-09-17
+---
+
 # 模块：上游镜像（upstream/）
 
 ## 一、功能
@@ -14,6 +22,12 @@ DSH 与 Cordis 的本地只读克隆，是知识库的 **T1 唯一事实源**。
 | cordiverse/cordis | `upstream/cordis` | `git clone --filter=blob:none https://github.com/cordiverse/cordis.git upstream/cordis` |
 
 克隆后的基线由 `/dsh-sync` 维护，当前知识库基线见 `CLAUDE.md` 版本基线节。
+
+### 2026-09-17 指定版本升级
+
+DSH 镜像从 `d347e703908d0406b7a7ef80e3a0e594d86b2215` 快进至 `0.1.5-rc.2` / `fb2c4b9e698e30edb738bca4cf0618587db7d203`，默认咨询基线同版；不追随远端 master 的 1.6-alpha.2。独立 Cordis 本次不更新，DSH 内核按目标 vendor 源码读取。保留旧 tag，固定 SHA 的历史查询继续有效。验证仅覆盖源码、接口与文档；未安装或启动 CLI/桌面产物、未迁移用户 Session。累计变化见 `wiki/topics/版本变更-0.1.1-rc.2-到-0.1.5-rc.2.md`。
+
+以下为历史同步记录，不能作为当前渠道状态。
 
 ### 2026-09-05 同步与多版本入口
 
