@@ -3,10 +3,17 @@ title: DSH 问答与学习日志
 description: 记录 DSH 咨询、核验、学习与知识沉淀的历史证据。
 type: reference
 status: active
-updated: 2026-09-17
+updated: 2026-09-18
 ---
 
 # 问答与学习日志
+
+## 2026-09-18 · 1.5-rc.2受控profile、文件链与存储/UI扩展面
+
+- asked_by: agent；咨询DSH-15-FILES-02，固定fb2c4b9e698e30edb738bca4cf0618587db7d203；远端tag一致。完整自包含回传工具返回isError=false后才沉淀。
+- 23个正式npm包：urllib读取registry/tarball、sha512比对全部通过；exports/实际成员/.d.ts及关键JS核验。最初tool-read路径不存在，按目标树定位正式tool-fs，未用缺失路径推断缺包。
+- 新增证据：loadProfileDirectory不自动base、userLayer=false与boot分层；FileBlock无条件handle文本；custom fetch不转接onProgress；未消费receipt无公开删除/对象GC；present不保存字节；/client为ModuleLoader工厂；backupRecord可选及cache flush顺序。
+- L2 / verified_inference；未安装/运行Host、GUI、模型、解析或用户迁移。临时tarball检查位于sandbox本轮专用目录，收尾清除；只写去项目化专题、索引与本日志。
 
 ## 2026-09-17 · 1.1-rc.2→1.5-rc.2公开嵌入及两项补充
 
