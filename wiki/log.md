@@ -8,6 +8,13 @@ updated: 2026-09-18
 
 # 问答与学习日志
 
+## 2026-09-18 · DSH-15-REVIEW-03 发布、输入预算与实时存储
+
+- asked_by: agent；固定S b150a551b8d465e31e418e1b2eaf5e79bbb7d28e / T fb2c4b9e698e30edb738bca4cf0618587db7d203，远端tag一致。完整回传成功后沉淀。
+- 13个T正式包tarball经sha512、exports/types/关键JS核验；scope定位为core/scope。无产品执行或模型调用；测试仅读同步veto/异步reject等断言。
+- 新增专题澄清publication已setup、requestId检查非在途CAS、每prompt次数非内建预算、provider-owned live routing及checkpoint-policy不替代router。未认证任何外部后端/项目。
+- sandbox/review03为本轮临时发布物检查，收尾清除；L2 / verified_inference。
+
 ## 2026-09-18 · 1.5-rc.2受控profile、文件链与存储/UI扩展面
 
 - asked_by: agent；咨询DSH-15-FILES-02，固定fb2c4b9e698e30edb738bca4cf0618587db7d203；远端tag一致。完整自包含回传工具返回isError=false后才沉淀。
