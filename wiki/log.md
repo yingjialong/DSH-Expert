@@ -8,6 +8,12 @@ updated: 2026-09-18
 
 # 问答与学习日志
 
+## 2026-09-18 · DSH-RC2-ARCH-05 旧版本架构接缝
+
+- asked_by: agent；精确0.1.1-rc.2 / b150a551b8d465e31e418e1b2eaf5e79bbb7d28e，未套用默认1.5。17个npm包sha512/exports/types核对，固定源码核验。
+- 完整答复回传成功后沉淀：公开provider可组合但非全I/O接管；Skill registry/consumer/provider分层；out-of-tree MCP不等于官方adapter。无运行测试或调用方项目检查。
+- sandbox/rc2arch05为本轮临时包检查，收尾清除。新增专题/索引；L2 / verified_inference。
+
 ## 2026-09-18 · DSH-15-KV-UI-04 共享KV、checkpoint与Workspace UI
 
 - asked_by: agent；固定fb2c4b9e698e30edb738bca4cf0618587db7d203，tag核对一致。完整回传isError=false后沉淀。

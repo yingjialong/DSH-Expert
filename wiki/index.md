@@ -8,6 +8,8 @@ updated: 2026-09-18
 
 # 知识库索引（index.md）
 
+- [rc.2职责与Skill/MCP扩展](topics/rc2-architecture-provider-skill-mcp.md)：旧hooks、同步create、I/O替换条件及consumer/provider与自定义MCP归属；锚点 agent-loop/src/index.ts、skill/tool-skill/src/index.ts（verified_inference / fresh）。
+
 - [1.5-rc.2 Domain/checkpoint/Workspace合同](topics/rc15-domain-checkpoint-workspace-contract.md)：共享KV无多实例refresh、policy排除面与无Session Composer限制；锚点 storage-domain/src/domain.ts、ui-workspace/src/client/navigation.ts（verified_inference / fresh）。
 
 - [1.5-rc.2发布、预算与live路由](topics/rc15-publication-budget-live-routing.md)：同步veto阶段、requestId有限检查、工具occurrence与backend routing/checkpoint区别；锚点 agent/src/index.ts、session-persistence-jsonl/src/storage.ts（verified_inference / fresh）。
