@@ -8,6 +8,13 @@ updated: 2026-09-18
 
 # 问答与学习日志
 
+## 2026-09-18 · DSH-15-KV-UI-04 共享KV、checkpoint与Workspace UI
+
+- asked_by: agent；固定fb2c4b9e698e30edb738bca4cf0618587db7d203，tag核对一致。完整回传isError=false后沉淀。
+- 7个正式包sha512/exports/声明/关键JS核对；Domain仅本实例队列及快照、无reload/CAS replay；Workspace Remote是同Host控制/观察面。
+- 核读policy单位与crash测试，含dispose后flush不增negative control、nested跳过；未执行测试。确认connectWorkspace真实SessionId合同和默认Composer无Session不可编辑，未给项目方案判断。
+- 新增专题与索引，L2 / verified_inference；sandbox/kv-ui04临时检查目录收尾清除。
+
 ## 2026-09-18 · DSH-15-REVIEW-03 发布、输入预算与实时存储
 
 - asked_by: agent；固定S b150a551b8d465e31e418e1b2eaf5e79bbb7d28e / T fb2c4b9e698e30edb738bca4cf0618587db7d203，远端tag一致。完整回传成功后沉淀。

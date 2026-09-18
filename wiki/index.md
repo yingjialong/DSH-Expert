@@ -8,6 +8,8 @@ updated: 2026-09-18
 
 # 知识库索引（index.md）
 
+- [1.5-rc.2 Domain/checkpoint/Workspace合同](topics/rc15-domain-checkpoint-workspace-contract.md)：共享KV无多实例refresh、policy排除面与无Session Composer限制；锚点 storage-domain/src/domain.ts、ui-workspace/src/client/navigation.ts（verified_inference / fresh）。
+
 - [1.5-rc.2发布、预算与live路由](topics/rc15-publication-budget-live-routing.md)：同步veto阶段、requestId有限检查、工具occurrence与backend routing/checkpoint区别；锚点 agent/src/index.ts、session-persistence-jsonl/src/storage.ts（verified_inference / fresh）。
 
 - [1.5-rc.2受控Profile与文件链](topics/rc15-controlled-profile-file-chain.md)：上传≠解析、file handle无路径分支、自定义carrier进度与receipt清理、UI bundle及cache可选备份；锚点 llm/src/content.ts、file-upload/src/client/runtime.ts（verified_inference / fresh）。
