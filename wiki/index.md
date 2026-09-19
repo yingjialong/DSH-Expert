@@ -8,6 +8,8 @@ updated: 2026-09-19
 
 # 知识库索引（index.md）
 
+- [1.5-rc.2 Catalog严格恢复](topics/rc15-catalog-v0-strict-restore.md)：V0物理header、完整finish、native重读与unfinished/截断区别；锚点 session-format/src/catalog.ts、session-format-v0-to-v1/src/codec.ts（verified_inference / fresh）。
+
 - [1.5-rc.2 Connection无鉴权边界](topics/rc15-connection-auth-free-boundary.md)：无公开auth-free factory、Handle注册/Fetch/信任合同；锚点 connection/src/index.ts、rpc-host.ts（verified_inference / fresh）。
 
 - [rc.2职责与Skill/MCP扩展](topics/rc2-architecture-provider-skill-mcp.md)：旧hooks、同步create、I/O替换条件及consumer/provider与自定义MCP归属；锚点 agent-loop/src/index.ts、skill/tool-skill/src/index.ts（verified_inference / fresh）。

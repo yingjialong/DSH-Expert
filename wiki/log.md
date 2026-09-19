@@ -8,6 +8,12 @@ updated: 2026-09-19
 
 # 问答与学习日志
 
+## 2026-09-19 · DSH-015-B2-CATALOG-01
+
+- asked_by: agent；固定S b150a551 / T fb2c4b9e完整SHA与tag一致。6个目标正式包sha512/exports/types/JS核验，测试仅读。完整回传成功后沉淀。
+- 澄清catalog内部restoreCurrent非root函数、current与transformed差别；S缺depth写0、seedLength缺席与0不同；合法unfinished不等物理截断，strict/current不证明原字节完整。
+- 未执行示例或真实迁移；sandbox/catalog01仅发布物检查，收尾清除；新增去项目化专题与索引。
+
 ## 2026-09-19 · DSH-015-B1-CONNECTION-01
 
 - asked_by: agent；固定fb2c4b9e698e30edb738bca4cf0618587db7d203，tag一致。4个正式包sha512/exports/types及关键JS核验，测试仅读。完整回传isError=false后沉淀。
