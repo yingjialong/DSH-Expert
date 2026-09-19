@@ -3,10 +3,16 @@ title: DSH 问答与学习日志
 description: 记录 DSH 咨询、核验、学习与知识沉淀的历史证据。
 type: reference
 status: active
-updated: 2026-09-18
+updated: 2026-09-19
 ---
 
 # 问答与学习日志
+
+## 2026-09-19 · DSH-015-B1-CONNECTION-01
+
+- asked_by: agent；固定fb2c4b9e698e30edb738bca4cf0618587db7d203，tag一致。4个正式包sha512/exports/types及关键JS核验，测试仅读。完整回传isError=false后沉淀。
+- 确认官方apply无Web仍初始化BrowserAuth、无公开auth-free factory；公开Handle可替代的条件与caller Fiber注册/Fetch/wire信任义务分别说明，不建议内部BrowserAuth cast。
+- 无组合运行、无模型或用户凭据访问。sandbox/b1connection01临时包检查目录收尾清除；新增去项目化专题/索引。
 
 ## 2026-09-18 · DSH-RC2-ARCH-05 旧版本架构接缝
 
