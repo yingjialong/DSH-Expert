@@ -8,6 +8,8 @@ updated: 2026-09-21
 
 # 知识库索引（index.md）
 
+- [1.5-rc.2模型默认与receipt保留](topics/rc15-model-defaults-file-retention.md)：Session投影/default隔离、beta query归属与file-ref扫描；锚点 model-selection-projection.ts、file-upload/src/index.ts（verified_inference / fresh）。
+
 - [1.5-rc.2 occurrence与stream取消](topics/rc15-tool-occurrence-stream-cancel.md)：真实call seq关联歧义、prompt取消边界、decoded openStream；锚点 agent-loop/src/tool-calls.ts、gateway/src/index.ts（verified_inference / fresh）。
 
 - [1.5-rc.2实际roster反射](topics/rc15-actual-roster-reflection.md)：隔离symbol清单、独立preset树、FiberState无runtime值、schemas非wire；锚点 cordis/src/reflect.ts、tools/src/index.ts（verified_inference / fresh）。

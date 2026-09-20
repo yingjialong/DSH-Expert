@@ -8,6 +8,11 @@ updated: 2026-09-21
 
 # 问答与学习日志
 
+## 2026-09-21 · DSH-015-B4-MODEL-RETENTION-02
+
+- asked_by: agent；固定DSH fb2c4b9e、pi-ai0.85.1、Anthropic SDK0.123.0。8包sha512/type/JS核验；beta query追到SDK硬编码资源路径。完整回传成功后沉淀。
+- 核实Session先提交而save default失败不回滚、协议off差别、文件扫描器非public、receipt清理非对象回收。未执行模型/恢复/GC测试；sandbox/model02临时包检查收尾清除。
+
 ## 2026-09-21 · DSH-015-B4-OCCURRENCE-01
 
 - asked_by: agent；固定fb2c4b9e完整SHA，tag一致；6正式包在内存读取并核sha512/exports/types，无临时发布物文件。主答复与openStream补充分别回传成功后沉淀。
