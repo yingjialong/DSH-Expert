@@ -3,10 +3,12 @@ title: DSH 知识库索引
 description: 按版本与主题定位 DSH 知识条目及治理文件。
 type: index
 status: active
-updated: 2026-09-19
+updated: 2026-09-20
 ---
 
 # 知识库索引（index.md）
+
+- [1.5-rc.2实际roster反射](topics/rc15-actual-roster-reflection.md)：隔离symbol清单、独立preset树、FiberState无runtime值、schemas非wire；锚点 cordis/src/reflect.ts、tools/src/index.ts（verified_inference / fresh）。
 
 - [1.5-rc.2 Catalog严格恢复](topics/rc15-catalog-v0-strict-restore.md)：V0物理header、完整finish、native重读与unfinished/截断区别；锚点 session-format/src/catalog.ts、session-format-v0-to-v1/src/codec.ts（verified_inference / fresh）。
 

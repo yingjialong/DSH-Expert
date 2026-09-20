@@ -3,10 +3,16 @@ title: DSH 问答与学习日志
 description: 记录 DSH 咨询、核验、学习与知识沉淀的历史证据。
 type: reference
 status: active
-updated: 2026-09-19
+updated: 2026-09-20
 ---
 
 # 问答与学习日志
+
+## 2026-09-20 · DSH-015-B3-AUDIT-01
+
+- asked_by: agent；固定fb2c4b9e与指定cordis4.0.2/loader1.0.3。四正式包sha512/types/root JS核验；tag一致。完整回传成功后沉淀。
+- 确认reflect.store公开可达但非root ReflectService导出；隔离symbol与状态分离；Loader不足覆盖独立preset；FiberState只有const enum；工具registry与wire不同。无Profile执行或外部项目评审。
+- sandbox/b3audit01为临时包检查目录，收尾清除；专题/索引更新，L2 / verified_inference。
 
 ## 2026-09-19 · DSH-015-B2-CATALOG-01
 
