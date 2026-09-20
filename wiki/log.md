@@ -3,10 +3,15 @@ title: DSH 问答与学习日志
 description: 记录 DSH 咨询、核验、学习与知识沉淀的历史证据。
 type: reference
 status: active
-updated: 2026-09-20
+updated: 2026-09-21
 ---
 
 # 问答与学习日志
+
+## 2026-09-21 · DSH-015-B4-OCCURRENCE-01
+
+- asked_by: agent；固定fb2c4b9e完整SHA，tag一致；6正式包在内存读取并核sha512/exports/types，无临时发布物文件。主答复与openStream补充分别回传成功后沉淀。
+- 核对call先于execution、token无日志seq、取消不撤回accepted、keepInbox、decoded stream与无公开HTTP流factory。源码及fixture仅读，未运行、不认证调用方项目。
 
 ## 2026-09-20 · DSH-015-B3-AUDIT-01
 
