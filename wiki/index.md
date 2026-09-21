@@ -8,6 +8,8 @@ updated: 2026-09-21
 
 # 知识库索引（index.md）
 
+- [1.5-rc.2输入与Layout合同](topics/rc15-client-input-layout-contract.md)：Workspace导航、Client scope/setDraft观察及默认apply贡献；锚点 input/facade.ts、ui-layout/src/client/index.ts（verified_inference / fresh）。
+
 - [1.5-rc.2 Controller终局处置](topics/rc15-controller-session-disposal.md)：无单Session公开dispose lookup，owner卸载与receipt/耐久失败分层；锚点 agent-loop/src/index.ts、file-upload/src/index.ts（verified_inference / fresh）。
 
 - [1.5-rc.2模型默认与receipt保留](topics/rc15-model-defaults-file-retention.md)：Session投影/default隔离、beta query归属与file-ref扫描；锚点 model-selection-projection.ts、file-upload/src/index.ts（verified_inference / fresh）。

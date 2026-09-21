@@ -8,6 +8,11 @@ updated: 2026-09-21
 
 # 问答与学习日志
 
+## 2026-09-21 · DSH-015-B4-CLIENT-INPUT-05
+
+- asked_by: agent；固定fb2c4b9e，6正式UI包sha512/声明/Client bundle核验，tag一致。完整回传成功后沉淀；未运行、无下级角色。
+- 确认导航合同不要求复制blank算法；setDraft无忙期guard、state而非void确认；跳过默认layout/workspace.apply会缺其独立贡献。sandbox/input05临时文件收尾删除。
+
 ## 2026-09-21 · DSH-015-B4-UPLOAD-PROVIDER-04
 
 - 固定fb2c4b9e，4正式包sha512/factory/types核验，完整回传成功后补入文件链专题。import不apply，immediately只prefetch；Conversation按公开fileUpload service消费，无隐藏Runtime身份依赖证据。
