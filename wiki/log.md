@@ -8,6 +8,10 @@ updated: 2026-09-21
 
 # 问答与学习日志
 
+## 2026-09-21 · DSH-015-B4-CLIENT-PRESET-06
+
+- asked_by: agent；固定fb2c4b9e、三正式包公开面/sha512核验，完整回传后沉淀。null与缺key、list hint与完整follow区别；未跑runtime、未自行fold或设计项目流程。
+
 ## 2026-09-21 · DSH-015-B4-CLIENT-INPUT-05
 
 - asked_by: agent；固定fb2c4b9e，6正式UI包sha512/声明/Client bundle核验，tag一致。完整回传成功后沉淀；未运行、无下级角色。
