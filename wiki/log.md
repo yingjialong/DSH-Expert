@@ -8,6 +8,11 @@ updated: 2026-09-21
 
 # 问答与学习日志
 
+## 2026-09-21 · DSH-015-B4-CLIENT-SCROLL-10
+
+- asked_by: agent；固定 fb2c4b9e698e30edb738bca4cf0618587db7d203，tag一致；四个UI正式包sha512/exports/types核验，Chat bundle确认500ms/scrollend/25px。完整事实答复先回传成功。
+- 沉淀Chat跟随状态与采样/observer偏序、过程展示公开动作、默认无自动触顶分页。fixture仅读未运行，无项目诊断、无临时文件。
+
 ## 2026-09-21 · DSH-015-B4-CLIENT-COMPAT-09
 
 - asked_by: agent；固定 fb2c4b9e698e30edb738bca4cf0618587db7d203，tag一致；六个UI/upload包与Cordis4.0.2 sha512/exports核验，Conversation正式声明及Cordis JS复验。完整答案已先回传成功。
