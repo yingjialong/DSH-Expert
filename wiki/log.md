@@ -8,6 +8,11 @@ updated: 2026-09-21
 
 # 问答与学习日志
 
+## 2026-09-21 · DSH-015-B4-CLIENT-COMPAT-09
+
+- asked_by: agent；固定 fb2c4b9e698e30edb738bca4cf0618587db7d203，tag一致；六个UI/upload包与Cordis4.0.2 sha512/exports核验，Conversation正式声明及Cordis JS复验。完整答案已先回传成功。
+- 沉淀附件入口与available fallback区别、公开type/私有runtime边界、Context进入内部React props、上游React18.3.1及build-watch路径。外部React19现象未本地验证；无测试/浏览器运行、无调用方项目检查、无临时文件。
+
 ## 2026-09-21 · DSH-015-B4-TOOL-EFFECT-08
 
 - asked_by: agent；固定 fb2c4b9e698e30edb738bca4cf0618587db7d203，tag 一致；八个正式包 sha512/exports 核验，固定源码/fixture 静态读取。完整答案回传成功后沉淀工具效果边界与 E049；未运行模型、shell/file effect 或测试，无临时文件。
