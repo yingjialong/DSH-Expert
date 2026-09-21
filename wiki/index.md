@@ -8,6 +8,8 @@ updated: 2026-09-21
 
 # 知识库索引（index.md）
 
+- [1.5-rc.2 工具与外部效果边界](topics/rc15-tool-effect-boundaries.md)：发布/执行/审批顺序、Shell detached 与 FS 版本/耐久限制；锚点 tools/src/index.ts、fs-local/src/fsio.ts（verified_inference / fresh）。
+
 - [1.5-rc.2 Client preset投影](topics/rc15-client-agent-preset-projection.md)：Browser类型、null/undefined与partial list/follow资格；锚点 presets/src/session.ts、projection-store.ts（verified_inference / fresh）。
 
 - [1.5-rc.2输入与Layout合同](topics/rc15-client-input-layout-contract.md)：Workspace导航、Client scope/setDraft观察及默认apply贡献；锚点 input/facade.ts、ui-layout/src/client/index.ts（verified_inference / fresh）。

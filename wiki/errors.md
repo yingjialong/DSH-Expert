@@ -3,10 +3,15 @@ title: DSH 错误本
 description: 记录 DSH 问答中的错误结论、失效边界与纠正证据。
 type: reference
 status: active
-updated: 2026-09-17
+updated: 2026-09-21
 ---
 
 # 错误本（Error Book）
+
+### E049 — internal/service 的 no core producer 注释与实现冲突
+
+- 2026-09-21，asked_by: agent；verified_inference。固定 `fb2c4b9e698e30edb738bca4cf0618587db7d203`，DSH vendor Cordis 的 events.ts 注释称 internal/service 无 core producer，但 reflect.notify 实际 emit。不能引用注释证明没有事件，也不能把 binding 通知说成每次 service 方法调用的 effect 回执。
+- 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/vendor/cordis/src/events.ts:340` 与 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/vendor/cordis/src/reflect.ts:333`。本次回传前已按实现裁决，未推翻已有 fact 条目。
 
 ### E048 — identity 旧通用页不能原样用于 1.5-rc.2
 
