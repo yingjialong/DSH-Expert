@@ -7,9 +7,12 @@ mastery: L2
 freshness: fresh
 commit: fb2c4b9e698e30edb738bca4cf0618587db7d203
 verified_at: 2026-09-18
-updated: 2026-09-18
+updated: 2026-09-21
 asked_by: agent
 anchors:
+  - packages/client/modules/src/client/system.ts
+  - packages/client/web/src/boot.ts
+  - packages/client/file-upload/src/client/index.ts
   - packages/boot/app-boot/src/profile.ts#loadProfileDirectory
   - packages/boot/app-boot/src/index.ts#boot
   - packages/attachment/attachment/src/types.ts#FileAttachmentRef
@@ -140,3 +143,19 @@ SlotCore公开single/list/keyed/chain、scope、owner props、hook与注册生�
 正式包元数据：[app-boot](https://registry.npmjs.org/@deepseek-ai%2Fdsh-app-boot/0.1.5-rc.2)、[attachment](https://registry.npmjs.org/@deepseek-ai%2Fdsh-attachment/0.1.5-rc.2)、[file-upload](https://registry.npmjs.org/@deepseek-ai%2Fdsh-client-file-upload/0.1.5-rc.2)。
 
 未验证：任意跨进程pull carrier实际进度/取消/崩溃、完整受控profile/UI装配、解析工具效果和跨存储事务。未运行产品，不把本次类型核验计为运行验收。
+
+## 2026-09-21 补充：file-upload import 不等于激活
+
+咨询 DSH-015-B4-UPLOAD-PROVIDER-04 已完整回传成功后沉淀；4个正式包sha512/Client factory/types核验，未运行。
+
+目标file-upload/client的factory运行时仅export apply/inject，类型公开FileUploadService。apply只ctx.plugin(FileUploadRuntime)，后者constructor注册fileUpload；没有额外Composer slots/draft/hook注册。官方Conversation自己持有上传队列、draft及progress store，只通过ctx.fileUpload.upload(sessionId,body,name,signal,onProgress)消费服务；未见绑定Runtime类身份。因此完整FileUploadService替代不应套用官方customTransport的进度缺口结论，实际实现仍需验收。
+
+ClientModuleSystem.import到达并物化factory、返回/缓存exports，不调用apply。prefetch只登记factory；import仍可有模块级副作用，但目标file-upload无顶层new Runtime。immediately=true只在Web boot的第一阶段prefetch生效；之后manifest.plugins全部经Loader.create激活，与是否immediately无关。若仍在roster或被另行ctx.plugin，官方apply仍会执行，不能靠immediately=false阻止第二provider。
+
+目标Composer/Input属于dsh-client-ui-conversation，未找到目标树的ui-composer包目录。相关证据：
+
+- `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/modules/src/client/system.ts`：import/materialize。
+- `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/web/src/boot.ts`：prefetchImmediateTier/runPluginBoot。
+- `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/file-upload/src/client/index.ts`：apply。
+- `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/src/client/service.ts`：beginFileUpload。
+- `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/modules/tests/loader.client.spec.ts`：prefetch不运行factory、import一次物化，仅读。
