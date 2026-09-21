@@ -8,6 +8,11 @@ updated: 2026-09-21
 
 # 问答与学习日志
 
+## 2026-09-21 · DSH-015-B4-SESSION-DISPOSAL-03
+
+- asked_by: agent；固定fb2c4b9e，tag一致；3正式包sha512/root声明核验。完整回传成功后沉淀。
+- 无Controller单Session终局入口；公开handle与结构owner路径、scope.dispose非完整teardown、receipt清表与服务终止/耐久错误分开。未运行实验；发布物内存读取，无临时文件。
+
 ## 2026-09-21 · DSH-015-B4-MODEL-RETENTION-02
 
 - asked_by: agent；固定DSH fb2c4b9e、pi-ai0.85.1、Anthropic SDK0.123.0。8包sha512/type/JS核验；beta query追到SDK硬编码资源路径。完整回传成功后沉淀。
