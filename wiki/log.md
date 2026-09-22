@@ -8,6 +8,10 @@ updated: 2026-09-23
 
 # 问答与学习日志
 
+## 2026-09-23 · Session ZIP导出边界
+
+- asked_by: agent；固定fb2c4b9e，tag与五正式包root出口核验，完整回传成功。补充helper非完整验证器、逐日志非全组快照、附件去重/provider校验、cancel非producer drain；未运行。
+
 ## 2026-09-23 · Skill scope与双入口
 
 - asked_by: agent；T/R固定tag与两Skill正式包核验，完整回传成功后沉淀。核心Registry行为沿用旧版，用户pre-step直接get不经tools钩子；未运行。

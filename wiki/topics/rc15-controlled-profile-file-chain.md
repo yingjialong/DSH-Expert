@@ -7,7 +7,7 @@ mastery: L2
 freshness: fresh
 commit: fb2c4b9e698e30edb738bca4cf0618587db7d203
 verified_at: 2026-09-18
-updated: 2026-09-21
+updated: 2026-09-23
 asked_by: agent
 anchors:
   - packages/client/modules/src/client/system.ts
@@ -159,3 +159,20 @@ ClientModuleSystem.import到达并物化factory、返回/缓存exports，不调�
 - `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/file-upload/src/client/index.ts`：apply。
 - `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/src/client/service.ts`：beginFileUpload。
 - `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/modules/tests/loader.client.spec.ts`：prefetch不运行factory、import一次物化，仅读。
+
+
+## 2026-09-23：Session ZIP 校验与终局
+
+asked_by: agent；固定本页SHA，五个相关正式包sha512/root声明核验，完整回传成功后补充，未运行。
+
+serializeSessionLog仅组装header/JSON.stringify events，不全量验证V3 schema/seq/surface。readSessionLogText依赖Persistence返回有效committed prefix，并finally await handle.close；flushLiveSessionLog只对单个live Session await flush。ZIP先消费调用方给的rootContent，再trace lineage、逐descendant flush/read，不冻结整套集合/日志cut。当前文件名session.v3.jsonl不校验调用方header版本，空rootContent也可导出。
+
+attachmentRefsInArtifact跳过JSON.parse失败行，其余是结构扫描而非Session/ref验证。扫描data.content/message.content/inserted及embedded stream block-end，递归block.content。未枚举unused receipts；普通present路径不自动打包。image按attachmentId合并，generic按id+NUL+原name；跨log后set覆盖，单content LIFO遍历不等于文本末项总赢。无冲突ref/bytes/归档路径碰撞检查。
+
+image路径media/<原id>.<ext>；generic去sha256:后files/<前2>/<digest>/<净化name>。同digest不同name分别入ZIP，净化后可能碰撞；helper不公开内部path函数。readImage/readFileStream的完整性由AttachmentStore合同保证，export不再hash。local file provider流末才核bytes/hash，失败时可能已输出部分压缩数据但最终stream error。合法0字节流会以empty final chunk结束；缺对象必须provider拒绝，错误返回空流不被export自行识别。
+
+公开sessionFormatCatalog.createRestore(...validation:current)配decodeRow/finish是另一套验证面，export不调用它；readHeader只看header。v2-to-v3公开assertReleasedV3Header/restoreReleasedV3Artifact/row-event admission各有边界，不校验附件bytes或跨Sessioncut。未导出内部validateSessionHeader，不可凭源码位置当root出口。
+
+sessionLogZipEntries是AsyncGenerator，file entry仅交出chunks，不负责外部消费者的附件流清理。streamSessionLogZip后台void async IIFE，cancel只abort+zip.terminate返回void，不await producer/handle close/iterator drain。正常循环退出有标准iterator关闭语义，但不合作pending next/I/O可仍等待。request abort依赖signal检查/provider合作，无公开finished/lease/cut句柄。local附件finally仅stream.destroy，没有显式await close事件。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session-query/session-log-export/src/archive.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/attachment/attachment/src/index.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/attachment/attachment-local/src/file-store.ts:147`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session-query/session-log-export/tests/archive.host.spec.ts:639`、670使用合作abort provider，不证明任意I/O排空；755/784覆盖generic路径与中途失败，本次仅读。
