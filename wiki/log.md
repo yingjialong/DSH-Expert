@@ -3,10 +3,14 @@ title: DSH 问答与学习日志
 description: 记录 DSH 咨询、核验、学习与知识沉淀的历史证据。
 type: reference
 status: active
-updated: 2026-09-21
+updated: 2026-09-22
 ---
 
 # 问答与学习日志
+
+## 2026-09-22 · ToolFS attachments隔离
+
+- asked_by: agent；固定fb2c4b9e，tag与两正式包核验。完整回传成功后补入工具效果专题；隔离label不回退、tools继承与DSH scope分离，未运行精确组合。
 
 ## 2026-09-21 · DSH-015-B4-CLIENT-SCROLL-10
 

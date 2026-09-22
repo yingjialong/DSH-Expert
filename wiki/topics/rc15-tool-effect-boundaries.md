@@ -7,9 +7,13 @@ mastery: L2
 freshness: fresh
 commit: fb2c4b9e698e30edb738bca4cf0618587db7d203
 verified_at: 2026-09-21
-updated: 2026-09-21
+updated: 2026-09-22
 asked_by: agent
 anchors:
+  - packages/fs/tool-fs/src/index.ts
+  - vendor/cordis/src/context.ts
+  - vendor/cordis/src/fiber.ts
+  - packages/core/scope/src/store.ts
   - packages/core/agent/src/index.ts#AgentRegistry
   - packages/core/agent-loop/src/index.ts
   - packages/core/agent-loop/src/tool-calls.ts
@@ -91,3 +95,16 @@ Fixture 仅读未运行：
 - `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/shell/tool-bash/tests/tools.spec.ts`：680 审批后取消。
 
 未对任何外部宿主作运行验收。
+
+
+## 2026-09-22：ToolFS 的 attachments 隔离
+
+固定本页 SHA；asked_by: agent；完整回传成功后补充。ToolFS/Cordis 两正式包 sha512/exports 核验，未运行组合测试。
+
+ToolFS root 必需 tools/fs/systemPrompt；read_image 仅在内部 inject(['attachments']) callback 注册，read/write/edit在外层注册。Config只有四个read限额，无禁用image开关；独立applyReadTool等不在root公开出口，正式包无src。
+
+在新 attachments isolation label 没有provider、其他依赖满足且没有同layer重名冲突时，isolate('attachments')后挂完整ToolFS模块使conditional子fiber不激活，而其他工具仍进入继承ToolRuntime。这是公开语义+源码推论，非精确组合实测。isolate只覆盖一个service label，_getImpl不回退父label；以后该label提供attachments可激活read_image。它不卸载原provider、不删除别处已有read_image，不是全局安全限制。
+
+Cordis realm隔离不改变原DSH scope tag；global/Agent/preset注册层沿用原scope。服务trace视图不必===，审计应看tools label/implementation与目标fiber状态；registry.has只证明runtime有fiber，不证明目标ACTIVE。公开schemas(scope)看可见集，省略scope是global。confining fs仍要求sandboxPolicy。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/fs/tool-fs/src/index.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/vendor/cordis/src/context.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/vendor/cordis/src/fiber.ts:597`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/scope/src/store.ts:226`。一方 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/fs/tool-fs/tests/read-image.spec.ts` registration surface覆盖attachments卸载/重挂时仅conditional工具变化；未覆盖本次精确隔离组合，本次仅读。
