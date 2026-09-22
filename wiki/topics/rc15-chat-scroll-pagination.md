@@ -10,6 +10,9 @@ verified_at: 2026-09-21
 updated: 2026-09-22
 asked_by: agent
 anchors:
+  - packages/client/ui-tool/package.json
+  - packages/client/ui-tool/src/client/apply.ts
+  - packages/client/ui-tool/src/client/tool/ToolCallTree.tsx
   - packages/client/ui-conversation/src/client/conversation/assembler.ts
   - packages/client/ui-conversation/src/client/conversation/event-registry.ts
   - packages/client/ui-conversation/src/client/conversation/view-registry.ts
@@ -105,3 +108,16 @@ asked_by: agent；先完整回传，固定源码交叉核验，未运行精确�
 公开UiConversation.binding(id).target('chat')提供getSnapshot/subscribe，订阅激活target；ChatSnapshot.nodes.values含已materialize visible/hidden节点。assistant-step的data.finalNode.messageId对应真实assistant/message id，finalNode.blocks由message.content投影，text块取text，reasoning等另分。没有专门getByMessageId，nodes.get的key也不是messageId。SessionBinding.eventSource.getSnapshot().entries另保留当前连续窗口真实assistant/message及content，定位为assembly feed，不是可写或全量数据库。缺窗口节点不证明Host缺消息，partial/中断冻结节点可无durable id。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/src/client/conversation/assembler.ts:463`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-chat/src/client/conversation-nodes/chat-snapshot-builder.ts:400`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-chat/src/client/conversation-nodes/assistant.ts:193`。可组合性未作为运行验收。
+
+
+## 2026-09-22：tool-call renderer 归属
+
+asked_by: agent；先回传成功，ui-tool正式0.1.5-rc.2 tarball sha512/manifest/types/factory核对，未运行。
+
+实际注册conversation.chat.node key=tool-call的是@deepseek-ai/dsh-client-ui-tool/client，factory id为包根名；runtime只export apply/inject。manifest模块inject为api-workspace-controller、client-connection、client-locale、client-ui-conversation；实际factory require react/jsx-runtime、react、ui-primitives。Cordis服务inject为slots/remote，使用remote.$host及connection/reset，locale用conversation。模块加载不等于apply。
+
+ui-chat提供tool数据definition及ChatNodeSeat producer，缺ui-tool且无同key替代时visible工具节点走Unknown surface JsonBlock。ui-tool注册ToolCallTree并声明tool.call.toolview，递归root/subCalls按toolName dispatch，未命中专用row走GenericToolCard。这是两层不同fallback。compact隐藏或renderer崩溃不能直接套“缺模块”结论。
+
+ui-tool apply自行激活bash/read/read_image/write/edit/grep/glob/web_search/web_fetch/todo_write/ask_user_question内建views，无需另导入私有row。ui-attachment图像gallery、ui-deliverables present是额外贡献；Turn process仍由ui-chat拥有。官方web-app配置确有ui-tool。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-tool/src/client/apply.ts:33`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-tool/src/client/tool/ToolCallTree.tsx:39`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/bundle/web-app/cordis.patch.yml:267`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-tool/tests/assembly-surfaces.client.spec.tsx:142` 仅读未运行。

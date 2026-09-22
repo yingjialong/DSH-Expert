@@ -8,6 +8,10 @@ updated: 2026-09-22
 
 # 问答与学习日志
 
+## 2026-09-22 · ui-tool renderer归属
+
+- asked_by: agent；固定fb2c4b9e，tag与ui-tool正式tarball核验。完整回传后补入Chat专题：模块依赖与服务inject分层，tool-call/原子toolview两层fallback，内建与额外presentation边界。未运行。
+
 ## 2026-09-22 · 并存Chat Node与messageId读取
 
 - asked_by: agent；固定fb2c4b9e，tag一致，复用已核正式公开面并回源核验assembler/builder。完整回传后补充独立definition共存与最终assistant读取；未跑扩展组合。
