@@ -7,9 +7,14 @@ mastery: L2
 freshness: fresh
 commit: fb2c4b9e698e30edb738bca4cf0618587db7d203
 verified_at: 2026-09-21
-updated: 2026-09-21
+updated: 2026-09-22
 asked_by: agent
 anchors:
+  - packages/client/ui-chat/src/client/chat/TurnTailNodeView.tsx
+  - packages/client/ui-chat/src/client/conversation-nodes/turn-tail.ts
+  - packages/client/ui-primitives/src/markdown/CodeBlock.tsx
+  - packages/client/ui-primitives/src/markdown/MarkdownText.tsx
+  - packages/client/ui-primitives/src/markdown/render.tsx
   - packages/client/ui-chat/src/client/chat/ChatView.tsx
   - packages/client/ui-chat/src/client/chat/ChatView.module.css
   - packages/client/ui-chat/src/client/chat/ChatNodeSeat.tsx
@@ -71,3 +76,16 @@ ChatView/ReasoningRow/toBottom/scrollerOf未公开runtime出口；/client公开C
 - `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/session-controller/src/client/contract/session.ts:120`：分页结果合同。
 - `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-chat/tests/chat-view.client.spec.tsx`：2328暂停恢复；2371 clamp/regrow；2429小手势累积；2482采样；2544resize；2626阈值不吸底；2639外层host；1690 partial history。
 - `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/apps/web/tests/chat-scroll-contract.e2e.ts`：509并发prepend/stream；664长scroll-away；755切换/resize；857keyboard；895fling。场景skipIf(record)，本次均未运行。
+
+
+## 2026-09-22：流内席位与代码块
+
+asked_by: agent；完整回传成功后补充，固定本页SHA，ui-chat/ui-primitives正式tarball重新核对，未运行。
+
+conversation.chat.turnTail是实际data-chat-flow内的session chain，TurnTailNodeView在MessageIconActions之前renderSlotChain；仅turn/end后definition才产生尾节点。owner为turn/seq/openFile，closing=null仍可render tail。它不是任意时刻或执行中占位入口，chain择一不是list累加；ui-deliverables已有注册。assistant-actions是同尾节点的动作条，只有closing durable messageId才render，owner仅messageId，不是fence toolbar。
+
+chat.node是已产生node的keyed renderer；注册新key不自动生成数据节点。commandview/images有实际producer但限定命令/图片。input dock/composer dock属于sticky composer附近，overlay/left/right/header不等于正文流。session slot的inject(sessionId)及公开sessions.binding/scope可取得Client作用域；owner无scrollHost/clipRect/ref，data-conversation-scroll仅实现DOM约定。
+
+assistant text→MarkdownText→内部renderCode→CodeBlock。公开MarkdownText无components/renderCode/actions参数；公开CodeBlock只有code/lang/streaming/className/contentRef/lineNumbers/复制labels，无按钮children/toolbar slot。contentRef仅服务直接创建该primitive的owner，不能访问默认assistant内部实例。内部固定Copy按钮，code来自mdast node.value加合成尾换行；空fence走pre、settled math走TeX。工具结果toolview不是assistant文本fence扩展。未找到满足“保留默认Markdown并加按钮读取代码”的公开细粒度入口。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-chat/src/client/chat/TurnTailNodeView.tsx:26`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-chat/src/client/conversation-nodes/turn-tail.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-primitives/src/markdown/MarkdownText.tsx:167`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-primitives/src/markdown/CodeBlock.tsx:12`。无外部项目诊断或实现方案。

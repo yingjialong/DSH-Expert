@@ -8,6 +8,10 @@ updated: 2026-09-22
 
 # 问答与学习日志
 
+## 2026-09-22 · Chat流内席位与代码块扩展
+
+- asked_by: agent；固定fb2c4b9e，tag及两正式包sha512/出口复验。完整回传后补充Chat专题：turnTail仅已结束Turn，assistant-actions非代码块toolbar，Markdown/CodeBlock无细粒度action入口。未运行。
+
 ## 2026-09-22 · Approval forwarding顺序
 
 - asked_by: agent；固定fb2c4b9e及Cordis4.0.2，tag与两包sha512/声明核验。完整回传成功后补入工具效果专题；无Client pending、prepend/global过滤与never前置边界，未运行。

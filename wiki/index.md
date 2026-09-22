@@ -8,7 +8,7 @@ updated: 2026-09-22
 
 # 知识库索引（index.md）
 
-- [1.5-rc.2 Chat滚动与分页](topics/rc15-chat-scroll-pagination.md)：采样/resize跟随归属、展开出口、按钮/回合导航分页；锚点 ChatView.tsx、contract/slots.ts（verified_inference / fresh）。
+- [1.5-rc.2 Chat滚动与分页](topics/rc15-chat-scroll-pagination.md)：跟随归属、turnTail流内席位、代码块无action入口及分页；锚点 ChatView.tsx、contract/slots.ts（verified_inference / fresh）。
 
 - [1.5-rc.2 Composer/Context/React边界](topics/rc15-composer-context-react-boundaries.md)：available非附件开关、默认bar导出限制、binding.ctx与React18锁定；锚点 InputBar.tsx、reflect.ts（verified_inference / fresh）。
 
