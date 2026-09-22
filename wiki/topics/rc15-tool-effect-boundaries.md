@@ -147,3 +147,16 @@ Service.ask校验预abort、非空、指定Agent exact live root及intent；随�
 这些wire frame/ID/parser在内部stream-protocol文件，root仅明确公开RemoteEventHostInfo；公开TypertRemoteEventInvocation有原request/context/resolve/reject但没有eventId。未找到分配后关联eventId与原Host request的公开hook/query；wire同时含agentId和eventId不等于原对象关联API。Client remote.$on也不交eventId。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/interaction/user-questions/src/index.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/interaction/tool-ask-user/src/index.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-user-questions/src/client/contract/slots.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/src/stream-protocol.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/src/types.ts`。browser-plugin.client.spec.ts与user-questions-composer.client.spec.tsx位于上述ui-user-questions包tests，仅读未运行。
+
+
+### Question增量：source包装、JSON投影与carrier复用
+
+2026-09-22，asked_by: agent；固定本页SHA，完整回传后补充，未运行。
+
+api-remotes的remoteEventSource/queue未导出，apply无source factory配置；公开Gateway唯一source注册不是取得/包装既存官方source的hook。未找到单invocation包装且保留官方queue的公开装配口。
+
+Gateway投影要求plain own agent===subject，signal须AbortSignal；仅删除agent/signal，其余own enumerable string字段通过lossless JSON校验后保留。symbol/非枚举/bigint/cycle等拒绝，不是Question字段白名单；额外字段存在不赋予业务语义，也无深冻结保证。Host Context effect和抽出signal控制取消；Client重建agent为Client Context、signal为delivery lifetime。
+
+公开composer chain可消费同一真实PendingQuestion carrier并传matched，不必新造pending。但默认QuestionComposer/内部draft store工厂不公开，公开TYPE不等于组件出口；无custom/skip禁用callback或局部slot。故“同carrier的替代presentation”与“公开配置默认UI为options-only并复用默认reducer”不是同一能力。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/src/stream-protocol.ts:145`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/tests/remote-event-protocol.host.spec.ts:107`（仅读）、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-user-questions/src/client/index.ts`。仅静态公开面，不提供外部方案。

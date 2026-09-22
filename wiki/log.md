@@ -8,6 +8,10 @@ updated: 2026-09-22
 
 # 问答与学习日志
 
+## 2026-09-22 · Question source/投影/carrier增量
+
+- asked_by: agent；固定fb2c4b9e，tag一致；先完整回传。补充无官方source包装口、额外JSON字段投影与同carrier替代presentation/默认UI配置的区别；未运行。
+
 ## 2026-09-22 · Question公开面与wire增量
 
 - asked_by: agent；固定fb2c4b9e，tag与三正式包核验。主答及A/B/C增量各完整回传成功；记录无options-only、ask无通用abort race、$events准确名称与eventId私有分配边界。未运行。
