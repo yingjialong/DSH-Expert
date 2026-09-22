@@ -8,6 +8,10 @@ updated: 2026-09-22
 
 # 问答与学习日志
 
+## 2026-09-22 · 并存Chat Node与messageId读取
+
+- asked_by: agent；固定fb2c4b9e，tag一致，复用已核正式公开面并回源核验assembler/builder。完整回传后补充独立definition共存与最终assistant读取；未跑扩展组合。
+
 ## 2026-09-22 · Chat流内席位与代码块扩展
 
 - asked_by: agent；固定fb2c4b9e，tag及两正式包sha512/出口复验。完整回传后补充Chat专题：turnTail仅已结束Turn，assistant-actions非代码块toolbar，Markdown/CodeBlock无细粒度action入口。未运行。

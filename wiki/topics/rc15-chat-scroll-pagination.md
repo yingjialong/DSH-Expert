@@ -10,6 +10,11 @@ verified_at: 2026-09-21
 updated: 2026-09-22
 asked_by: agent
 anchors:
+  - packages/client/ui-conversation/src/client/conversation/assembler.ts
+  - packages/client/ui-conversation/src/client/conversation/event-registry.ts
+  - packages/client/ui-conversation/src/client/conversation/view-registry.ts
+  - packages/client/ui-chat/src/client/conversation-nodes/chat-snapshot-builder.ts
+  - packages/client/ui-chat/src/client/conversation-nodes/assistant.ts
   - packages/client/ui-chat/src/client/chat/TurnTailNodeView.tsx
   - packages/client/ui-chat/src/client/conversation-nodes/turn-tail.ts
   - packages/client/ui-primitives/src/markdown/CodeBlock.tsx
@@ -89,3 +94,14 @@ chat.node是已产生node的keyed renderer；注册新key不自动生成数据�
 assistant text→MarkdownText→内部renderCode→CodeBlock。公开MarkdownText无components/renderCode/actions参数；公开CodeBlock只有code/lang/streaming/className/contentRef/lineNumbers/复制labels，无按钮children/toolbar slot。contentRef仅服务直接创建该primitive的owner，不能访问默认assistant内部实例。内部固定Copy按钮，code来自mdast node.value加合成尾换行；空fence走pre、settled math走TeX。工具结果toolview不是assistant文本fence扩展。未找到满足“保留默认Markdown并加按钮读取代码”的公开细粒度入口。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-chat/src/client/chat/TurnTailNodeView.tsx:26`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-chat/src/client/conversation-nodes/turn-tail.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-primitives/src/markdown/MarkdownText.tsx:167`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-primitives/src/markdown/CodeBlock.tsx:12`。无外部项目诊断或实现方案。
+
+
+## 2026-09-22：独立节点与 messageId 读取
+
+asked_by: agent；先完整回传，固定源码交叉核验，未运行精确组合。events.register(ConversationNodeDefinition)按kind唯一；assembler遍历所有普通definition，单个真实tool/call可同时命中默认tool及自有kind。context按(kind,id)隔离，每context唯一start，返回node.key须等于context.key且target匹配。自有target=chat节点满足ChatConversationViewNode的anchorSeq/location/visibility/data合同后可由默认ChatSnapshotBuilder接纳，无需再注册chat view builder；views.register按target唯一，重复chat冲突。renderer另经conversation.chat.node新key注册，单有renderer不创建节点。
+
+默认排序为presentation anchor/rank/originalAnchor/key，含Turn process调整，不按注册顺序保证邻接。自有kind不自动拥有内置legacy/navigation专用语义，也可能被compact过程规则折叠。只投影call展示不要求复制官方工具生命周期，但仍须定义自身最小match/start/update/buildViewNode。
+
+公开UiConversation.binding(id).target('chat')提供getSnapshot/subscribe，订阅激活target；ChatSnapshot.nodes.values含已materialize visible/hidden节点。assistant-step的data.finalNode.messageId对应真实assistant/message id，finalNode.blocks由message.content投影，text块取text，reasoning等另分。没有专门getByMessageId，nodes.get的key也不是messageId。SessionBinding.eventSource.getSnapshot().entries另保留当前连续窗口真实assistant/message及content，定位为assembly feed，不是可写或全量数据库。缺窗口节点不证明Host缺消息，partial/中断冻结节点可无durable id。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/src/client/conversation/assembler.ts:463`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-chat/src/client/conversation-nodes/chat-snapshot-builder.ts:400`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-chat/src/client/conversation-nodes/assistant.ts:193`。可组合性未作为运行验收。
