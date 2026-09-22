@@ -3,10 +3,12 @@ title: DSH 知识库索引
 description: 按版本与主题定位 DSH 知识条目及治理文件。
 type: index
 status: active
-updated: 2026-09-22
+updated: 2026-09-23
 ---
 
 # 知识库索引（index.md）
+
+- [1.5-rc.2 Skill scope与双入口](topics/rc15-skill-scope-invocation.md)：provider目录缓存、model/user读取及gate范围，锚点skill/tool-skill index（verified_inference / fresh）。
 
 - [1.5-rc.2 Chat滚动与分页](topics/rc15-chat-scroll-pagination.md)：跟随归属、turnTail流内席位、代码块无action入口及分页；锚点 ChatView.tsx、contract/slots.ts（verified_inference / fresh）。
 
