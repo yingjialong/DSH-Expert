@@ -10,6 +10,9 @@ verified_at: 2026-09-21
 updated: 2026-09-22
 asked_by: agent
 anchors:
+  - packages/api/remotes/src/index.ts
+  - packages/api/remotes/src/remote-events.ts
+  - packages/api/gateway/src/index.ts
   - packages/fs/tool-fs/src/index.ts
   - vendor/cordis/src/context.ts
   - vendor/cordis/src/fiber.ts
@@ -108,3 +111,16 @@ ToolFS root 必需 tools/fs/systemPrompt；read_image 仅在内部 inject(['atta
 Cordis realm隔离不改变原DSH scope tag；global/Agent/preset注册层沿用原scope。服务trace视图不必===，审计应看tools label/implementation与目标fiber状态；registry.has只证明runtime有fiber，不证明目标ACTIVE。公开schemas(scope)看可见集，省略scope是global。confining fs仍要求sandboxPolicy。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/fs/tool-fs/src/index.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/vendor/cordis/src/context.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/vendor/cordis/src/fiber.ts:597`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/scope/src/store.ts:226`。一方 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/fs/tool-fs/tests/read-image.spec.ts` registration surface覆盖attachments卸载/重挂时仅conditional工具变化；未覆盖本次精确隔离组合，本次仅读。
+
+
+## 2026-09-22：审批 remote forwarding 与先行答者
+
+固定本页SHA及Cordis4.0.2，asked_by: agent。api-remotes/Cordis正式tarball sha512/exports/声明核验，先回传成功，未运行组合。
+
+api-remotes apply注册Gateway唯一source时立即调用source并安装固定allowlist listeners，不等Client连接。approval/request普通push listener先forward，result直接返回，next才委派后续Host；无Client或Client不答时pending没有默认超时。断线移除delivery不等于next；request abort/Agent Context释放/source终止可拒绝pending。多个Client复用同一Host listener，首result/rejected结算，next须剩余delivery为空；同Gateway重复source注册拒绝。
+
+Cordis on公开prepend/global。后注册prepend用unshift，进入此前api-remotes之前，但只影响新dispatch；已经等待中的waterfall已有callback快照。多个prepend后装者更前；不同fiber不另建顺序，隔离events则另当别论。global跳过Context.filter（含Agent/base过滤），不是只提高优先级；原carrier及req.agent不变，必须明确处理归属。普通untagged root listener本身已可接收DSH scope允许的请求。
+
+官方ApprovalService仍拥有open-turn检查、asked→decide→decided。never与预先abort在waterfall之前，prepend不绕过。合法答者直接return outcome短路，其它next；allowed-once仅本请求，非持久许可/执行完成证明。未找到api-remotes单独exclude approval配置；导出allowlist常量不是可变配置合同。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/remotes/src/index.ts`（remoteEventSource/forwardWaterfall）、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/src/index.ts:238`（source注册）、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/vendor/cordis/src/events.ts`（dispatch/register）。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/tests/gateway-stream.host.spec.ts:705` 与 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/interaction/user-approval/tests/approval.spec.ts:422` 仅读未运行。

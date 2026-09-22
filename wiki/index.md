@@ -12,7 +12,7 @@ updated: 2026-09-22
 
 - [1.5-rc.2 Composer/Context/React边界](topics/rc15-composer-context-react-boundaries.md)：available非附件开关、默认bar导出限制、binding.ctx与React18锁定；锚点 InputBar.tsx、reflect.ts（verified_inference / fresh）。
 
-- [1.5-rc.2 工具与外部效果边界](topics/rc15-tool-effect-boundaries.md)：发布/执行/审批顺序、ToolFS attachments隔离、Shell/FS效果限制；锚点 tools/src/index.ts、fs-local/src/fsio.ts（verified_inference / fresh）。
+- [1.5-rc.2 工具与外部效果边界](topics/rc15-tool-effect-boundaries.md)：审批forward/prepend顺序、ToolFS attachments隔离、Shell/FS效果限制；锚点 tools/src/index.ts、fs-local/src/fsio.ts（verified_inference / fresh）。
 
 - [1.5-rc.2 Client preset投影](topics/rc15-client-agent-preset-projection.md)：Browser类型、null/undefined与partial list/follow资格；锚点 presets/src/session.ts、projection-store.ts（verified_inference / fresh）。
 
