@@ -10,6 +10,12 @@ verified_at: 2026-09-21
 updated: 2026-09-22
 asked_by: agent
 anchors:
+  - packages/interaction/user-questions/src/index.ts
+  - packages/interaction/user-questions/src/types.ts
+  - packages/interaction/tool-ask-user/src/index.ts
+  - packages/client/ui-user-questions/src/client/index.ts
+  - packages/client/ui-user-questions/src/client/contract/slots.ts
+  - packages/api/gateway/src/stream-protocol.ts
   - packages/api/remotes/src/index.ts
   - packages/api/remotes/src/remote-events.ts
   - packages/api/gateway/src/index.ts
@@ -124,3 +130,20 @@ Cordis on公开prepend/global。后注册prepend用unshift，进入此前api-rem
 官方ApprovalService仍拥有open-turn检查、asked→decide→decided。never与预先abort在waterfall之前，prepend不绕过。合法答者直接return outcome短路，其它next；allowed-once仅本请求，非持久许可/执行完成证明。未找到api-remotes单独exclude approval配置；导出allowlist常量不是可变配置合同。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/remotes/src/index.ts`（remoteEventSource/forwardWaterfall）、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/src/index.ts:238`（source注册）、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/vendor/cordis/src/events.ts`（dispatch/register）。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/tests/gateway-stream.host.spec.ts:705` 与 `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/interaction/user-approval/tests/approval.spec.ts:422` 仅读未运行。
+
+
+## 2026-09-22：Question schema 与 wire 公开边界
+
+asked_by: agent；主答与缩小范围增量均完整回传成功后沉淀。固定本页SHA，三个Question正式包sha512/exports核验；未运行。
+
+ask_user_question输入questions项为id/question/header?/options[{label,description?}]?/multi_select?，映射service multiSelect。无optionsOnly/allowCustom:false；generic UI允许custom和skip，答案selected/custom。Service另有detail与plan-review intent，默认工具不转发。service未做唯一id/选项成员/一题一答关系校验，不能把输出结构schema当这类约束。
+
+Service.ask校验预abort、非空、指定Agent exact live root及intent；随后waterfall返回answer或next，无deny union。scope listener可throw/reject阻止，next是委派。工具pre/guard只涵盖工具路径，不能涵盖任意direct ask。ask本身没有通用abort race，官方Gateway/UI配合signal取消，忽略signal的自定义永不结算Promise不被强制结束。
+
+官方Client包为dsh-client-ui-user-questions/client，runtime仅apply/inject，PendingQuestion为TYPE。apply真实接remote.$on并发布uiSession pending，conversation.composer selector渲染组件。carrier.answer/cancel是本地结算，不是Host收到/耐久确认；取消整批、多题一次answers。无专门持久question asked/answered producer；tool-call/result是另一层。exec.agent传入request，token/callId/turn/prompt requestId不传；各层id不得混同。
+
+逻辑stream准确名$events而非$events/stream，payload={args:{}}；ready有clientId/host，waterfall有event/eventId/agentId/request，cancel有eventId。结果$events/result的args含clientId/eventId/outcome。api-remotes核对Agent并提供context，Gateway私有startRemoteEvent分配eventId，openRemoteEvents分配clientId；request.agent/signal由wire投影移出，Client重建scope。
+
+这些wire frame/ID/parser在内部stream-protocol文件，root仅明确公开RemoteEventHostInfo；公开TypertRemoteEventInvocation有原request/context/resolve/reject但没有eventId。未找到分配后关联eventId与原Host request的公开hook/query；wire同时含agentId和eventId不等于原对象关联API。Client remote.$on也不交eventId。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/interaction/user-questions/src/index.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/interaction/tool-ask-user/src/index.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-user-questions/src/client/contract/slots.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/src/stream-protocol.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/src/types.ts`。browser-plugin.client.spec.ts与user-questions-composer.client.spec.tsx位于上述ui-user-questions包tests，仅读未运行。

@@ -8,6 +8,10 @@ updated: 2026-09-22
 
 # 问答与学习日志
 
+## 2026-09-22 · Question公开面与wire增量
+
+- asked_by: agent；固定fb2c4b9e，tag与三正式包核验。主答及A/B/C增量各完整回传成功；记录无options-only、ask无通用abort race、$events准确名称与eventId私有分配边界。未运行。
+
 ## 2026-09-22 · ui-tool renderer归属
 
 - asked_by: agent；固定fb2c4b9e，tag与ui-tool正式tarball核验。完整回传后补入Chat专题：模块依赖与服务inject分层，tool-call/原子toolview两层fallback，内建与额外presentation边界。未运行。
