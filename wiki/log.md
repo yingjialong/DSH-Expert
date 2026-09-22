@@ -8,6 +8,10 @@ updated: 2026-09-23
 
 # 问答与学习日志
 
+## 2026-09-23 · B5-MCP-015RC2-PUBLIC-01
+
+- asked_by: agent；固定T与S对照、两正式包核验，完整回传后沉淀maintenance/preset/values边界；未运行，无外部项目检查。
+
 ## 2026-09-23 · Session ZIP导出边界
 
 - asked_by: agent；固定fb2c4b9e，tag与五正式包root出口核验，完整回传成功。补充helper非完整验证器、逐日志非全组快照、附件去重/provider校验、cancel非producer drain；未运行。
