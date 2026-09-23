@@ -3,10 +3,14 @@ title: DSH 问答与学习日志
 description: 记录 DSH 咨询、核验、学习与知识沉淀的历史证据。
 type: reference
 status: active
-updated: 2026-09-23
+updated: 2026-09-24
 ---
 
 # 问答与学习日志
+
+## 2026-09-24 · DSH-015-B6-DISPOSE-03
+
+- asked_by: agent；固定fb2c4b9e，tag一致；完整回传后记录ctx.get ACTIVE查询、retained store无卸载后保证、默认10与取消N/N限定；未运行。
 
 ## 2026-09-23 · DSH-015-B6-PRESET-IDENTITY-01
 

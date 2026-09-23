@@ -7,7 +7,7 @@ mastery: L2
 freshness: fresh
 commit: fb2c4b9e698e30edb738bca4cf0618587db7d203
 verified_at: 2026-09-23
-updated: 2026-09-23
+updated: 2026-09-24
 asked_by: agent
 anchors:
   - packages/core/agent-loop/src/agent.ts
@@ -51,3 +51,14 @@ T util-values root公开snapshotJsonValue/isJsonValue/deepFreeze/deepEqualJson/a
 无通用preset历史ref重写API；format V2→V3有明确code→ptc特例，不能泛称所有字符串永远原样，也不提供宿主任意hash映射。其它合法旧id由当前root提供实现是公开可组合性，不证明历史行为等价或代码generation冻结。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/preset/agent-presets/src/preset.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/boot/app-boot/src/profile.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session/session-format-v2-to-v3/src/migration.ts:18`。discovery/authoring fixtures仅读未运行。
+
+
+## 2026-09-24：inactive查询与取消批次
+
+asked_by: agent；先完整回传DSH-015-B6-DISPOSE-03。Cordis ctx.get(name)跳过inject要求，仅按realm查ACTIVE provider，调用者inactive无专门拒绝；provider已unloading也返回undefined，不是未注销就返回。直接ctx.sessions可因required注入已inactive抛错。get(false)不复活服务，非生命周期lease。
+
+SessionStore.get/list实现无assertActive，只读store；保留对象不必然throw，但无卸载后可用/完整最终snapshot承诺。服务注销与业务记录detach非同一原子步骤，不据旧对象推断writer drain。
+
+AgentLoop公开默认maxParallelToolCalls=10。正常取消且无scheduler/log失败时N项计划仍写N call/N result，未started为synthetic ABORTED_BEFORE_DISPATCH，不等body已执行。started先drain再按序结果；scheduler failure不保证配对，tools/result异步observer不await。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/vendor/cordis/src/reflect.ts:233`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/session/src/index.ts:1170`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/src/constants.ts`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/tests/tool-calls.spec.ts:466`仅读未运行。
