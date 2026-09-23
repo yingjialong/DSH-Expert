@@ -205,3 +205,12 @@ query cold-read仅read handle，prepare未发布Session可有内存marker但不�
 export flush只查已有live Session，readSessionLogText只读handle并序列化，entries/trace不resume。若已有follow promotion，export flush可刷其缓冲，不是export创建marker。完全关闭writer后独立只读导出不自行添seed，但JSONL为逻辑重序列化非物理字节拷贝。未认证外部观察结果。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/session-controller/src/history.ts:202`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/src/index.ts:875`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session-query/session-query/src/observation.ts:123`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/session-controller/tests/controller.host.spec.ts:200`仅读未运行。
+
+
+### interrupted closer 与重复恢复
+
+2026-09-23，asked_by: agent，先完整回传DSH-015-B6-INTERRUPTED-02。Persistence read handle不合成语义closers；Query cold-read在read/close后追加interruptedTurnClosers到内存seed，readSurface消费其surface，capturedThroughSeq可含synthetic尾，非必等于磁盘cut。fromRestore自身不调用closer helper；prepared构造marker不自动持久。
+
+真实AgentLoop.resume取得write owner后读stored prefix，append官方closers，再prepare并保存未存suffix。export直接读Persistence不走Query恢复events。已balanced/empty时closers=[]；open turn按需补多条tool/result、step/end、interrupted turn/end。end-seed另按尾是否已有marker判断，无新工作反复resume不重复添；未耐久/失败不能宣称跨重试exactly-once。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/session/src/repair.ts:29`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session-query/session-query/src/cold-read.ts:30`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/tests/resume.spec.ts:472`与680覆盖实际存储及重复resume，本次仅读未运行。

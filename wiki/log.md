@@ -8,6 +8,10 @@ updated: 2026-09-23
 
 # 问答与学习日志
 
+## 2026-09-23 · DSH-015-B6-INTERRUPTED-02
+
+- asked_by: agent；固定fb2c4b9e，tag一致，完整回传后补充Query内存修复、Agent writer修复与重复resume条件；fixture仅读未运行。
+
 ## 2026-09-23 · DSH-015-B6-COLD-SEED-01
 
 - asked_by: agent；固定fb2c4b9e，tag一致；完整回传后沉淀普通follow后台promotion、resume写suffix与page/export只读边界。未运行。
