@@ -185,3 +185,12 @@ asked_by: agent；固定本页SHA，完整回传后补充，静态推论未跑�
 Store.create只prepare/enter/announce，不负责persistence.create。Query corpus合并persisted list与live，按parentSession追踪而非origin过滤；只live child可被trace看到但ZIP读取缺stored log会失败。发布live时公开prepare→取得writer/保存seed→enter/announce可组合，后续JSONL按已有writer路由session/event；不能重复手动append同一已路由事件。无跨存储发布事务或自动回滚保证。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/session/src/index.ts:930`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session-query/session-query/src/corpus.ts:61`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session-query/session-query/src/tracing.ts:153`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session/session-persistence-jsonl/tests/jsonl.spec.ts:1308`明确空Session flush materialization，本次仅读。
+
+
+### child FileUploads 准入与直接存储
+
+2026-09-23，asked_by: agent，固定本页SHA；完整回传后沉淀，未运行。FileUploads两入口commit前检查scopeOf(agent.ctx)===agent及header.origin；origin=subagent明确拒绝subagent/attachment-invalid，reason=SUBAGENT_FILE_UNSUPPORTED，不因live或物理上传准入而绕过。检查不是parentSession/parentAgent谓词。raw合法请求的业务错误用HTTP200 ok:false返回，不据通用upload_failed反推外部映射。
+
+AttachmentStore.saveFileStream是无Agent/receipt参数的公开存储seam，可先durably保存真实bytes，再由合法Session内容引用真实ref。它不禁止child拥有附件，也不模拟Client child上传准入。Session.append不复验附件bytes/digest，日志仍需独立持久化；无通用protectCommittedRef/pin/refcount合同，跨存储失败可留下未引用对象。真实child日志ref可由官方export消费，是组合推论非端到端实测。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/file-upload/src/index.ts:230`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/file-upload/src/http-route.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/attachment/attachment/src/index.ts`；fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/session-controller/tests/commands-upload-file.host.spec.ts:276` 仅读。
