@@ -8,6 +8,10 @@ updated: 2026-09-23
 
 # 问答与学习日志
 
+## 2026-09-23 · DSH-015-B6-PRESET-IDENTITY-01
+
+- asked_by: agent；固定T/S tag，复用目标正式公开面并回源。完整回传后补充system root稳定字符串身份、resume/冷读差异与code→ptc特例；未运行示例。
+
 ## 2026-09-23 · DSH-015-B6-INTERRUPTED-02
 
 - asked_by: agent；固定fb2c4b9e，tag一致，完整回传后补充Query内存修复、Agent writer修复与重复resume条件；fixture仅读未运行。

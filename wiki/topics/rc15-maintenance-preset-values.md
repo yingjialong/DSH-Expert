@@ -40,3 +40,14 @@ T util-values root公开snapshotJsonValue/isJsonValue/deepFreeze/deepEqualJson/a
 与S core/session/json.ts的walker及S llm/call-config.ts的deepFreeze主体比较一致，主要搬迁出口，未发现本题函数语义变化。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/src/agent.ts:157`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/preset/agent-presets/src/session.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/util/values/src/index.ts`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/tests/loop.spec.ts:336` 等仅读未运行。
+
+
+## 非hash preset ID 的当前实现
+
+2026-09-23，asked_by: agent；先完整回传DSH-015-B6-PRESET-IDENTITY-01，未运行。ID是preset目录名，发现正则^[a-z0-9][a-z0-9-]*$，不是内容hash要求。公开roots可声明system信任并在原合法id目录提供当前agent.cordis.yml；shipped默认最先、configured其次、user最后，同id先root胜出，includeShippedRoot可显式关闭。Profile/bundle只是当前runtime装配，不替Session重命名。
+
+默认Controller resume按effective projection resolve/mount；mount通过setup join不append selected。显式id缺失/损坏拒绝，不等于未记录值采用default。裸AgentFactory.resume的setup由调用者负责，不宣称核心自动mount所有preset。低层restore/query/export不验证roster可挂载，但普通follow会后台promotion而可能失败。
+
+无通用preset历史ref重写API；format V2→V3有明确code→ptc特例，不能泛称所有字符串永远原样，也不提供宿主任意hash映射。其它合法旧id由当前root提供实现是公开可组合性，不证明历史行为等价或代码generation冻结。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/preset/agent-presets/src/preset.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/boot/app-boot/src/profile.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session/session-format-v2-to-v3/src/migration.ts:18`。discovery/authoring fixtures仅读未运行。
