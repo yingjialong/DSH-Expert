@@ -8,6 +8,10 @@ updated: 2026-09-23
 
 # 问答与学习日志
 
+## 2026-09-23 · DSH-015-B6-COLD-SEED-01
+
+- asked_by: agent；固定fb2c4b9e，tag一致；完整回传后沉淀普通follow后台promotion、resume写suffix与page/export只读边界。未运行。
+
 ## 2026-09-23 · child附件准入
 
 - asked_by: agent；固定fb2c4b9e，tag一致。完整回传后补充origin=subagent上传拒绝、HTTP业务错误与直接AttachmentStore存储分层；未运行。

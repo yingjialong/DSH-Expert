@@ -194,3 +194,14 @@ Store.create只prepare/enter/announce，不负责persistence.create。Query corp
 AttachmentStore.saveFileStream是无Agent/receipt参数的公开存储seam，可先durably保存真实bytes，再由合法Session内容引用真实ref。它不禁止child拥有附件，也不模拟Client child上传准入。Session.append不复验附件bytes/digest，日志仍需独立持久化；无通用protectCommittedRef/pin/refcount合同，跨存储失败可留下未引用对象。真实child日志ref可由官方export消费，是组合推论非端到端实测。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/file-upload/src/index.ts:230`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/file-upload/src/http-route.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/attachment/attachment/src/index.ts`；fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/session-controller/tests/commands-upload-file.host.spec.ts:276` 仅读。
+
+
+### cold follow 与 end-seed writer 边界
+
+2026-09-23，asked_by: agent；固定本页SHA，先完整回传DSH-015-B6-COLD-SEED-01。普通history follow在yield首snapshot后，address=session且source=prepared时retain并后台promote→agents.resume；page无promotion，modelCatalog无Session地址只build目录。因此0 create/prompt/model请求不排除resume写入。
+
+query cold-read仅read handle，prepare未发布Session可有内存marker但不持久化。真正AgentLoop.resume取得write owner，追加必要closers，prepare构造Session，再按storedCount显式appendUnstoredSuffix，才能把新end-seed写入handle。旧尾已end-seed不必新增；setup/修复可另增事件，不能保证只一条。
+
+export flush只查已有live Session，readSessionLogText只读handle并序列化，entries/trace不resume。若已有follow promotion，export flush可刷其缓冲，不是export创建marker。完全关闭writer后独立只读导出不自行添seed，但JSONL为逻辑重序列化非物理字节拷贝。未认证外部观察结果。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/session-controller/src/history.ts:202`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/src/index.ts:875`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session-query/session-query/src/observation.ts:123`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/session-controller/tests/controller.host.spec.ts:200`仅读未运行。
