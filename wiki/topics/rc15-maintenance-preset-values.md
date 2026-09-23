@@ -62,3 +62,16 @@ SessionStore.get/list实现无assertActive，只读store；保留对象不必然
 AgentLoop公开默认maxParallelToolCalls=10。正常取消且无scheduler/log失败时N项计划仍写N call/N result，未started为synthetic ABORTED_BEFORE_DISPATCH，不等body已执行。started先drain再按序结果；scheduler failure不保证配对，tools/result异步observer不await。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/vendor/cordis/src/reflect.ts:233`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/session/src/index.ts:1170`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/src/constants.ts`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/tests/tool-calls.spec.ts:466`仅读未运行。
+
+
+## 2026-09-24：Session title 后台生命周期
+
+asked_by: agent；DSH-015-B6-TITLE-01已完整回传，固定T，session-title正式包sha512/root声明核验，未运行。SessionTitleService需sessions/sessionProjections与三个必需正整数config；register唯一provider后服务自身即自动consumer，AgentLoop图不自动装它。
+
+first-prompt只针对无parentSession、第一条eligible source=user文本且无title；预留pending后等request/header或marked主llm/stream匹配route边界才generate。不是挂载即补跑历史。provider failure显式refresh重试；请求messages按watermark截断。
+
+service提交session/title，投影latest-wins，持久化依赖已有writer路由与后续flush/close。后台inFlight不属于Agent.whenIdle；provider disposer/service teardown会abort并await跟踪Promise，Session disposed通知本身不await所有任务。不合作generate可阻塞drain。自动signal不继承主turn取消；purpose=session-title不自动进入AgentLoop agent/request-error retry。
+
+rename supersede后source=user pin，迟到provider受signal/revision/exact-session检查不能覆盖；refresh是明确unpin。projection本身不强制任意直接append的手动优先。官方title-llm另加timeout与session/title-llm-request，自有provider不自动继承。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session/session-title/src/index.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session/session-title-llm/src/index.ts`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session/session-title/tests/provider.spec.ts:119`与rename.spec.ts:131仅读未运行。

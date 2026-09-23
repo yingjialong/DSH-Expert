@@ -8,6 +8,10 @@ updated: 2026-09-24
 
 # 问答与学习日志
 
+## 2026-09-24 · DSH-015-B6-TITLE-01
+
+- asked_by: agent；固定T、tag与session-title发布物核验。完整回传后记录自动触发/标题pin、后台drain与独立持久化边界；未运行。
+
 ## 2026-09-24 · DSH-015-B6-DISPOSE-03
 
 - asked_by: agent；固定fb2c4b9e，tag一致；完整回传后记录ctx.get ACTIVE查询、retained store无卸载后保证、默认10与取消N/N限定；未运行。
