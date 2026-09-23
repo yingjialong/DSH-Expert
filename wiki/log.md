@@ -8,6 +8,10 @@ updated: 2026-09-23
 
 # 问答与学习日志
 
+## 2026-09-23 · 无Agent持久child lineage
+
+- asked_by: agent；固定fb2c4b9e，tag一致。完整回传后补充Store发布/Persistence持久化分层、空child flush与Query parentSession遍历；未运行整图。
+
 ## 2026-09-23 · B5-MCP-015RC2-PUBLIC-01
 
 - asked_by: agent；固定T与S对照、两正式包核验，完整回传后沉淀maintenance/preset/values边界；未运行，无外部项目检查。

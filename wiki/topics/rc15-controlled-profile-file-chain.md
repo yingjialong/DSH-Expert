@@ -176,3 +176,12 @@ image路径media/<原id>.<ext>；generic去sha256:后files/<前2>/<digest>/<净�
 sessionLogZipEntries是AsyncGenerator，file entry仅交出chunks，不负责外部消费者的附件流清理。streamSessionLogZip后台void async IIFE，cancel只abort+zip.terminate返回void，不await producer/handle close/iterator drain。正常循环退出有标准iterator关闭语义，但不合作pending next/I/O可仍等待。request abort依赖signal检查/provider合作，无公开finished/lease/cut句柄。local附件finally仅stream.destroy，没有显式await close事件。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session-query/session-log-export/src/archive.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/attachment/attachment/src/index.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/attachment/attachment-local/src/file-store.ts:147`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session-query/session-log-export/tests/archive.host.spec.ts:639`、670使用合作abort provider，不证明任意I/O排空；755/784覆盖generic路径与中途失败，本次仅读。
+
+
+### 2026-09-23：无 Agent 的持久 child lineage
+
+asked_by: agent；固定本页SHA，完整回传后补充，静态推论未跑整图。公开SessionStore.prepare可生成parentSession/origin=subagent的合法child header，不创建Agent；Persistence.create取write handle，真实已有prefix如有需append，flush强制空header落盘，close释放owner。无需伪造turn或ref，无需Workspace attach。parentSession不自动证明父存在、fork继承或subagent实际运行。
+
+Store.create只prepare/enter/announce，不负责persistence.create。Query corpus合并persisted list与live，按parentSession追踪而非origin过滤；只live child可被trace看到但ZIP读取缺stored log会失败。发布live时公开prepare→取得writer/保存seed→enter/announce可组合，后续JSONL按已有writer路由session/event；不能重复手动append同一已路由事件。无跨存储发布事务或自动回滚保证。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/session/src/index.ts:930`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session-query/session-query/src/corpus.ts:61`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session-query/session-query/src/tracing.ts:153`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session/session-persistence-jsonl/tests/jsonl.spec.ts:1308`明确空Session flush materialization，本次仅读。
