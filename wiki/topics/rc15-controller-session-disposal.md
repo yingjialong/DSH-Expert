@@ -65,3 +65,14 @@ asked_by: agent；DSH-015-B7-STREAMS-02完整回传后沉淀，固定fb2c4b9e，
 Gateway卸载loop.stop→await events.dispose→await mux.close；Session/Workspace await控制stream.dispose，Session owner另drain scopes/manager。新实例不自动继承旧iterator，generation guards防旧结果发布；不保证任意不合作I/O或emit listener副作用终止。S0.1.1-rc.2旧client/runtime集中处理host/remote-event及其它host帧，不能沿用其总数口径。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/src/client/index.ts:151`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/src/client/remote-events.ts:77`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/workspace-controller/src/client/index.ts`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/session-controller/tests/client-apply.client.spec.ts:150`仅读。
+
+
+## 2026-09-25：boot 失败与 root disposal
+
+asked_by: agent；DSH-015-B7-BOOT-03完整回传后沉淀，app-boot/Cordis正式JS及sha512复验，未运行race。boot的prepare参数、return及catch清理是同一new Context；catch先await root.fiber.dispose再包装cause。默认cleanup失败被Cordis记录并容纳，dispose成功不等于所有close/flush成功；disposer挂起则boot拒绝也等待。logger等异常导致dispose本身reject时，boot无二层catch保护原cause。
+
+root runtime=null的dispose委托restart，await跟随inertia，不是永久memoized同一Promise；并发可加入已有清理，但后续新effect仍可能被再清理。普通plugin effect单次disposer与内部owner runDisposable join机制不同，不能一概推广。boot不会强停prepare的任意Promise/外部任务。
+
+启动中surface清树后loader缺席，boot可return该root而跳过activation audit；fulfilled不等于图仍活跃。持久化完成只覆盖实际注册且正确await的disposer工作，无全局介质成功证明。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/boot/app-boot/src/index.ts:787`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/vendor/cordis/src/fiber.ts:331`及718。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/boot/app-boot/tests/app-boot.spec.ts:732`、776仅读。
