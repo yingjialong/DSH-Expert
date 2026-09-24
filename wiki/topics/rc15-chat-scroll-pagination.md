@@ -7,7 +7,7 @@ mastery: L2
 freshness: fresh
 commit: fb2c4b9e698e30edb738bca4cf0618587db7d203
 verified_at: 2026-09-21
-updated: 2026-09-22
+updated: 2026-09-24
 asked_by: agent
 anchors:
   - packages/client/ui-tool/package.json
@@ -121,3 +121,14 @@ ui-chat提供tool数据definition及ChatNodeSeat producer，缺ui-tool且无同k
 ui-tool apply自行激活bash/read/read_image/write/edit/grep/glob/web_search/web_fetch/todo_write/ask_user_question内建views，无需另导入私有row。ui-attachment图像gallery、ui-deliverables present是额外贡献；Turn process仍由ui-chat拥有。官方web-app配置确有ui-tool。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-tool/src/client/apply.ts:33`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-tool/src/client/tool/ToolCallTree.tsx:39`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/bundle/web-app/cordis.patch.yml:267`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-tool/tests/assembly-surfaces.client.spec.tsx:142` 仅读未运行。
+
+
+## 2026-09-24：重复 ToolCallId 的跨层差异
+
+asked_by: agent；DSH-015-B7-ID-PRESET-01已完整回传。固定T，llm/ui-chat/presets三正式JS核验，未实跑。ToolCallId公开类型未声明跨Session全局唯一；每Session独立binding/assembler隔离跨Session同串。格式关系toolLifecycles在turn/step清理，结果时delete，不是整个Session永久seen表。
+
+默认Chat toolDefinition却用裸callId作start身份，result按同id update；assembler key不含turn/step，第二start抛more than one start Match。两个同id真实call同时进入窗口不保证独立显示，不是自动覆盖；transport同seq重放由cursor处理，不能和新seq重复id混同。sourceEventSeqs精确日志引用不等于Chat身份已用它。
+
+preset直接resolve/mount用RemoteError agent-preset/not-found/invalid，旧class不公开；Controller create可保留RemoteError，但resolveAgent恢复catch可折gateway/internal。冷read/format成功不证明可mount/resume。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-chat/src/client/conversation-nodes/tool.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/src/client/conversation/assembler.ts:507`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session/session-format-v0-to-v1/src/relationships.ts:125`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/tests/conversation-assembler.client.spec.ts:1518`仅读，未声明全域重复ID兼容。

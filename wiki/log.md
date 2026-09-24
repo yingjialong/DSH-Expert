@@ -8,6 +8,10 @@ updated: 2026-09-24
 
 # 问答与学习日志
 
+## 2026-09-24 · DSH-015-B7-ID-PRESET-01
+
+- asked_by: agent；固定T及三正式包核验，完整回传后补充重复callId格式/Chat层差异与preset错误折叠；未运行重复ID实例。
+
 ## 2026-09-24 · DSH-015-B6-TITLE-01
 
 - asked_by: agent；固定T、tag与session-title发布物核验。完整回传后记录自动触发/标题pin、后台drain与独立持久化边界；未运行。
