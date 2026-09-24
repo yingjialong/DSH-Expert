@@ -7,7 +7,7 @@ mastery: L2
 freshness: fresh
 commit: fb2c4b9e698e30edb738bca4cf0618587db7d203
 verified_at: 2026-09-21
-updated: 2026-09-21
+updated: 2026-09-25
 asked_by: agent
 anchors:
   - packages/core/agent/src/index.ts
@@ -56,3 +56,12 @@ Cordis Fiber._unload并行独立disposers，异常catch并logger.error；根disp
 - `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/vendor/cordis/src/fiber.ts`：异常contain及并行卸载。
 
 [正式agent包](https://registry.npmjs.org/@deepseek-ai%2Fdsh-agent/0.1.5-rc.2)。未对外部owner、物理存储或具体Context卸载做运行验收，不扩展GC。
+
+
+## 2026-09-25：Client逻辑流 owner
+
+asked_by: agent；DSH-015-B7-STREAMS-02完整回传后沉淀，固定fb2c4b9e，未运行。Session controller Client apply启动session.control，Workspace controller Client apply启动workspace.follow，各自async effect dispose。$events由api-gateway/client的Remote内部ClientRemoteEvents注册Connection generation source，每代pump；Host api-remotes仅提供Gateway唯一source。逻辑stream不等于物理peer，没有Client总流数常量承诺。
+
+Gateway卸载loop.stop→await events.dispose→await mux.close；Session/Workspace await控制stream.dispose，Session owner另drain scopes/manager。新实例不自动继承旧iterator，generation guards防旧结果发布；不保证任意不合作I/O或emit listener副作用终止。S0.1.1-rc.2旧client/runtime集中处理host/remote-event及其它host帧，不能沿用其总数口径。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/src/client/index.ts:151`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/src/client/remote-events.ts:77`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/workspace-controller/src/client/index.ts`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/session-controller/tests/client-apply.client.spec.ts:150`仅读。

@@ -3,10 +3,14 @@ title: DSH 问答与学习日志
 description: 记录 DSH 咨询、核验、学习与知识沉淀的历史证据。
 type: reference
 status: active
-updated: 2026-09-24
+updated: 2026-09-25
 ---
 
 # 问答与学习日志
+
+## 2026-09-25 · DSH-015-B7-STREAMS-02
+
+- asked_by: agent；固定T/S tag核验，完整回传后沉淀三个logical stream owner、旧runtime结构差异及生命周期边界；未运行。
 
 ## 2026-09-24 · 默认tool Definition替换边界
 
