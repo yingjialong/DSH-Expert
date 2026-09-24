@@ -8,6 +8,10 @@ updated: 2026-09-24
 
 # 问答与学习日志
 
+## 2026-09-24 · 默认tool Definition替换边界
+
+- asked_by: agent；固定T/tag与三包正式出口复验，完整回传后补充entries借用/注销owner、无局部默认definition override配置及reducer出口；未运行。
+
 ## 2026-09-24 · DSH-015-B7-ID-PRESET-01
 
 - asked_by: agent；固定T及三正式包核验，完整回传后补充重复callId格式/Chat层差异与preset错误折叠；未运行重复ID实例。

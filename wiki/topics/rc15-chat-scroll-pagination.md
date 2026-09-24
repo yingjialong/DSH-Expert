@@ -132,3 +132,12 @@ asked_by: agent；DSH-015-B7-ID-PRESET-01已完整回传。固定T，llm/ui-chat
 preset直接resolve/mount用RemoteError agent-preset/not-found/invalid，旧class不公开；Controller create可保留RemoteError，但resolveAgent恢复catch可折gateway/internal。冷read/format成功不证明可mount/resume。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-chat/src/client/conversation-nodes/tool.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/src/client/conversation/assembler.ts:507`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session/session-format-v0-to-v1/src/relationships.ts:125`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/tests/conversation-assembler.client.spec.ts:1518`仅读，未声明全域重复ID兼容。
+
+
+### 默认 tool Definition 的局部替换边界
+
+2026-09-24，asked_by: agent；窄追问完整回传后三正式包出口复验沉淀。events.register按kind唯一，不是renderer slot的shadow；合法注销靠该次register disposer/owner卸载。默认ui-chat apply无条件注册tool definition且不交出其disposer，无公开unregister(kind)/exclude配置。entries确实公开borrowed Definition对象，但不提供修改它或原登记撤销的合同。
+
+toolDefinition/registerToolConversationNode及ChatView/TurnProcessNodeView不在ui-chat/client runtime出口；ToolCallTree亦不在ui-tool/client出口。公开自有Definition可形成自己的id，但无默认tool reducer可参数化occurrence身份的工厂。独立新节点并存不等于可仅替换默认definition并保留全部默认状态；未验证此窄组合，不建议私有map/src或patch。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/src/client/conversation/definition-registry.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-chat/src/client/apply.ts:70`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-tool/src/client/index.ts`。未运行。
