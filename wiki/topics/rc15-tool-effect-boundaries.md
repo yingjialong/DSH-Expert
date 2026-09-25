@@ -7,7 +7,7 @@ mastery: L2
 freshness: fresh
 commit: fb2c4b9e698e30edb738bca4cf0618587db7d203
 verified_at: 2026-09-21
-updated: 2026-09-22
+updated: 2026-09-25
 asked_by: agent
 anchors:
   - packages/interaction/user-questions/src/index.ts
@@ -160,3 +160,12 @@ Gateway投影要求plain own agent===subject，signal须AbortSignal；仅删除a
 公开composer chain可消费同一真实PendingQuestion carrier并传matched，不必新造pending。但默认QuestionComposer/内部draft store工厂不公开，公开TYPE不等于组件出口；无custom/skip禁用callback或局部slot。故“同carrier的替代presentation”与“公开配置默认UI为options-only并复用默认reducer”不是同一能力。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/src/stream-protocol.ts:145`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/api/gateway/tests/remote-event-protocol.host.spec.ts:107`（仅读）、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-user-questions/src/client/index.ts`。仅静态公开面，不提供外部方案。
+
+
+## 2026-09-25：连续同内容 write
+
+asked_by: agent；固定T/tag核验，先完整回传，未运行。官方write每次通过前置gate后恰一次writeText，无内容相等short-circuit。成功后同步fs/observed(outcome.version)由policy按agent.session对象+targetKey记录；同Session下一write用replaceIfVersion(前次outcome.version)，无需再次read。版本opaque，不保证同内容每次必变。
+
+不存在/unseen或absent→createIfAbsent；已有未观察也给createIfAbsent，由provider拒绝FS_NOT_OBSERVED。已有read→observed(v0)→write(v0)返回v1→observed(v1)→write(v1)。guard版本变化为FS_STALE_VERSION。无policy则intent undefined，直接provider调用不自动emit工具observation；owner缺席/重载/并发旧观察等不满足顺序保证。空diff只是presentation；listener抛错可在写已发生后令工具失败。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/fs/tool-fs/src/write.ts:117`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/fs/fs-observation-policy/src/index.ts`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/fs/tool-fs/tests/tools.spec.ts:661`、integration.spec.ts:508仅读。两次provider调用为条件性源码推论，不证明远端物理写/授权次数。

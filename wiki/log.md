@@ -8,6 +8,10 @@ updated: 2026-09-25
 
 # 问答与学习日志
 
+## 2026-09-25 · 连续同内容write
+
+- asked_by: agent；固定T/tag核验，完整回传后补充observation刷新、read/write intent顺序及无same-content早退；未运行远端实例。
+
 ## 2026-09-25 · DSH-015-B7-ID-02
 
 - asked_by: agent；固定T/tag与三个LLM包root核验，完整回传后记录stream包装、block-end优先、请求ID对应及无通用canonicalizer；未运行变换实例。
