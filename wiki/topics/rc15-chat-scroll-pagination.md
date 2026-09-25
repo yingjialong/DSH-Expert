@@ -7,7 +7,7 @@ mastery: L2
 freshness: fresh
 commit: fb2c4b9e698e30edb738bca4cf0618587db7d203
 verified_at: 2026-09-21
-updated: 2026-09-24
+updated: 2026-09-25
 asked_by: agent
 anchors:
   - packages/client/ui-tool/package.json
@@ -141,3 +141,12 @@ preset直接resolve/mount用RemoteError agent-preset/not-found/invalid，旧clas
 toolDefinition/registerToolConversationNode及ChatView/TurnProcessNodeView不在ui-chat/client runtime出口；ToolCallTree亦不在ui-tool/client出口。公开自有Definition可形成自己的id，但无默认tool reducer可参数化occurrence身份的工厂。独立新节点并存不等于可仅替换默认definition并保留全部默认状态；未验证此窄组合，不建议私有map/src或patch。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/src/client/conversation/definition-registry.ts`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-chat/src/client/apply.ts:70`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-tool/src/client/index.ts`。未运行。
+
+
+### LLM stream 与工具 ID 变换公开面
+
+2026-09-25，asked_by: agent；ID-02完整回传后沉淀，llm/deepseek/pi-ai三正式包sha512/root出口核验，未运行。公开llm/stream waterfall可包装AsyncIterable<StreamChunk>，自定义LlmAdapter.stream可拥有协议转换；无专用mapToolCallId/canonicalization factory。wrapper看到adapter已转换chunk，不是raw网络JSON。block-end完整block优先于partial delta，改delta不自动改最终id；replay metadata不被通用层自动重映射。
+
+默认DeepSeek/pi-ai保留provider id并将assistant/result关联id用于下一请求；公开类型未统一强制自定义adapter保留原始字节，也不承诺自由改写对所有provider安全。adapter负责其请求协议一致性，DSH标准工具producer沿输出id关联。Loop request已冻结且middleware明确只读，响应扩展能力不是改历史授权。无通用Session/turn ID重写及反向恢复工具。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/llm/llm/src/index.ts:60`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/llm/llm/src/assembler.ts:80`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/llm/llm-deepseek/src/serialize.ts:212`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/llm/llm/tests/service.spec.ts:1198`仅读。

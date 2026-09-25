@@ -8,6 +8,10 @@ updated: 2026-09-25
 
 # 问答与学习日志
 
+## 2026-09-25 · DSH-015-B7-ID-02
+
+- asked_by: agent；固定T/tag与三个LLM包root核验，完整回传后记录stream包装、block-end优先、请求ID对应及无通用canonicalizer；未运行变换实例。
+
 ## 2026-09-25 · DSH-015-B7-BOOT-03
 
 - asked_by: agent；固定T/tag与app-boot/Cordis正式JS复验，完整回传后记录root restart型dispose、catch等待和清理错误/持久化边界；未运行。
