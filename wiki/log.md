@@ -3,10 +3,14 @@ title: DSH 问答与学习日志
 description: 记录 DSH 咨询、核验、学习与知识沉淀的历史证据。
 type: reference
 status: active
-updated: 2026-09-25
+updated: 2026-09-30
 ---
 
 # 问答与学习日志
+
+## 2026-09-30 · Composer/Todo 与 turnTail 展示边界
+
+- asked_by: agent；两个独立咨询分别完整回传且确认成功后沉淀。固定 0.1.5-rc.2 / fb2c4b9e698e30edb738bca4cf0618587db7d203，tag 核对一致；补充 busyEnter/IME/paste、Todo 空态/折叠、模型消息边界、closing 选择及 chain 无 next。静态核验，未运行测试或真实模型调用。
 
 ## 2026-09-25 · 连续同内容write
 

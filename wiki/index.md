@@ -3,7 +3,7 @@ title: DSH 知识库索引
 description: 按版本与主题定位 DSH 知识条目及治理文件。
 type: index
 status: active
-updated: 2026-09-23
+updated: 2026-09-30
 ---
 
 # 知识库索引（index.md）
@@ -20,7 +20,7 @@ updated: 2026-09-23
 
 - [1.5-rc.2 Client preset投影](topics/rc15-client-agent-preset-projection.md)：Browser类型、null/undefined与partial list/follow资格；锚点 presets/src/session.ts、projection-store.ts（verified_inference / fresh）。
 
-- [1.5-rc.2输入与Layout合同](topics/rc15-client-input-layout-contract.md)：Workspace导航、Client scope/setDraft观察及默认apply贡献；锚点 input/facade.ts、ui-layout/src/client/index.ts（verified_inference / fresh）。
+- [1.5-rc.2输入与Layout合同](topics/rc15-client-input-layout-contract.md)：Workspace导航、输入状态、busyEnter/IME/paste 与 Todo 展示边界；锚点 input/facade.ts、input/editor/keymap.ts、skeleton/TodoPanel.tsx（verified_inference / fresh）。
 
 - [1.5-rc.2 Controller终局处置](topics/rc15-controller-session-disposal.md)：无单Session公开dispose lookup，owner卸载与receipt/耐久失败分层；锚点 agent-loop/src/index.ts、file-upload/src/index.ts（verified_inference / fresh）。
 

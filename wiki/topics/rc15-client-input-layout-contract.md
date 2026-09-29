@@ -7,9 +7,15 @@ mastery: L2
 freshness: fresh
 commit: fb2c4b9e698e30edb738bca4cf0618587db7d203
 verified_at: 2026-09-21
-updated: 2026-09-21
+updated: 2026-09-30
 asked_by: agent
 anchors:
+  - packages/client/ui-conversation/src/client/input/editor/keymap.ts
+  - packages/client/ui-conversation/src/client/input/submission-policy.ts
+  - packages/client/ui-conversation/src/submission-settings.ts
+  - packages/client/ui-conversation/src/client/skeleton/InputBar.tsx
+  - packages/client/ui-conversation/src/client/skeleton/TodoPanel.tsx
+  - packages/core/agent-loop/src/agent.ts
   - packages/client/ui-workspace/src/client/navigation.ts
   - packages/client/ui-workspace/src/client/index.ts
   - packages/api/session-controller/src/client/contract/sessions.ts
@@ -62,3 +68,24 @@ LayoutController公开constructor(actions,hasMainPanel)、导航/几何方法，
 - `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/tests/input-bar.client.spec.tsx:1083`：programmatic draft同步state/DOM断言，仅读未运行。
 
 未验证外部provider或真实Layout/导航/提交组合；不据静态类型宣称运行验收。
+
+## 2026-09-30：默认 Composer 与 Todo 展示边界
+
+asked_by: agent；固定本页 SHA，远端 tag 一致，完整回传后沉淀。静态核验 L2 / verified_inference，fixtures 仅读未运行。
+
+Composer 普通 Enter 先仲裁输入菜单，再判断重复键与 canSubmit；Shift+Enter 先于 IME guard 放行原生换行。普通 Enter 的 isComposing/keyCode229/composition watch（compositionend 后 10ms）阻止误提交，不 preventDefault。pasteText 接收 text/plain，多行作为文本插入而不提交；混合文件/文字分别 intakeFiles/pasteText。
+
+Host user-settings 的 ui-conversation.busyEnter 为 queue|steer，默认 queue。Agent 运行且支持 steering 时，Enter/主 Send 采用偏好，Ctrl/Cmd+Enter 采用相反模式；其他情况 queue。提交状态机 adjudicating/submitting 的 machineBusy 不等于 Agent running。普通会话运行且草稿空/blocked 时主按钮为 Stop；continuable child 可有独立 Stop。上传未结束、locked 等约束仍影响发送。该设置不承诺公开任意 keymap 重映射。
+
+TodoDock 在 conversation.input.dock 注册 todo/order=0；todos 为 null/空数组时不显示，TodoPanel 初始折叠，展开遍历全部条目，无最多 3 条限制。Question/Todo 的默认实现不能推导永久固定面板或固定像素布局合同。
+
+ISessions.open(id):void 是导航接口，不能误写为 SessionFace.open。Client 历史窗口与 Host 模型历史分离；Agent 的最终内部 request.messages 在 agent.ts:603 来自 session.deriveMessages()，历史行可见不能单独证明 provider wire 中有哪些消息。
+
+新增关键证据（均按固定 SHA 读取）：
+
+- `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/src/client/input/editor/keymap.ts`：registerComposerKeymap。
+- `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/src/client/input/submission-policy.ts`：resolveSubmitMode。
+- `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/src/submission-settings.ts`：ConversationSettingsSchema。
+- `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/src/client/skeleton/InputBar.tsx`：machineBusy/primaryStops。
+- `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-conversation/src/client/skeleton/TodoPanel.tsx:88`：collapsed/empty；:123 为 TodoDock。
+- `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/src/agent.ts:603`：模型请求 messages 边界。

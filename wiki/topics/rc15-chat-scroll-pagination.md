@@ -7,9 +7,10 @@ mastery: L2
 freshness: fresh
 commit: fb2c4b9e698e30edb738bca4cf0618587db7d203
 verified_at: 2026-09-21
-updated: 2026-09-25
+updated: 2026-09-30
 asked_by: agent
 anchors:
+  - packages/client/ui-renderer/src/client/scoped-slots.tsx
   - packages/client/ui-tool/package.json
   - packages/client/ui-tool/src/client/apply.ts
   - packages/client/ui-tool/src/client/tool/ToolCallTree.tsx
@@ -150,3 +151,11 @@ toolDefinition/registerToolConversationNode及ChatView/TurnProcessNodeView不在
 默认DeepSeek/pi-ai保留provider id并将assistant/result关联id用于下一请求；公开类型未统一强制自定义adapter保留原始字节，也不承诺自由改写对所有provider安全。adapter负责其请求协议一致性，DSH标准工具producer沿输出id关联。Loop request已冻结且middleware明确只读，响应扩展能力不是改历史授权。无通用Session/turn ID重写及反向恢复工具。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/llm/llm/src/index.ts:60`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/llm/llm/src/assembler.ts:80`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/llm/llm-deepseek/src/serialize.ts:212`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/llm/llm/tests/service.spec.ts:1198`仅读。
+
+## 2026-09-30：turnTail 的 closing 与 chain 选择
+
+asked_by: agent；固定本页 SHA，完整回传后沉淀，L2 / verified_inference，未运行。closing 是各 step 的 finalized assistant 按 finalNode.seq 排序后最后一个含非空 text block 的结果，非全 turn 正文拼接；没有则 null。tailData 要求 turn/end。
+
+chain 无 middleware next：首个 select 返回非 null 即获选并 break，组件接 ownerProps/matched；获选组件渲染 null 不重新选下一家。tail 在 MessageIconActions 前；closing 为 null 可单独显示 tail。注册自包含内容不保证同时保留其他 turnTail consumer。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-chat/src/client/conversation-nodes/turn-tail.ts:115`；`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-chat/src/client/chat/TurnTailNodeView.tsx:24`；`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/client/ui-renderer/src/client/scoped-slots.tsx:814`。
