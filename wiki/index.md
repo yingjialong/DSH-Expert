@@ -3,10 +3,12 @@ title: DSH 知识库索引
 description: 按版本与主题定位 DSH 知识条目及治理文件。
 type: index
 status: active
-updated: 2026-09-30
+updated: 2026-10-01
 ---
 
 # 知识库索引（index.md）
+
+- [1.5-rc.2 v3 导出与摘要证据](topics/rc15-v3-export-compaction-evidence.md)：header/事件统计、llmStreamCall、replacement 与成功链；锚点 archive.ts、compaction-basic/src/region.ts（verified_inference / fresh）。
 
 - [1.5-rc.2 maintenance/preset/values](topics/rc15-maintenance-preset-values.md)：真idle、收敛边界、effective/standing及JSON工具迁移；锚点agent.ts、session.ts、values/index.ts（verified_inference / fresh）。
 
