@@ -7,9 +7,12 @@ mastery: L2
 freshness: fresh
 commit: fb2c4b9e698e30edb738bca4cf0618587db7d203
 verified_at: 2026-09-23
-updated: 2026-09-23
+updated: 2026-10-01
 asked_by: agent
 anchors:
+  - packages/skill/skill/tests/skill.spec.ts
+  - packages/core/tools/tests/scoped.spec.ts
+  - packages/core/agent-loop/src/agent.ts
   - packages/skill/skill/src/index.ts
   - packages/skill/tool-skill/src/index.ts
   - packages/preset/agent-presets/src/index.ts
@@ -57,3 +60,15 @@ R→T的skill核心文件仅导入变化，scope/cache/factory/flags非新增。
 - `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/skill/tool-skill/tests/tool-skill.spec.ts:1034`：mid-sentence gesture。
 
 Fixture仅读未运行，不认证外部Provider实现。
+
+## 2026-10-01：失效后的 get 与最小执行探针
+
+asked_by: agent；固定本页 T，远端 tag 一致，完整回传后沉淀。源码/fixture 静态核验，未运行。
+
+get 获选 provider 返回 undefined 时立即返回，**不自动 invalidate、不返回上次成功正文、不在本次 fallback 到同名次优 provider**。故未主动失效的 snapshot 可仍显示缓存旧摘要而 get 为空；complete=true 不代表物理资源刚复验。重新 collect 时原候选消失，其他 provider/远层同名才可成为新 winner。name 漂移才走 invalidateEntry；load throw 传播错误。每次命中候选都会调 provider.get，但 provider可自有缓存，Registry借用定义；runtime注册另把definition作为locator保留。
+
+最终 pre deny 或 guard拒绝跳过 tools/execute 与注册body，但适用post/final/result仍可运行。prepend只是waterfall排序：直接deny且不next可短路后续pre；await next后拒绝不能撤销内层先前I/O；更外层listener可重写pre决策。guard在最终allow后同步运行，无force-allow，不能阻止此前pre/ask自身行为。
+
+SystemPrompt + ToolRuntime + SkillRegistry 的直接 execute 只验证当前Context/scope/注册工具的执行管线；SkillRegistry不自动注册官方skill工具。它不创建Agent、不跑pre-step、不自动写Session工具事件。官方tool-skill模型入口经ToolRuntime，但用户gesture在pre-step直接skills.get；catalog用snapshot。工具gate拒绝不能推导直接读取、用户gesture或catalog也被阻断。
+
+证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/skill/skill/src/index.ts:502`；`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/skill/skill/tests/skill.spec.ts:889`；`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/tools/src/index.ts:1453`；`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/tools/tests/scoped.spec.ts:286`；`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/src/agent.ts:240`。fixtures仅读未运行。
