@@ -42,7 +42,7 @@ updated: 2026-10-01
 
 - [1.5-rc.2发布、预算与live路由](topics/rc15-publication-budget-live-routing.md)：同步veto阶段、requestId有限检查、工具occurrence与backend routing/checkpoint区别；锚点 agent/src/index.ts、session-persistence-jsonl/src/storage.ts（verified_inference / fresh）。
 
-- [1.5-rc.2受控Profile与文件链](topics/rc15-controlled-profile-file-chain.md)：上传≠解析、file handle无路径分支、自定义carrier进度与receipt清理、UI bundle及cache可选备份；锚点 llm/src/content.ts、file-upload/src/client/runtime.ts（verified_inference / fresh）。
+- [1.5-rc.2受控Profile与文件链](topics/rc15-controlled-profile-file-chain.md)：上传与receipt、cold/follow恢复、工具结果未知与新turn边界；锚点 llm/src/content.ts、file-upload/src/client/runtime.ts（verified_inference / fresh）。
 
 - [1.5-rc.2公开嵌入与迁移](topics/rc15-public-embedding-migration.md)：boot/Remote、SessionHandle与纯V3迁移、无持久化及UI硬依赖；锚点 session-persistence/src/index.ts、session-format/src/types.ts（verified_inference / fresh）。
 

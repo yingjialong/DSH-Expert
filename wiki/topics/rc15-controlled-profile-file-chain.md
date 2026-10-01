@@ -7,9 +7,12 @@ mastery: L2
 freshness: fresh
 commit: fb2c4b9e698e30edb738bca4cf0618587db7d203
 verified_at: 2026-09-18
-updated: 2026-09-23
+updated: 2026-10-01
 asked_by: agent
 anchors:
+  - packages/session/session-checkpoint-policy/tests/crash-recovery.e2e.ts
+  - packages/core/agent-loop/src/inbox.ts
+  - packages/core/session/src/repair.ts
   - packages/client/modules/src/client/system.ts
   - packages/client/web/src/boot.ts
   - packages/client/file-upload/src/client/index.ts
@@ -214,3 +217,19 @@ export flush只查已有live Session，readSessionLogText只读handle并序列�
 真实AgentLoop.resume取得write owner后读stored prefix，append官方closers，再prepare并保存未存suffix。export直接读Persistence不走Query恢复events。已balanced/empty时closers=[]；open turn按需补多条tool/result、step/end、interrupted turn/end。end-seed另按尾是否已有marker判断，无新工作反复resume不重复添；未耐久/失败不能宣称跨重试exactly-once。
 
 证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/session/src/repair.ts:29`、`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session-query/session-query/src/cold-read.ts:30`。fixture `/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/tests/resume.spec.ts:472`与680覆盖实际存储及重复resume，本次仅读未运行。
+
+### 2026-10-01：崩溃恢复错误码与新 turn
+
+asked_by: agent；固定本页 SHA，远端 tag 一致，完整回传后沉淀。L2 / verified_inference，源码及 fixture 仅读，未执行崩溃或模型测试。
+
+interruptedTurnClosers 扫描最后 open turn：assistant/message 的 tool-call blocks 登记 pending，tool/call 加入 callSeq，tool/result 移除；step/end 清理该 step。只有 pending 需要补错误结果；随后补尚开 step/end 和 turn/end reason.kind=interrupted。空/已闭合日志不补；不会调用工具 body 或续跑旧 turn。
+
+- 无记录 tool/call：ToolNotStartedError / TOOL_NOT_STARTED，表示 Harness 未记录启动，不是外部物理效果证明。
+- 有记录 call、无持久结果：ToolOutcomeUnknownError / TOOL_OUTCOME_UNKNOWN；sourceEventSeqs 引用 call.seq。未知不等于失败或无副作用；官方 hard-crash fixture 覆盖副作用已发生但结果缺失。
+- 合成 tool/result 的 data.message 为 user role、source.kind=tool，content[0].isError=true，仍归旧 turn/step。全部 closers.time 复用最后真实事件时间，seq 连续追加；不能据此测重启或实际工具结束时间。
+
+默认 Agent 构造为 idle，resume 不重投已执行 prompt，也不重试旧工具；后续唤醒输入才驱动新 turn。durable inbox 可恢复未消费输入，不能称全部 pending 丢失；构造 inbox 不自行唤醒。setup/session-start listener 可投递输入，故不能对任意组合保证必须人类再输入或恢复后绝无活动。旧 prompt 作为历史进入上下文不等于重提交新 prompt。
+
+判读最小字段为旧 turn/end.reason.kind=interrupted、tool/result.data.error.code 和 callId/sourceEventSeqs，以及后续新 turn/start.data.turn。step/end 无独立 interrupted 标志；session/end-seed 非新 turn。cold snapshot 中的 synthetic 尾不证明已落盘，follow 可能另行 promote/resume；需区分 query 与 persistence 证据。
+
+新增证据：`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/session/src/repair.ts:29`；`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/src/agent.ts:96`；`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/core/agent-loop/tests/resume.spec.ts:946`；`/Users/majiajun/workspace/DSH-Expert/upstream/deepseek-harness/packages/session/session-checkpoint-policy/tests/crash-recovery.e2e.ts:105`。

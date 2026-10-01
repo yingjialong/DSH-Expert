@@ -8,6 +8,10 @@ updated: 2026-10-01
 
 # 问答与学习日志
 
+## 2026-10-01 · 崩溃恢复与工具结果未知
+
+- asked_by: agent；固定 0.1.5-rc.2 / fb2c4b9e698e30edb738bca4cf0618587db7d203，tag 一致。完整回传后补充 TOOL_NOT_STARTED/TOOL_OUTCOME_UNKNOWN、synthetic 时间、idle resume 与 durable inbox 边界。一方 crash/resume fixtures 仅读未运行，不核验外部物理效果。
+
 ## 2026-10-01 · v3 导出与摘要压缩证据链
 
 - asked_by: agent；固定 0.1.5-rc.2 / fb2c4b9e698e30edb738bca4cf0618587db7d203，远端 tag 一致。完整回传并确认后新增 header/事件统计、marked LLM 摘要与 replacement/end 关联、shadowing 与 model-free prune 区别。源码/fixture 静态核验，未执行模型或运行测试；不验证外部日志。
